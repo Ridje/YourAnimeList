@@ -1,23 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    app:cardBackgroundColor="@android:color/transparent"
+    app:cardElevation="0dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+>
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <androidx.appcompat.widget.AppCompatImageView
-            android:layout_width="96dp"
-            android:layout_height="144dp"
-            app:srcCompat="@drawable/default_image"/>
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/itemImage"
+            android:layout_width="@dimen/posterWidth"
+            android:layout_height="@dimen/posterHeight"
+            app:shapeAppearanceOverlay="@style/circleImageView"
+            app:srcCompat="@drawable/default_image" />
 
         <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/itemTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="Perfect blue" />
+            android:maxWidth="@dimen/posterWidth"
+            android:text="Perfect blue"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2"
+            android:textAlignment="center" />
     </androidx.appcompat.widget.LinearLayoutCompat>
-</androidx.cardview.widget.CardView>
+</com.google.android.material.card.MaterialCardView>
