@@ -20,16 +20,12 @@ class ExploreFragment : Fragment() {
 
     private lateinit var viewModel: ExploreViewModel
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        _binding = ExploreFragmentBinding.inflate(layoutInflater)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        return inflater.inflate(R.layout.explore_fragment, container, false)
+        _binding = ExploreFragmentBinding.inflate(layoutInflater, container, false)
+        return binding.root
     }
 
 
