@@ -23,12 +23,12 @@ class ExploreItemsAdapter(val animeList:List<Anime>, private val itemClickListen
     inner class ExploreAnimeItem(val binding : ExploreFragmentItemBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(anime:Anime) {
             binding.itemTitle.text = anime.title
-            binding.root.setOnClickListener { itemClickListener?.onItemClickListener() }
+            binding.root.setOnClickListener { itemClickListener?.onItemClickListener(animeList[adapterPosition]) }
         }
     }
 
     interface OnItemClickListener {
-        fun onItemClickListener()
+        fun onItemClickListener(anime : Anime)
     }
 }
 
