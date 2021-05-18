@@ -6,12 +6,9 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.Observer
 import com.google.android.material.snackbar.Snackbar
 import com.kis.youranimelist.MainActivity
-import com.kis.youranimelist.R
 import com.kis.youranimelist.databinding.ExploreFragmentBinding
-import com.kis.youranimelist.model.Anime
 import com.kis.youranimelist.ui.item.ItemFragment
 
 class ExploreFragment : Fragment() {

@@ -24,4 +24,8 @@ class MainActivity : AppCompatActivity() {
         fragment.commit()
 
     }
+
+    fun navigateBack() {
+        supportFragmentManager.popBackStack();
+    }
 }
