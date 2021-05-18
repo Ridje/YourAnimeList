@@ -9,7 +9,6 @@ import java.lang.Thread.sleep
 class ExploreViewModel(private val liveDataToObserve: MutableLiveData<ExploreState> = MutableLiveData()) :
     ViewModel() {
 
-    private val repository : Repository = RepositoryMock()
 
     fun getLiveData() = liveDataToObserve
 
@@ -17,7 +16,7 @@ class ExploreViewModel(private val liveDataToObserve: MutableLiveData<ExploreSta
         liveDataToObserve.value = ExploreState.Loading
         Thread {
             sleep(1000)
-            liveDataToObserve.postValue(ExploreState.Success(repository.getAnimeListByGroup()))
+            liveDataToObserve.postValue(ExploreState.Success(RepositoryMock.getAnimeListByCategory()))
         }.start()
     }
 }

@@ -1,60 +1,58 @@
 package com.kis.youranimelist.ui.explore
 
-import android.graphics.Canvas
 import android.graphics.Rect
-import android.graphics.drawable.Drawable
-import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.children
-import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.kis.youranimelist.R
 import com.kis.youranimelist.databinding.ExploreFragmentGroupBinding
-import com.kis.youranimelist.model.Anime
+import com.kis.youranimelist.model.AnimeCategory
 
-class ExploreAdapter(private val animeGroups:List<Map<String, Any>>) : RecyclerView.Adapter<ExploreAnimeGroup>() {
+class ExploreAdapter(private val animeCategories:List<AnimeCategory>, private val itemClickListener:ExploreItemsAdapter.OnItemClickListener?) : RecyclerView.Adapter<ExploreAdapter.ExploreAnimeCategory>() {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ExploreAnimeGroup {
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ExploreAnimeCategory {
         val binding = ExploreFragmentGroupBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return ExploreAnimeGroup(binding);
+        return ExploreAnimeCategory(binding);
     }
 
-    override fun onBindViewHolder(holder: ExploreAnimeGroup, position: Int) {
-        holder.bind(animeGroups[position])
+    override fun onBindViewHolder(holder: ExploreAnimeCategory, position: Int) {
+        holder.bind(animeCategories[position])
     }
 
-    override fun getItemCount(): Int = animeGroups.size
-}
+    override fun getItemCount(): Int = animeCategories.size
 
-class ExploreAnimeGroup(val binding: ExploreFragmentGroupBinding) : RecyclerView.ViewHolder(binding.root) {
-    fun bind(groupInfo:Map<String, Any>) {
-        binding.groupName.text = groupInfo["name"] as String
-        binding.itemList.adapter = ExploreItemsAdapter(groupInfo["items"] as List<Anime>)
-        binding.itemList.addItemDecoration(
-            SimpleDividerItemDecorationLastExcluded(
-                binding.itemList.resources.getDimension(R.dimen.itemsMargin)
+    inner class ExploreAnimeCategory(private val binding: ExploreFragmentGroupBinding) : RecyclerView.ViewHolder(binding.root) {
+        fun bind(animeCategory: AnimeCategory) {
+            binding.categoryName.text = animeCategory.name
+            binding.itemList.adapter = ExploreItemsAdapter(animeCategory.animeList, itemClickListener)
+            binding.itemList.addItemDecoration(
+                SimpleDividerItemDecorationLastExcluded(
+                    binding.itemList.resources.getDimension(R.dimen.itemsMargin)
+                )
             )
-        )
-    }
-}
-
-class SimpleDividerItemDecorationLastExcluded(private val spacing: Float) :
-    RecyclerView.ItemDecoration() {
-
-    override fun getItemOffsets(
-        rect: Rect,
-        view: View,
-        parent: RecyclerView,
-        s: RecyclerView.State
-    ) {
-        parent.adapter?.let { adapter ->
-            rect.right = when (parent.getChildAdapterPosition(view)) {
-                RecyclerView.NO_POSITION, adapter.itemCount - 1 -> 0
-                else -> spacing.toInt()
-            }
         }
     }
+
+    inner class SimpleDividerItemDecorationLastExcluded(private val spacing: Float) :
+        RecyclerView.ItemDecoration() {
+
+        override fun getItemOffsets(
+            rect: Rect,
+            view: View,
+            parent: RecyclerView,
+            s: RecyclerView.State
+        ) {
+            parent.adapter?.let { adapter ->
+                rect.right = when (parent.getChildAdapterPosition(view)) {
+                    RecyclerView.NO_POSITION, adapter.itemCount - 1 -> 0
+                    else -> spacing.toInt()
+                }
+            }
+        }
+
+    }
+
 }
+

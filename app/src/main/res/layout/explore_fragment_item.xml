@@ -16,6 +16,7 @@
             android:id="@+id/itemImage"
             android:layout_width="@dimen/posterWidth"
             android:layout_height="@dimen/posterHeight"
+            android:scaleType="fitXY"
             app:shapeAppearanceOverlay="@style/circleImageView"
             app:srcCompat="@drawable/default_image" />
 
@@ -25,8 +26,9 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:maxWidth="@dimen/posterWidth"
+            android:paddingTop="12dp"
             android:text="Perfect blue"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2"
-            android:textAlignment="center" />
+            android:textAlignment="center"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2" />
     </androidx.appcompat.widget.LinearLayoutCompat>
 </com.google.android.material.card.MaterialCardView>
