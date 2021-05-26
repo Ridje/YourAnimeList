@@ -6,10 +6,11 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.google.android.material.snackbar.Snackbar
 import com.kis.youranimelist.MainActivity
+import com.kis.youranimelist.R
 import com.kis.youranimelist.databinding.ExploreFragmentBinding
 import com.kis.youranimelist.model.Anime
+import com.kis.youranimelist.showSnackBar
 import com.kis.youranimelist.ui.item.ItemFragment
 
 class ExploreFragment : Fragment() {
@@ -21,7 +22,9 @@ class ExploreFragment : Fragment() {
         fun newInstance() = ExploreFragment()
     }
 
-    private lateinit var viewModel: ExploreViewModel
+    private val viewModel: ExploreViewModel by lazy {
+        ViewModelProvider(this).get(ExploreViewModel::class.java)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -34,7 +37,6 @@ class ExploreFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel = ViewModelProvider(this).get(ExploreViewModel::class.java)
         viewModel.getLiveData().observe(viewLifecycleOwner, { render(it)})
         viewModel.getAnimeListByGroup()
     }
@@ -61,10 +63,7 @@ class ExploreFragment : Fragment() {
             is ExploreState.Loading -> { binding.progressBar.visibility = View.VISIBLE }
             is ExploreState.Error -> {
                 binding.progressBar.visibility = View.GONE
-                Snackbar
-                    .make(binding.root, "Error", Snackbar.LENGTH_INDEFINITE)
-                    .setAction("Reload") { viewModel.getAnimeListByGroup() }
-                    .show()
+                binding.root.showSnackBar(getString(R.string.error), getString(R.string.reload),  { viewModel.getAnimeListByGroup() })
             }
         }
     }

@@ -10,9 +10,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_activity)
-        if (savedInstanceState == null) {
-            navivageTo(ExploreFragment.newInstance(), false)
-        }
+        savedInstanceState ?: navivageTo(ExploreFragment.newInstance(), false)
     }
 
     fun navivageTo(fragment:Fragment, addToBackstack:Boolean) {

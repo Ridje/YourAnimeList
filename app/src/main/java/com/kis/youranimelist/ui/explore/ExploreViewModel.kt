@@ -9,7 +9,6 @@ import java.lang.Thread.sleep
 class ExploreViewModel(private val liveDataToObserve: MutableLiveData<ExploreState> = MutableLiveData()) :
     ViewModel() {
 
-
     fun getLiveData() = liveDataToObserve
 
     fun getAnimeListByGroup() {
