@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="itemsMargin">24dp</dimen>
+    <dimen name="posterWidth">144dp</dimen>
+    <dimen name="posterHeight">216dp</dimen>
+    <dimen name="posterFadeEffectHeight">200dp</dimen>
+</resources>

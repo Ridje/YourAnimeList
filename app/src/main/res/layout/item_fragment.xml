@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.item.ItemFragment">
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:indeterminate="true"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/itemContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/posterView"
+                android:layout_width="match_parent"
+                android:layout_height="500dp"
+                android:scaleType="fitXY"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/default_image" />
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/buttonBack"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="28dp"
+                android:layout_marginTop="28dp"
+                android:background="@color/background_color"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:shapeAppearanceOverlay="@style/cornedImageView"
+                app:srcCompat="@drawable/button_back" />
+
+            <View
+                android:id="@+id/imageFade"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/posterFadeEffectHeight"
+                android:layout_gravity="bottom"
+                android:background="@drawable/fade_image"
+                app:layout_constraintBottom_toBottomOf="@+id/posterView"
+                app:layout_constraintEnd_toEndOf="@+id/posterView"
+                app:layout_constraintStart_toStartOf="@+id/posterView" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/itemTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="24dp"
+                android:paddingEnd="24dp"
+                android:text="ATTACK ON TITANS"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline4"
+                app:layout_constraintStart_toStartOf="@+id/imageFade"
+                app:layout_constraintTop_toBottomOf="@+id/imageFade" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/itemYear"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="24dp"
+                android:paddingEnd="4dp"
+                android:text="2020"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Overline"
+                app:layout_constraintStart_toStartOf="@+id/itemTitle"
+                app:layout_constraintTop_toBottomOf="@+id/itemTitle" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/itemDividerOne"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="|"
+                app:layout_constraintBottom_toBottomOf="@+id/itemYear"
+                app:layout_constraintStart_toEndOf="@+id/itemYear"
+                app:layout_constraintTop_toTopOf="@+id/itemYear" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/itemGenres"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp"
+                android:text="action, adventure, fantasy"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Overline"
+                app:layout_constraintBottom_toBottomOf="@+id/itemYear"
+                app:layout_constraintStart_toEndOf="@+id/itemDividerOne"
+                app:layout_constraintTop_toBottomOf="@+id/itemTitle" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/itemDividerTwo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="|"
+                app:layout_constraintBottom_toBottomOf="@+id/itemYear"
+                app:layout_constraintStart_toEndOf="@+id/itemGenres"
+                app:layout_constraintTop_toTopOf="@+id/itemYear" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/itemMean"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="4dp"
+                android:paddingEnd="24dp"
+                android:text="9.4"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Overline"
+                app:layout_constraintBottom_toBottomOf="@+id/itemYear"
+                app:layout_constraintStart_toEndOf="@+id/itemDividerTwo"
+                app:layout_constraintTop_toBottomOf="@+id/itemTitle" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/itemSynopsys"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="24dp"
+                android:paddingVertical="16dp"
+                android:text="@string/anime_synopsis_example"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/itemYear" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </ScrollView>
+</FrameLayout>
