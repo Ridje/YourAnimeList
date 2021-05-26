@@ -141,12 +141,7 @@ object RepositoryMock : Repository {
         return animeByCategory
     }
 
-    override fun getAnimeInfo(): Anime {
-        return Anime(
-            5114,
-            "Fullmetal Alchemist: Brotherhood",
-            null,
-            2009,
-            9.17f)
+    override fun getAnimeInfo(anime: Anime): Anime {
+        return anime
     }
 }

@@ -21,9 +21,15 @@ class ItemFragment : Fragment() {
 
     private var _binding: ItemFragmentBinding? = null
     private val binding get() = _binding!!
+    private var anime : Anime? = null
 
     companion object {
-        fun newInstance() = ItemFragment()
+        const val BUNDLE_EXTRA = "item_value"
+        fun newInstance(bundle : Bundle) : ItemFragment {
+            val fragment = ItemFragment()
+            fragment.arguments = bundle
+            return fragment
+        }
     }
 
     private lateinit var viewModel: ItemViewModel
@@ -44,9 +50,15 @@ class ItemFragment : Fragment() {
                 (requireActivity() as MainActivity).navigateBack()
             }
         })
-        viewModel = ViewModelProvider(this).get(ItemViewModel::class.java)
-        viewModel.getLiveData().observe(viewLifecycleOwner, { render(it) })
-        viewModel.getAnimeInfo()
+
+        anime = arguments?.getParcelable<Anime>(BUNDLE_EXTRA)
+        if (anime != null) {
+            viewModel = ViewModelProvider(this).get(ItemViewModel::class.java)
+            viewModel.getLiveData().observe(viewLifecycleOwner, { render(it) })
+            viewModel.getAnimeInfo(anime!!)
+        } else {
+            (requireActivity() as MainActivity).navigateBack()
+        }
 
     }
 
@@ -65,7 +77,7 @@ class ItemFragment : Fragment() {
                 binding.progressBar.visibility = View.GONE
                 Snackbar
                     .make(binding.root, "Error", Snackbar.LENGTH_INDEFINITE)
-                    .setAction("Reload") { viewModel.getAnimeInfo() }
+                    .setAction("Reload") { viewModel.getAnimeInfo(anime!!) }
                     .show()
             }
         }

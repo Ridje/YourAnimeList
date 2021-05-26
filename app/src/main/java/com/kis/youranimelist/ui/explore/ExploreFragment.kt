@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import com.google.android.material.snackbar.Snackbar
 import com.kis.youranimelist.MainActivity
 import com.kis.youranimelist.databinding.ExploreFragmentBinding
+import com.kis.youranimelist.model.Anime
 import com.kis.youranimelist.ui.item.ItemFragment
 
 class ExploreFragment : Fragment() {
@@ -49,8 +50,10 @@ class ExploreFragment : Fragment() {
                 binding.progressBar.visibility = View.GONE
                 binding.explore.adapter = ExploreAdapter(exploreState.animeData,
                     object : ExploreItemsAdapter.OnItemClickListener {
-                        override fun onItemClickListener() {
-                            (requireActivity() as MainActivity).navivageTo(ItemFragment.newInstance(), true)
+                        override fun onItemClickListener(anime : Anime) {
+                            val bundle = Bundle()
+                            bundle.putParcelable(ItemFragment.BUNDLE_EXTRA, anime)
+                            (requireActivity() as MainActivity).navivageTo(ItemFragment.newInstance(bundle), true)
                         }
                     })
                 binding.explore.setHasFixedSize(true);
