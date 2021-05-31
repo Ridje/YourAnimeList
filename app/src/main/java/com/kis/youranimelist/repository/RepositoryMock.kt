@@ -141,7 +141,5 @@ object RepositoryMock : Repository {
         return animeByCategory
     }
 
-    override fun getAnimeInfo(anime: Anime): Anime {
-        return anime
-    }
+    override fun getAnimeInfo(anime: Anime): Anime = anime
 }

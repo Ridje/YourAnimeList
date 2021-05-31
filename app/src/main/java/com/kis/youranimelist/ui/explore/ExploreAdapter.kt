@@ -23,15 +23,16 @@ class ExploreAdapter(private val animeCategories:List<AnimeCategory>, private va
 
     override fun getItemCount(): Int = animeCategories.size
 
-    inner class ExploreAnimeCategory(private val binding: ExploreFragmentGroupBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class ExploreAnimeCategory(private val binding: ExploreFragmentGroupBinding) :
+        RecyclerView.ViewHolder(binding.root) {
         fun bind(animeCategory: AnimeCategory) {
-            binding.categoryName.text = animeCategory.name
-            binding.itemList.adapter = ExploreItemsAdapter(animeCategory.animeList, itemClickListener)
-            binding.itemList.addItemDecoration(
-                SimpleDividerItemDecorationLastExcluded(
-                    binding.itemList.resources.getDimension(R.dimen.itemsMargin)
-                )
-            )
+            binding.apply {
+                categoryName.text = animeCategory.name
+                itemList.adapter = ExploreItemsAdapter(animeCategory.animeList, itemClickListener)
+                itemList.addItemDecoration(
+                    SimpleDividerItemDecorationLastExcluded(
+                        itemList.resources.getDimension(R.dimen.itemsMargin)))
+            }
         }
     }
 
