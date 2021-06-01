@@ -6,18 +6,20 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.google.android.material.snackbar.Snackbar
 import com.kis.youranimelist.MainActivity
 import com.kis.youranimelist.R
 import com.kis.youranimelist.databinding.ItemFragmentBinding
 import com.kis.youranimelist.model.Anime
 import com.squareup.picasso.Picasso
+import com.kis.youranimelist.showSnackBar
 
 class ItemFragment : Fragment() {
 
     private var _binding: ItemFragmentBinding? = null
     private val binding get() = _binding!!
-    private var anime : Anime? = null
+    private val anime : Anime? by lazy {
+        arguments?.getParcelable(BUNDLE_EXTRA)
+    }
 
     companion object {
         const val BUNDLE_EXTRA = "item_value"
@@ -28,7 +30,9 @@ class ItemFragment : Fragment() {
         }
     }
 
-    private lateinit var viewModel: ItemViewModel
+    private val viewModel: ItemViewModel by lazy {
+        ViewModelProvider(this).get(ItemViewModel::class.java)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -41,24 +45,16 @@ class ItemFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.buttonBack.setOnClickListener(object : View.OnClickListener {
-            override fun onClick(v: View?) {
-                (requireActivity() as MainActivity).navigateBack()
-            }
-        })
+        binding.buttonBack.setOnClickListener { (requireActivity() as MainActivity).navigateBack() }
 
-        anime = arguments?.getParcelable<Anime>(BUNDLE_EXTRA)
-        if (anime != null) {
-            viewModel = ViewModelProvider(this).get(ItemViewModel::class.java)
+        anime?.let { animeArgument ->
             viewModel.getLiveData().observe(viewLifecycleOwner, { render(it) })
-            viewModel.getAnimeInfo(anime!!)
-        } else {
-            (requireActivity() as MainActivity).navigateBack()
-        }
+            viewModel.getAnimeInfo(animeArgument)
+        } ?: (requireActivity() as MainActivity).navigateBack()
 
     }
 
-    fun render(itemState: ItemState) {
+    private fun render(itemState: ItemState) {
         when (itemState) {
             is ItemState.Success -> {
                 binding.progressBar.visibility = View.GONE
@@ -71,19 +67,21 @@ class ItemFragment : Fragment() {
             }
             is ItemState.Error -> {
                 binding.progressBar.visibility = View.GONE
-                Snackbar
-                    .make(binding.root, "Error", Snackbar.LENGTH_INDEFINITE)
-                    .setAction("Reload") { viewModel.getAnimeInfo(anime!!) }
-                    .show()
+                binding.root.showSnackBar(
+                    getString(R.string.error),
+                    getString(R.string.reload),
+                    { anime?.let { viewModel.getAnimeInfo(it) } })
             }
         }
     }
 
     private fun renderItem(item : Anime) {
-        binding.itemMean.text = item.mean.toString()
-        binding.itemTitle.text = item.title
-        binding.itemYear.text = item.startSeason?.year.toString()
-        binding.itemSynopsis.text = item.synopsis ?: "No synopsis"
-        Picasso.get().load(item.mainPicture?.large ?: item.mainPicture?.medium).error(R.drawable.default_image).into(binding.posterView)
+        binding.apply {
+            itemMean.text = item.mean.toString()
+            itemTitle.text = item.title
+            itemYear.text = item.year.toString()
+            itemSynopsis.text = item.synopsis ?: getString(R.string.no_synopsis)
+            Picasso.get().load(item.mainPicture?.large ?: item.mainPicture?.medium).error(R.drawable.default_image).into(posterView)
+        }
     }
 }
