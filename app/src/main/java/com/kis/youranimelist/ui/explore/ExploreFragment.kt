@@ -8,8 +8,10 @@ import android.view.View
 import android.view.ViewGroup
 import com.google.android.material.snackbar.Snackbar
 import com.kis.youranimelist.MainActivity
+import com.kis.youranimelist.R
 import com.kis.youranimelist.databinding.ExploreFragmentBinding
 import com.kis.youranimelist.model.Anime
+import com.kis.youranimelist.model.ranking_response.AnimeRankingItem
 import com.kis.youranimelist.ui.item.ItemFragment
 
 class ExploreFragment : Fragment() {
@@ -53,7 +55,7 @@ class ExploreFragment : Fragment() {
                         override fun onItemClickListener(anime : Anime) {
                             val bundle = Bundle()
                             bundle.putParcelable(ItemFragment.BUNDLE_EXTRA, anime)
-                            (requireActivity() as MainActivity).navivageTo(ItemFragment.newInstance(bundle), true)
+                            (requireActivity() as MainActivity).navivageTo(ItemFragment.newInstance(bundle))
                         }
                     })
                 binding.explore.setHasFixedSize(true);
@@ -62,8 +64,8 @@ class ExploreFragment : Fragment() {
             is ExploreState.Error -> {
                 binding.progressBar.visibility = View.GONE
                 Snackbar
-                    .make(binding.root, "Error", Snackbar.LENGTH_INDEFINITE)
-                    .setAction("Reload") { viewModel.getAnimeListByGroup() }
+                    .make(binding.root, getString(R.string.error), Snackbar.LENGTH_INDEFINITE)
+                    .setAction(getString(R.string.reload)) { viewModel.getAnimeListByGroup() }
                     .show()
             }
         }

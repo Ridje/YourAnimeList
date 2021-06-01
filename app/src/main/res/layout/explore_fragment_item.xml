@@ -16,9 +16,9 @@
             android:id="@+id/itemImage"
             android:layout_width="@dimen/posterWidth"
             android:layout_height="@dimen/posterHeight"
-            android:scaleType="centerCrop"
+            android:scaleType="fitXY"
             app:shapeAppearanceOverlay="@style/cornedImageView"
-            app:srcCompat="@drawable/default_image" />
+            app:srcCompat="@drawable/poster_medium_example" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/itemTitle"

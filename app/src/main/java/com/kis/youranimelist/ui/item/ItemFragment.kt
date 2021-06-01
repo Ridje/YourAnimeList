@@ -9,13 +9,9 @@ import android.view.ViewGroup
 import com.google.android.material.snackbar.Snackbar
 import com.kis.youranimelist.MainActivity
 import com.kis.youranimelist.R
-import com.kis.youranimelist.databinding.ExploreFragmentBinding
 import com.kis.youranimelist.databinding.ItemFragmentBinding
 import com.kis.youranimelist.model.Anime
-import com.kis.youranimelist.ui.explore.ExploreAdapter
-import com.kis.youranimelist.ui.explore.ExploreItemsAdapter
-import com.kis.youranimelist.ui.explore.ExploreState
-import com.kis.youranimelist.ui.explore.ExploreViewModel
+import com.squareup.picasso.Picasso
 
 class ItemFragment : Fragment() {
 
@@ -86,7 +82,8 @@ class ItemFragment : Fragment() {
     private fun renderItem(item : Anime) {
         binding.itemMean.text = item.mean.toString()
         binding.itemTitle.text = item.title
-        binding.itemYear.text = item.year.toString()
-        binding.itemSynopsys.text = item?.synopsys ?: "No synopsys"
+        binding.itemYear.text = item.startSeason?.year.toString()
+        binding.itemSynopsis.text = item.synopsis ?: "No synopsis"
+        Picasso.get().load(item.mainPicture?.large ?: item.mainPicture?.medium).error(R.drawable.default_image).into(binding.posterView)
     }
 }
