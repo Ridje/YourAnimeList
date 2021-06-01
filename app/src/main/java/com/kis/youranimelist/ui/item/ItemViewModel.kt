@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.kis.youranimelist.model.Anime
 import com.kis.youranimelist.repository.RepositoryMock
+import com.kis.youranimelist.repository.RepositoryNetwork
 
 class ItemViewModel(private val liveDataToObserve: MutableLiveData<ItemState> = MutableLiveData()) : ViewModel() {
     fun getLiveData() = liveDataToObserve
@@ -12,7 +13,22 @@ class ItemViewModel(private val liveDataToObserve: MutableLiveData<ItemState> = 
         liveDataToObserve.value = ItemState.Loading
         Thread {
             Thread.sleep(1000)
-            liveDataToObserve.postValue(ItemState.Success(RepositoryMock.getAnimeInfo(anime)))
+            try {
+                liveDataToObserve.postValue(
+                    ItemState.Success(
+                        RepositoryNetwork.getAnimeInfo(
+                            anime.id,
+                            fields
+                        )
+                    )
+                )
+            } catch (e : Exception) {
+                liveDataToObserve.postValue(ItemState.Error(e))
+                e.printStackTrace()
+            }
         }.start()
+    }
+    companion object {
+        const val fields = "id, title, mean, main_picture, start_season, synopsis"
     }
 }

@@ -26,18 +26,18 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/itemContainer"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/posterView"
                 android:layout_width="match_parent"
-                android:layout_height="500dp"
+                android:layout_height="600dp"
                 android:scaleType="fitXY"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/default_image" />
+                app:srcCompat="@drawable/poster_large_example" />
 
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/buttonBack"
@@ -65,12 +65,13 @@
                 android:id="@+id/itemTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="50dp"
                 android:paddingHorizontal="24dp"
                 android:paddingEnd="24dp"
                 android:text="ATTACK ON TITANS"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Headline4"
                 app:layout_constraintStart_toStartOf="@+id/imageFade"
-                app:layout_constraintTop_toBottomOf="@+id/imageFade" />
+                app:layout_constraintTop_toTopOf="@+id/imageFade" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/itemYear"
@@ -126,7 +127,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/itemTitle" />
 
             <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/itemSynopsys"
+                android:id="@+id/itemSynopsis"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingHorizontal="24dp"

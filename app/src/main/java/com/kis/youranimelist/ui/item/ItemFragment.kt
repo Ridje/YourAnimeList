@@ -10,6 +10,7 @@ import com.kis.youranimelist.MainActivity
 import com.kis.youranimelist.R
 import com.kis.youranimelist.databinding.ItemFragmentBinding
 import com.kis.youranimelist.model.Anime
+import com.squareup.picasso.Picasso
 import com.kis.youranimelist.showSnackBar
 
 class ItemFragment : Fragment() {
@@ -79,7 +80,8 @@ class ItemFragment : Fragment() {
             itemMean.text = item.mean.toString()
             itemTitle.text = item.title
             itemYear.text = item.year.toString()
-            itemSynopsys.text = item.synopsys ?: getString(R.string.no_synopsys)
+            itemSynopsis.text = item.synopsis ?: getString(R.string.no_synopsis)
+            Picasso.get().load(item.mainPicture?.large ?: item.mainPicture?.medium).error(R.drawable.default_image).into(posterView)
         }
     }
 }

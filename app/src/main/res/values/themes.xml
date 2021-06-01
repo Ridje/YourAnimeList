@@ -25,4 +25,9 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
+
+    <style name="ThemeOverlay.YourAnimeList.FullscreenContainer" parent="">
+        <item name="fullscreenBackgroundColor">@color/background_color</item>
+        <item name="fullscreenTextColor">@color/text_color</item>
+    </style>
 </resources>

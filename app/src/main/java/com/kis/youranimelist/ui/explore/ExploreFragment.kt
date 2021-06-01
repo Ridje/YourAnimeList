@@ -10,6 +10,7 @@ import com.kis.youranimelist.MainActivity
 import com.kis.youranimelist.R
 import com.kis.youranimelist.databinding.ExploreFragmentBinding
 import com.kis.youranimelist.model.Anime
+import com.kis.youranimelist.model.ranking_response.AnimeRankingItem
 import com.kis.youranimelist.showSnackBar
 import com.kis.youranimelist.ui.item.ItemFragment
 
@@ -55,7 +56,7 @@ class ExploreFragment : Fragment() {
                         override fun onItemClickListener(anime : Anime) {
                             val bundle = Bundle()
                             bundle.putParcelable(ItemFragment.BUNDLE_EXTRA, anime)
-                            (requireActivity() as MainActivity).navivageTo(ItemFragment.newInstance(bundle), true)
+                            (requireActivity() as MainActivity).navivageTo(ItemFragment.newInstance(bundle))
                         }
                     })
                 binding.explore.setHasFixedSize(true);
