@@ -79,7 +79,7 @@ class ItemFragment : Fragment() {
         binding.apply {
             itemMean.text = item.mean.toString()
             itemTitle.text = item.title
-            itemYear.text = item.year.toString()
+            itemYear.text = item.startSeason?.year.toString()
             itemSynopsis.text = item.synopsis ?: getString(R.string.no_synopsis)
             Picasso.get().load(item.mainPicture?.large ?: item.mainPicture?.medium).error(R.drawable.default_image).into(posterView)
         }

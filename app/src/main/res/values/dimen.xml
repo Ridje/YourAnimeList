@@ -4,4 +4,5 @@
     <dimen name="posterWidth">144dp</dimen>
     <dimen name="posterHeight">216dp</dimen>
     <dimen name="posterFadeEffectHeight">200dp</dimen>
+    <dimen name="air_size">40dp</dimen>
 </resources>
