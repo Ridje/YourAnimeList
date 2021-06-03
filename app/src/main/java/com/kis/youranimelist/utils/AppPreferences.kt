@@ -5,8 +5,9 @@ import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
+import dagger.hilt.android.qualifiers.ApplicationContext
 
-class AppPreferences private constructor(private val context: Context) {
+class AppPreferences private constructor(@ApplicationContext val context: Context) {
 
     private val sharedPreferences : SharedPreferences = EncryptedSharedPreferences.create(
         context.packageName,

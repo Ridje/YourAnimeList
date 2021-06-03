@@ -5,8 +5,13 @@ import androidx.lifecycle.ViewModel
 import com.kis.youranimelist.model.Anime
 import com.kis.youranimelist.repository.RepositoryMock
 import com.kis.youranimelist.repository.RepositoryNetwork
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class ItemViewModel(private val liveDataToObserve: MutableLiveData<ItemState> = MutableLiveData()) : ViewModel() {
+@HiltViewModel
+class ItemViewModel @Inject constructor(val repositoryNetwork: RepositoryNetwork) : ViewModel() {
+
+    private val liveDataToObserve = MutableLiveData<ItemState>()
     fun getLiveData() = liveDataToObserve
 
     fun getAnimeInfo(anime : Anime) {
@@ -16,7 +21,7 @@ class ItemViewModel(private val liveDataToObserve: MutableLiveData<ItemState> = 
             try {
                 liveDataToObserve.postValue(
                     ItemState.Success(
-                        RepositoryNetwork.getAnimeInfo(
+                        repositoryNetwork.getAnimeInfo(
                             anime.id,
                             fields
                         )

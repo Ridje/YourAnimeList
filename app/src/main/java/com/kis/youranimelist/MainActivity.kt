@@ -3,10 +3,14 @@ package com.kis.youranimelist
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.fragment.app.Fragment
+import com.kis.youranimelist.repository.RepositoryNetwork
 import com.kis.youranimelist.ui.explore.ExploreFragment
 import com.kis.youranimelist.ui.login.LoginFragment
 import com.kis.youranimelist.utils.AppPreferences
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
