@@ -38,7 +38,7 @@ object RepositoryNetwork : Repository {
         .create(MyAnimeListOAuthAPI::class.java)
 
     fun rebuildServices() {
-        malService =  Retrofit
+        malService = Retrofit
             .Builder()
             .baseUrl(Urls.apiBaseUrl)
             .addConverterFactory(JacksonConverterFactory.create())
