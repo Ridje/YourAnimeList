@@ -4,15 +4,24 @@ import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
+import com.kis.youranimelist.network.AuthInterceptor
 import com.kis.youranimelist.repository.RepositoryNetwork
 import com.kis.youranimelist.utils.AppPreferences
+import dagger.hilt.android.HiltAndroidApp
+import okhttp3.OkHttpClient
+import javax.inject.Inject
 
+@HiltAndroidApp
 class YourAnimeListApplication : Application(), OnSharedPreferenceChangeListener {
+
+    @Inject
+    lateinit var authInterceptor : AuthInterceptor
 
     override fun onCreate() {
         super.onCreate()
         AppPreferences.getInstance(applicationContext).registerOnSharedPreferenceChangeListener(this)
         loadAppPreferences(applicationContext)
+        authInterceptor.setAuthorization(accessTokenType, accessToken)
     }
 
     companion object {
@@ -33,6 +42,7 @@ class YourAnimeListApplication : Application(), OnSharedPreferenceChangeListener
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
         loadAppPreferences(applicationContext)
-        RepositoryNetwork.rebuildServices()
+        authInterceptor.setAuthorization(accessTokenType, accessToken)
+
     }
 }

@@ -17,18 +17,24 @@ import com.kis.youranimelist.MainActivity
 import com.kis.youranimelist.databinding.FragmentLoginBinding
 import com.kis.youranimelist.repository.Repository
 import com.kis.youranimelist.repository.RepositoryMock
+import com.kis.youranimelist.repository.RepositoryModule
 import com.kis.youranimelist.repository.RepositoryNetwork
 import com.kis.youranimelist.utils.Pkce
 import com.kis.youranimelist.utils.AppPreferences
 import com.kis.youranimelist.utils.Urls
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.BufferedReader
 import java.util.stream.Collectors
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class LoginFragment : Fragment() {
 
 
+    @Inject
+    lateinit var repository : RepositoryNetwork
     private var _binding: FragmentLoginBinding? = null
     private val codeVerifier = Pkce.generateCodeVerifier()
     private val codeChallenge = codeVerifier
@@ -61,7 +67,7 @@ class LoginFragment : Fragment() {
                             lifecycleScope.launchWhenCreated {
 
                                 val postResult = withContext(Dispatchers.IO) {
-                                    RepositoryNetwork.getAccessToken(BuildConfig.CLIENT_ID, it, codeVerifier, "authorization_code")
+                                    repository.getAccessToken(BuildConfig.CLIENT_ID, it, codeVerifier, "authorization_code")
                                 }
 
                                 activity?.let {
@@ -91,11 +97,6 @@ class LoginFragment : Fragment() {
         binding.contentLayout.visibility = View.GONE
         binding.webView.visibility = View.VISIBLE
 
-    }
-
-    @RequiresApi(Build.VERSION_CODES.N)
-    private fun getLines(reader: BufferedReader): String {
-        return reader.lines().collect(Collectors.joining("\n"))
     }
 
 

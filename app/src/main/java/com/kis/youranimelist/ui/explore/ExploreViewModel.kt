@@ -6,13 +6,15 @@ import com.kis.youranimelist.model.Anime
 import com.kis.youranimelist.model.AnimeCategory
 import com.kis.youranimelist.model.ranking_response.AnimeRanked
 import com.kis.youranimelist.repository.RepositoryNetwork
-import java.util.function.Supplier
+import dagger.hilt.android.lifecycle.HiltViewModel
 import java.util.stream.Collectors
+import javax.inject.Inject
 
-class ExploreViewModel(private val liveDataToObserve: MutableLiveData<ExploreState> = MutableLiveData()) :
-    ViewModel() {
+@HiltViewModel
+class ExploreViewModel @Inject constructor(private val repositoryNetwork: RepositoryNetwork) : ViewModel() {
 
     private val limit = 20
+    private val liveDataToObserve: MutableLiveData<ExploreState> = MutableLiveData()
 
     fun getLiveData() = liveDataToObserve
 
@@ -23,11 +25,11 @@ class ExploreViewModel(private val liveDataToObserve: MutableLiveData<ExploreSta
             val listByCategory = mutableListOf<AnimeCategory>()
             try {
                 val topAnimeAll: List<AnimeRanked> =
-                    RepositoryNetwork.getAnimeRankingList("all", limit, null, null)
+                    repositoryNetwork.getAnimeRankingList("all", limit, null, null)
                 val topAnimeAiring: List<AnimeRanked> =
-                    RepositoryNetwork.getAnimeRankingList("airing", limit, null, null)
+                    repositoryNetwork.getAnimeRankingList("airing", limit, null, null)
                 val topAnimeMovies: List<AnimeRanked> =
-                    RepositoryNetwork.getAnimeRankingList("movie", limit, null, null)
+                    repositoryNetwork.getAnimeRankingList("movie", limit, null, null)
                 listByCategory.add(
                     AnimeCategory(
                         "Top ranked",

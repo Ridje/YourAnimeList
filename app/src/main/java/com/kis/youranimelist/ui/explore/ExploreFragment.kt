@@ -1,19 +1,20 @@
 package com.kis.youranimelist.ui.explore
 
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.viewModels
 import com.kis.youranimelist.MainActivity
 import com.kis.youranimelist.R
 import com.kis.youranimelist.databinding.ExploreFragmentBinding
 import com.kis.youranimelist.model.Anime
-import com.kis.youranimelist.model.ranking_response.AnimeRankingItem
 import com.kis.youranimelist.showSnackBar
 import com.kis.youranimelist.ui.item.ItemFragment
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class ExploreFragment : Fragment() {
 
     private var _binding: ExploreFragmentBinding? = null
@@ -23,9 +24,7 @@ class ExploreFragment : Fragment() {
         fun newInstance() = ExploreFragment()
     }
 
-    private val viewModel: ExploreViewModel by lazy {
-        ViewModelProvider(this).get(ExploreViewModel::class.java)
-    }
+    private val viewModel: ExploreViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
