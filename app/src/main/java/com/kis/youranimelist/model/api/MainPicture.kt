@@ -1,4 +1,4 @@
-package com.kis.youranimelist.model
+package com.kis.youranimelist.model.api
 
 import android.os.Parcelable
 import com.fasterxml.jackson.annotation.JsonProperty

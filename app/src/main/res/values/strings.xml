@@ -6,6 +6,6 @@ While the workflow remains the same, Mob isn't just blindly following Reigen aro
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="login">Login</string>
     <string name="no_synopsis">No synopsis</string>
-    <string name="reload">Reload</string>
-    <string name="error">Error</string>
+    <string name="reload">Try again?</string>
+    <string name="error_during_download">Error during download!</string>
 </resources>

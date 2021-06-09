@@ -9,7 +9,7 @@ import androidx.fragment.app.viewModels
 import com.kis.youranimelist.MainActivity
 import com.kis.youranimelist.R
 import com.kis.youranimelist.databinding.ItemFragmentBinding
-import com.kis.youranimelist.model.Anime
+import com.kis.youranimelist.model.app.Anime
 import com.squareup.picasso.Picasso
 import com.kis.youranimelist.showSnackBar
 import dagger.hilt.android.AndroidEntryPoint
@@ -66,7 +66,7 @@ class ItemFragment : Fragment() {
             is ItemState.Error -> {
                 binding.progressBar.visibility = View.GONE
                 binding.root.showSnackBar(
-                    getString(R.string.error),
+                    getString(R.string.error_during_download),
                     getString(R.string.reload),
                     { anime?.let { viewModel.getAnimeInfo(it) } })
             }
