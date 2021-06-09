@@ -1,8 +1,7 @@
 package com.kis.youranimelist.network
 
-import com.kis.youranimelist.model.Anime
-import com.kis.youranimelist.model.ranking_response.AnimeRanked
-import com.kis.youranimelist.model.ranking_response.Root
+import com.kis.youranimelist.model.api.Anime
+import com.kis.youranimelist.model.api.ranking_response.Root
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Path

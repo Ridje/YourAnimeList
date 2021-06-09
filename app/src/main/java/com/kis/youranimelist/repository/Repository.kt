@@ -1,15 +1,8 @@
 package com.kis.youranimelist.repository
 
-import android.accounts.NetworkErrorException
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.kis.youranimelist.BuildConfig
-import com.kis.youranimelist.model.Anime
-import com.kis.youranimelist.model.Token
-import com.kis.youranimelist.model.ranking_response.AnimeRanked
-import com.kis.youranimelist.utils.Urls
-import okhttp3.FormBody
-import okhttp3.OkHttpClient
-import okhttp3.Request
+import com.kis.youranimelist.model.api.Anime
+import com.kis.youranimelist.model.api.Token
+import com.kis.youranimelist.model.api.ranking_response.AnimeRanked
 
 interface Repository {
 

@@ -7,9 +7,10 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.kis.youranimelist.R
 import com.kis.youranimelist.databinding.ExploreFragmentGroupBinding
-import com.kis.youranimelist.model.AnimeCategory
+import com.kis.youranimelist.model.app.Anime
+import com.kis.youranimelist.model.app.AnimeCategory
 
-class ExploreAdapter(private val animeCategories:List<AnimeCategory>, private val itemClickListener:ExploreItemsAdapter.OnItemClickListener?) : RecyclerView.Adapter<ExploreAdapter.ExploreAnimeCategory>() {
+class ExploreAdapter(private val animeCategories:List<AnimeCategory>, val clickListener: ((Anime)-> Unit)) : RecyclerView.Adapter<ExploreAdapter.ExploreAnimeCategory>() {
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ExploreAnimeCategory {
@@ -25,13 +26,22 @@ class ExploreAdapter(private val animeCategories:List<AnimeCategory>, private va
 
     inner class ExploreAnimeCategory(private val binding: ExploreFragmentGroupBinding) :
         RecyclerView.ViewHolder(binding.root) {
+        init {
+            binding.itemList.addItemDecoration(
+                SimpleDividerItemDecorationLastExcluded(
+                    binding.itemList.resources.getDimension(R.dimen.itemsMargin)))
+        }
         fun bind(animeCategory: AnimeCategory) {
             binding.apply {
                 categoryName.text = animeCategory.name
-                itemList.adapter = ExploreItemsAdapter(animeCategory.animeList, itemClickListener)
-                itemList.addItemDecoration(
-                    SimpleDividerItemDecorationLastExcluded(
-                        itemList.resources.getDimension(R.dimen.itemsMargin)))
+                if (animeCategory.animeList.isEmpty()) {
+                    binding.progressBar.visibility = View.VISIBLE
+                    binding.itemList.visibility = View.GONE
+                } else {
+                    binding.progressBar.visibility = View.GONE
+                    binding.itemList.visibility = View.VISIBLE
+                    itemList.adapter = ExploreItemsAdapter(animeCategory.animeList, clickListener)
+                }
             }
         }
     }
@@ -54,6 +64,5 @@ class ExploreAdapter(private val animeCategories:List<AnimeCategory>, private va
         }
 
     }
-
 }
 

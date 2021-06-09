@@ -1,7 +1,6 @@
 package com.kis.youranimelist.network
 
-import com.kis.youranimelist.model.Token
-import com.kis.youranimelist.repository.Repository
+import com.kis.youranimelist.model.api.Token
 import retrofit2.Call
 import retrofit2.http.*
 

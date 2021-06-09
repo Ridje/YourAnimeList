@@ -1,10 +1,10 @@
 package com.kis.youranimelist.repository
 
 import android.accounts.NetworkErrorException
-import com.kis.youranimelist.model.Anime
-import com.kis.youranimelist.model.StartSeason
-import com.kis.youranimelist.model.Token
-import com.kis.youranimelist.model.ranking_response.AnimeRanked
+import com.kis.youranimelist.model.api.Anime
+import com.kis.youranimelist.model.api.StartSeason
+import com.kis.youranimelist.model.api.Token
+import com.kis.youranimelist.model.api.ranking_response.AnimeRanked
 import com.kis.youranimelist.network.MyAnimeListAPI
 import com.kis.youranimelist.network.MyAnimeListOAuthAPI
 

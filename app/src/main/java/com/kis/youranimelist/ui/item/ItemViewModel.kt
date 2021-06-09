@@ -2,8 +2,7 @@ package com.kis.youranimelist.ui.item
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.kis.youranimelist.model.Anime
-import com.kis.youranimelist.repository.RepositoryMock
+import com.kis.youranimelist.model.app.Anime
 import com.kis.youranimelist.repository.RepositoryNetwork
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -21,13 +20,15 @@ class ItemViewModel @Inject constructor(val repositoryNetwork: RepositoryNetwork
             try {
                 liveDataToObserve.postValue(
                     ItemState.Success(
-                        repositoryNetwork.getAnimeInfo(
-                            anime.id,
-                            fields
+                        Anime(
+                            repositoryNetwork.getAnimeInfo(
+                                anime.id,
+                                fields
+                            )
                         )
                     )
                 )
-            } catch (e : Exception) {
+            } catch (e: Exception) {
                 liveDataToObserve.postValue(ItemState.Error(e))
                 e.printStackTrace()
             }

@@ -9,7 +9,7 @@ import androidx.fragment.app.viewModels
 import com.kis.youranimelist.MainActivity
 import com.kis.youranimelist.R
 import com.kis.youranimelist.databinding.ExploreFragmentBinding
-import com.kis.youranimelist.model.Anime
+import com.kis.youranimelist.model.app.Anime
 import com.kis.youranimelist.showSnackBar
 import com.kis.youranimelist.ui.item.ItemFragment
 import dagger.hilt.android.AndroidEntryPoint
@@ -26,6 +26,12 @@ class ExploreFragment : Fragment() {
 
     private val viewModel: ExploreViewModel by viewModels()
 
+    private val clickListener = { anime : Anime -> val
+        bundle = Bundle()
+        bundle.putParcelable(ItemFragment.BUNDLE_EXTRA, anime)
+        (requireActivity() as MainActivity).navivageTo(ItemFragment.newInstance(bundle))
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -39,6 +45,8 @@ class ExploreFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         viewModel.getLiveData().observe(viewLifecycleOwner, { render(it)})
         viewModel.getAnimeListByGroup()
+        binding.explore.adapter = ExploreAdapter(viewModel.results, clickListener)
+
     }
 
     override fun onDestroyView() {
@@ -46,24 +54,15 @@ class ExploreFragment : Fragment() {
         _binding = null
     }
 
+
     fun render(exploreState: ExploreState) {
         when (exploreState) {
-            is ExploreState.Success -> {
-                binding.progressBar.visibility = View.GONE
-                binding.explore.adapter = ExploreAdapter(exploreState.animeData,
-                    object : ExploreItemsAdapter.OnItemClickListener {
-                        override fun onItemClickListener(anime : Anime) {
-                            val bundle = Bundle()
-                            bundle.putParcelable(ItemFragment.BUNDLE_EXTRA, anime)
-                            (requireActivity() as MainActivity).navivageTo(ItemFragment.newInstance(bundle))
-                        }
-                    })
-                binding.explore.setHasFixedSize(true);
+            is ExploreState.LoadingResult -> {
+                (binding.explore.adapter as? ExploreAdapter)?.notifyDataSetChanged()
             }
-            is ExploreState.Loading -> { binding.progressBar.visibility = View.VISIBLE }
             is ExploreState.Error -> {
                 binding.progressBar.visibility = View.GONE
-                binding.root.showSnackBar(getString(R.string.error), getString(R.string.reload),  { viewModel.getAnimeListByGroup() })
+                binding.root.showSnackBar(getString(R.string.error_during_download), getString(R.string.reload),  { viewModel.getAnimeListByGroup() })
             }
         }
     }

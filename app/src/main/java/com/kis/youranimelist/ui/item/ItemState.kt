@@ -1,6 +1,6 @@
 package com.kis.youranimelist.ui.item
 
-import com.kis.youranimelist.model.Anime
+import com.kis.youranimelist.model.app.Anime
 
 sealed class ItemState {
     data class Success(val item : Anime) : ItemState()
