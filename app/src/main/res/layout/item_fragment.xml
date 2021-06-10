@@ -77,8 +77,8 @@
                 android:id="@+id/itemYear"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingStart="24dp"
                 android:paddingEnd="4dp"
+                android:paddingStart="24dp"
                 android:text="2020"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Overline"
                 app:layout_constraintStart_toStartOf="@+id/itemTitle"
@@ -125,6 +125,18 @@
                 app:layout_constraintBottom_toBottomOf="@+id/itemYear"
                 app:layout_constraintStart_toEndOf="@+id/itemDividerTwo"
                 app:layout_constraintTop_toBottomOf="@+id/itemTitle" />
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/itemNote"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Add your notes here"
+                android:paddingHorizontal="24dp"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Overline"
+                android:textColor="@color/primary_red"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/itemSynopsis" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/itemSynopsis"

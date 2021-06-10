@@ -75,12 +75,21 @@ class ItemFragment : Fragment() {
         }
     }
 
+    override fun onStop() {
+        super.onStop()
+
+        if (binding.itemNote.text.toString() != anime?.userNotes) {
+            //save later to db
+            anime?.userNotes = binding.itemNote.text.toString()
+        }
+    }
+
     private fun renderItem(item : Anime) {
         binding.apply {
             itemMean.text = item.mean.toString()
             itemTitle.text = item.title
             itemYear.text = item.startSeason?.year.toString()
-            itemSynopsis.text = item.synopsis ?: getString(R.string.no_synopsis)
+            itemSynopsis.text = item.synopsis?.replace("[Written by MAL Rewrite]", "")?.trim() ?: getString(R.string.no_synopsis)
             Picasso.get().load(item.mainPicture?.large ?: item.mainPicture?.medium).error(R.drawable.default_image).into(posterView)
         }
     }

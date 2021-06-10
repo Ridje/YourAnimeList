@@ -14,7 +14,8 @@ data class Anime(
     var mainPicture: MainPicture?,
     var startSeason: StartSeason?,
     var mean: Float?,
-    var synopsis: String? = "Description"
+    var synopsis: String? = "Description",
+    var userNotes: String = ""
 ) : Parcelable {
     constructor(animeRanked: AnimeRankingItem) : this(
         animeRanked.id,
@@ -25,5 +26,12 @@ data class Anime(
         null
     )
 
-    constructor(anime: Anime) : this(anime.id, anime.title, anime.mainPicture, anime.startSeason , anime.mean, anime.synopsis)
+    constructor(anime: Anime) : this(
+        anime.id,
+        anime.title,
+        anime.mainPicture,
+        anime.startSeason,
+        anime.mean,
+        anime.synopsis
+    )
 }
