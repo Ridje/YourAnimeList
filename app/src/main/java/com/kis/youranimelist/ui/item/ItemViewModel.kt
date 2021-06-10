@@ -18,6 +18,7 @@ class ItemViewModel @Inject constructor(val repositoryNetwork: RepositoryNetwork
         liveDataToObserve.value = ItemState.Loading
         Thread {
             try {
+                repositoryLocal.addAnimeViewHistory(anime.id, anime.title)
                 val anime = Anime(
                     repositoryNetwork.getAnimeInfo(
                         anime.id,

@@ -7,7 +7,7 @@ import androidx.room.Query
 import com.kis.youranimelist.model.db.Anime
 
 @Dao
-interface animeDAO {
+interface AnimeDAO {
 
     @Query("Select * From Anime WHERE id = :animeId")
     fun getNoteByAnimeID(animeId: Int): Anime?

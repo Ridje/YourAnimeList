@@ -47,7 +47,6 @@ class ExploreFragment : Fragment() {
         viewModel.getLiveData().observe(viewLifecycleOwner, { render(it)})
         viewModel.getAnimeListByGroup()
         binding.explore.adapter = ExploreAdapter(viewModel.results, clickListener)
-
     }
 
     override fun onDestroyView() {

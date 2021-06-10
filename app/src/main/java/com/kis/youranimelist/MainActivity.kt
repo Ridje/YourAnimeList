@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import com.kis.youranimelist.databinding.MainActivityBinding
 import com.kis.youranimelist.ui.explore.ExploreFragment
+import com.kis.youranimelist.ui.history.HistoryFragment
 import com.kis.youranimelist.ui.login.LoginFragment
 import com.kis.youranimelist.ui.settings.SettingsFragment
 import com.kis.youranimelist.utils.AppPreferences
@@ -32,7 +33,7 @@ class MainActivity : AppCompatActivity() {
     private fun switchNavigation(item: Int): Boolean {
         when (item) {
             R.id.navigation_home -> navigateToDefaultFragment()
-            R.id.navigation_favourites -> navigateToDefaultFragment()
+            R.id.navigation_favourites -> navigateTo(HistoryFragment())
             R.id.navigation_settings -> navigateTo(SettingsFragment())
         }
 
