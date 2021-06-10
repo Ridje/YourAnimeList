@@ -8,6 +8,7 @@ import com.kis.youranimelist.network.AuthInterceptor
 import com.kis.youranimelist.repository.RepositoryNetwork
 import com.kis.youranimelist.utils.AppPreferences
 import dagger.hilt.android.HiltAndroidApp
+import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.OkHttpClient
 import javax.inject.Inject
 
@@ -43,6 +44,5 @@ class YourAnimeListApplication : Application(), OnSharedPreferenceChangeListener
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
         loadAppPreferences(applicationContext)
         authInterceptor.setAuthorization(accessTokenType, accessToken)
-
     }
 }

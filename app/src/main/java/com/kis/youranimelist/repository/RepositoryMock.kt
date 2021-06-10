@@ -17,8 +17,8 @@ object RepositoryMock : Repository {
                 AnimeRankingItem(
                     42361,
                     "Ijiranaide, Nagatoro-san",
-                    null
-                ),
+                    null,
+                    null),
                 Ranking(1, 10)
             )
         )

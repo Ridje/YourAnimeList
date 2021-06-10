@@ -1,34 +1,46 @@
 package com.kis.youranimelist.ui.explore
 
+import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.kis.youranimelist.R
 import com.kis.youranimelist.model.app.Anime
 import com.kis.youranimelist.model.app.AnimeCategory
 import com.kis.youranimelist.repository.RepositoryNetwork
+import com.kis.youranimelist.utils.AppPreferences
+import dagger.Module
+import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.multibindings.IntKey
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.prefs.Preferences
 import java.util.stream.Collectors
 import javax.inject.Inject
 
 @HiltViewModel
-class ExploreViewModel @Inject constructor(private val repositoryNetwork: RepositoryNetwork) : ViewModel() {
-
+class ExploreViewModel @Inject constructor(private val repositoryNetwork: RepositoryNetwork,
+                                           @ApplicationContext val context: Context) : ViewModel() {
 
     private val limit = 20
     private val liveDataToObserve: MutableLiveData<ExploreState> = MutableLiveData()
 
+    @Inject
+    lateinit var appPreferences: AppPreferences
+
     val results = mutableListOf(
-        AnimeCategory("Top ranked") { repositoryNetwork.getAnimeRankingList("all", limit, null, null) },
-        AnimeCategory("Airing") { repositoryNetwork.getAnimeRankingList("airing", limit, null, null) },
-        AnimeCategory("Popular") { repositoryNetwork.getAnimeRankingList("bypopularity", limit, null, null) },
-        AnimeCategory("Favorite") { repositoryNetwork.getAnimeRankingList("favorite", limit, null, null) }
+        AnimeCategory("Top ranked") { repositoryNetwork.getAnimeRankingList("all", limit, null, fields) },
+        AnimeCategory("Airing") { repositoryNetwork.getAnimeRankingList("airing", limit, null, fields) },
+        AnimeCategory("Popular") { repositoryNetwork.getAnimeRankingList("bypopularity", limit, null, fields) },
+        AnimeCategory("Favorite") { repositoryNetwork.getAnimeRankingList("favorite", limit, null, fields) }
     )
 
     val handler = CoroutineExceptionHandler { _, exception ->
+        exception.printStackTrace()
         liveDataToObserve.value = ExploreState.Error(exception)
     }
 
@@ -41,18 +53,30 @@ class ExploreViewModel @Inject constructor(private val repositoryNetwork: Reposi
 
     fun getAnimeListByGroup() {
         liveDataToObserve.value = ExploreState.LoadingResult(results)
+
+        val nsfwSettingValue = appPreferences.readString(AppPreferences.NSFW_SETTING_KEY)
+        val nsfwValues = context.resources.getStringArray(R.array.nsfw_values)
+
         viewModelScope.launch(handler) {
             val categories = results
 
             for (i in categories.indices) {
                 val result = withContext(Dispatchers.IO) {
                     val requestResult = categories[i].networkGetter.invoke()
-                    return@withContext requestResult.stream().map { Anime(it.anime) }.collect(Collectors.toList())
+                    return@withContext requestResult.stream().filter { allowedContent(nsfwValues, nswfSettingValue, it.anime.nsfw)}.map { Anime(it.anime) }.collect(Collectors.toList())
                 }
                 categories[i].animeList = result
                 updateResults()
             }
 
         }
+    }
+
+    private fun allowedContent(nsfwValues: Array<String>, userValue: String, itemValue: String?): Boolean {
+        return itemValue == null || userValue.isEmpty() || nsfwValues.indexOf(itemValue) <= nsfwValues.indexOf(userValue)
+    }
+
+    companion object {
+        const val fields = "id, title, main_picture, nsfw"
     }
 }

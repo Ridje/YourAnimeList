@@ -29,7 +29,7 @@ class ExploreFragment : Fragment() {
     private val clickListener = { anime : Anime -> val
         bundle = Bundle()
         bundle.putParcelable(ItemFragment.BUNDLE_EXTRA, anime)
-        (requireActivity() as MainActivity).navivageTo(ItemFragment.newInstance(bundle))
+        (requireActivity() as MainActivity).navigateTo(ItemFragment.newInstance(bundle))
     }
 
     override fun onCreateView(
