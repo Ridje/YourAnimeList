@@ -10,6 +10,7 @@ import com.kis.youranimelist.MainActivity
 import com.kis.youranimelist.R
 import com.kis.youranimelist.databinding.ItemFragmentBinding
 import com.kis.youranimelist.model.app.Anime
+import com.kis.youranimelist.navigateBack
 import com.squareup.picasso.Picasso
 import com.kis.youranimelist.showSnackBar
 import dagger.hilt.android.AndroidEntryPoint
@@ -38,17 +39,18 @@ class ItemFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = ItemFragmentBinding.inflate(inflater, container, false)
+        (requireActivity() as MainActivity).setVisibilityBottomNavigationMenu(View.GONE)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.buttonBack.setOnClickListener { (requireActivity() as MainActivity).navigateBack() }
+        binding.buttonBack.setOnClickListener { requireActivity().navigateBack()}
 
         anime?.let { animeArgument ->
             viewModel.getLiveData().observe(viewLifecycleOwner, { render(it) })
             viewModel.getAnimeInfo(animeArgument)
-        } ?: (requireActivity() as MainActivity).navigateBack()
+        } ?: requireActivity().navigateBack()
 
     }
 

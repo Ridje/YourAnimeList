@@ -63,7 +63,7 @@ class ExploreViewModel @Inject constructor(private val repositoryNetwork: Reposi
             for (i in categories.indices) {
                 val result = withContext(Dispatchers.IO) {
                     val requestResult = categories[i].networkGetter.invoke()
-                    return@withContext requestResult.stream().filter { allowedContent(nsfwValues, nswfSettingValue, it.anime.nsfw)}.map { Anime(it.anime) }.collect(Collectors.toList())
+                    return@withContext requestResult.stream().filter { allowedContent(nsfwValues, nsfwSettingValue, it.anime.nsfw)}.map { Anime(it.anime) }.collect(Collectors.toList())
                 }
                 categories[i].animeList = result
                 updateResults()

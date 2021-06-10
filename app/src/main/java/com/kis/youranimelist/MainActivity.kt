@@ -2,15 +2,15 @@ package com.kis.youranimelist
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import com.kis.youranimelist.databinding.MainActivityBinding
-import com.kis.youranimelist.repository.RepositoryNetwork
 import com.kis.youranimelist.ui.explore.ExploreFragment
 import com.kis.youranimelist.ui.login.LoginFragment
 import com.kis.youranimelist.ui.settings.SettingsFragment
 import com.kis.youranimelist.utils.AppPreferences
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -35,29 +35,42 @@ class MainActivity : AppCompatActivity() {
             R.id.navigation_favourites -> navigateToDefaultFragment()
             R.id.navigation_settings -> navigateTo(SettingsFragment())
         }
+
         return true
     }
 
-
-    fun navigateToDefaultFragment() {
-        supportFragmentManager.beginTransaction().replace(R.id.fragment_container, getDefaultFragment()).commit()
+    fun setVisibilityBottomNavigationMenu(visibility: Int) {
+        binding.bottomNavigationMenu.visibility = visibility
     }
 
-    fun navigateTo(fragment:Fragment) {
-       supportFragmentManager.beginTransaction().replace(R.id.fragment_container, fragment).addToBackStack(null).commit()
-
+    override fun onBackPressed() {
+        super.onBackPressed()
+        setVisibilityBottomNavigationMenu(View.VISIBLE)
     }
+}
 
-    fun navigateBack() {
-        supportFragmentManager.popBackStack();
+fun FragmentActivity.navigateToDefaultFragment() {
+    supportFragmentManager.beginTransaction().replace(R.id.fragment_container, getDefaultFragment()).commit()
+}
+
+fun FragmentActivity.navigateTo(fragment:Fragment, addToBackStack: Boolean = false) {
+    val trans = supportFragmentManager.beginTransaction().replace(R.id.fragment_container, fragment)
+    if (addToBackStack) {
+        trans.addToBackStack(null)
     }
+    trans.commit()
+}
 
-    private fun getDefaultFragment() : Fragment {
 
-        val accessToken = AppPreferences.getInstance(applicationContext).readString(AppPreferences.ACCESS_TOKEN_SETTING_KEY)
-        return when {
-            accessToken.isBlank() -> LoginFragment()
-            else -> ExploreFragment.newInstance()
-        }
+fun FragmentActivity.navigateBack() {
+    supportFragmentManager.popBackStack();
+}
+
+fun FragmentActivity.getDefaultFragment() : Fragment {
+
+    val accessToken = AppPreferences.getInstance(applicationContext).readString(AppPreferences.ACCESS_TOKEN_SETTING_KEY)
+    return when {
+        accessToken.isBlank() -> LoginFragment()
+        else -> ExploreFragment.newInstance()
     }
 }

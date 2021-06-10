@@ -11,6 +11,7 @@ import androidx.lifecycle.lifecycleScope
 import com.kis.youranimelist.BuildConfig
 import com.kis.youranimelist.MainActivity
 import com.kis.youranimelist.databinding.FragmentLoginBinding
+import com.kis.youranimelist.navigateToDefaultFragment
 import com.kis.youranimelist.repository.Repository
 import com.kis.youranimelist.repository.RepositoryNetwork
 import com.kis.youranimelist.utils.Pkce
@@ -68,7 +69,7 @@ class LoginFragment : Fragment() {
                                     appPreferencesInstance.writeString(AppPreferences.REFRESH_TOKEN_SETTING_KEY, postResult.refreshToken)
                                     appPreferencesInstance.writeInt(AppPreferences.EXPIRES_IN_TOKEN_SETTING_KEY, postResult.expiresIn)
                                     appPreferencesInstance.writeString(AppPreferences.TYPE_TOKEN_SETTING_KEY, postResult.tokenType)
-                                    (it as MainActivity).navigateToDefaultFragment()
+                                    fragmentActivity.navigateToDefaultFragment()
                                 }
                             }
                         }
