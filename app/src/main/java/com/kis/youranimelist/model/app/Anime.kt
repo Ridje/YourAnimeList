@@ -15,7 +15,7 @@ data class Anime(
     var startSeason: StartSeason?,
     var mean: Float?,
     var synopsis: String? = "Description",
-    var userNotes: String = ""
+    var userNote: String = ""
 ) : Parcelable {
     constructor(animeRanked: AnimeRankingItem) : this(
         animeRanked.id,

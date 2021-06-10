@@ -20,9 +20,7 @@ class ItemFragment : Fragment() {
 
     private var _binding: ItemFragmentBinding? = null
     private val binding get() = _binding!!
-    private val anime : Anime? by lazy {
-        arguments?.getParcelable(BUNDLE_EXTRA)
-    }
+    private var anime : Anime? = null
     private val viewModel: ItemViewModel by viewModels()
 
     companion object {
@@ -32,6 +30,11 @@ class ItemFragment : Fragment() {
             fragment.arguments = bundle
             return fragment
         }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        anime = arguments?.getParcelable(BUNDLE_EXTRA)
     }
 
     override fun onCreateView(
@@ -59,7 +62,8 @@ class ItemFragment : Fragment() {
             is ItemState.Success -> {
                 binding.progressBar.visibility = View.GONE
                 binding.itemContainer.visibility = View.VISIBLE
-                renderItem(itemState.item)
+                anime = itemState.item
+                renderItem()
             }
             is ItemState.Loading -> {
                 binding.itemContainer.visibility = View.GONE
@@ -78,19 +82,27 @@ class ItemFragment : Fragment() {
     override fun onStop() {
         super.onStop()
 
-        if (binding.itemNote.text.toString() != anime?.userNotes) {
-            //save later to db
-            anime?.userNotes = binding.itemNote.text.toString()
+        if (binding.itemNote.text.toString() != anime?.userNote) {
+            anime?.let {
+                it.userNote = binding.itemNote.text.toString()
+                viewModel.writeAnimeNote(it)
+            }
         }
     }
 
-    private fun renderItem(item : Anime) {
+    override fun onDestroy() {
+        super.onDestroy()
+        anime = null
+    }
+
+    private fun renderItem() {
         binding.apply {
-            itemMean.text = item.mean.toString()
-            itemTitle.text = item.title
-            itemYear.text = item.startSeason?.year.toString()
-            itemSynopsis.text = item.synopsis?.replace("[Written by MAL Rewrite]", "")?.trim() ?: getString(R.string.no_synopsis)
-            Picasso.get().load(item.mainPicture?.large ?: item.mainPicture?.medium).error(R.drawable.default_image).into(posterView)
+            itemMean.text = anime?.mean.toString()
+            itemTitle.text = anime?.title
+            itemYear.text = anime?.startSeason?.year.toString()
+            itemSynopsis.text = anime?.synopsis?.replace("[Written by MAL Rewrite]", "")?.trim() ?: getString(R.string.no_synopsis)
+            itemNote.setText(anime?.userNote)
+            Picasso.get().load(anime?.mainPicture?.large ?: anime?.mainPicture?.medium).error(R.drawable.default_image).into(posterView)
         }
     }
 }

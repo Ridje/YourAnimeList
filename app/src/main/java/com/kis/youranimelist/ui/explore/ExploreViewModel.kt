@@ -9,16 +9,12 @@ import com.kis.youranimelist.model.app.Anime
 import com.kis.youranimelist.model.app.AnimeCategory
 import com.kis.youranimelist.repository.RepositoryNetwork
 import com.kis.youranimelist.utils.AppPreferences
-import dagger.Module
-import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.multibindings.IntKey
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.prefs.Preferences
 import java.util.stream.Collectors
 import javax.inject.Inject
 

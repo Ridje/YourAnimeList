@@ -5,11 +5,8 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import com.kis.youranimelist.network.AuthInterceptor
-import com.kis.youranimelist.repository.RepositoryNetwork
 import com.kis.youranimelist.utils.AppPreferences
 import dagger.hilt.android.HiltAndroidApp
-import dagger.hilt.android.qualifiers.ApplicationContext
-import okhttp3.OkHttpClient
 import javax.inject.Inject
 
 @HiltAndroidApp
