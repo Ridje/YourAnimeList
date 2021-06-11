@@ -12,6 +12,9 @@
         <item name="colorOnSecondary">@color/white</item>
         <item name="android:textColorPrimary">@color/text_color</item>
         <item name="android:textColor">@color/text_color</item>
+        <item name="android:textColorSecondary">@color/text_color_secondary</item>
+        <item name="android:textColorTertiary">@color/text_color_secondary</item>
+        <item name="android:textColorHint">@color/text_color_secondary</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
@@ -19,6 +22,7 @@
         <item name="colorOnBackground">@color/white</item>
         <item name="colorSurface">@color/background_color</item>
         <item name="colorOnSurface">@color/white</item>
+
     </style>
 
     <style name="Theme.YourAnimeList.NoActionBar">

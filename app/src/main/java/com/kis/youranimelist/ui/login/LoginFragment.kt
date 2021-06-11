@@ -9,9 +9,8 @@ import android.webkit.WebViewClient
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.kis.youranimelist.BuildConfig
-import com.kis.youranimelist.MainActivity
 import com.kis.youranimelist.databinding.FragmentLoginBinding
-import com.kis.youranimelist.repository.Repository
+import com.kis.youranimelist.navigateToDefaultFragment
 import com.kis.youranimelist.repository.RepositoryNetwork
 import com.kis.youranimelist.utils.Pkce
 import com.kis.youranimelist.utils.AppPreferences
@@ -26,7 +25,7 @@ class LoginFragment : Fragment() {
 
 
     @Inject
-    lateinit var repository : RepositoryNetwork
+    lateinit var repositoryNetwork : RepositoryNetwork
     private var _binding: FragmentLoginBinding? = null
     private val codeVerifier = Pkce.generateCodeVerifier()
     private val codeChallenge = codeVerifier
@@ -55,11 +54,11 @@ class LoginFragment : Fragment() {
             ): Boolean {
                 request?.let {
                     if ((it.url.host + request.url.path) == Urls.appRedirectUrl) {
-                        it.url.getQueryParameter(Repository.CODE_FIELD)?.let {
+                        it.url.getQueryParameter(RepositoryNetwork.CODE_FIELD)?.let {
                             lifecycleScope.launchWhenCreated {
 
                                 val postResult = withContext(Dispatchers.IO) {
-                                    repository.getAccessToken(BuildConfig.CLIENT_ID, it, codeVerifier, "authorization_code")
+                                    repositoryNetwork.getAccessToken(BuildConfig.CLIENT_ID, it, codeVerifier, "authorization_code")
                                 }
 
                                 activity?.let { fragmentActivity ->
@@ -68,7 +67,7 @@ class LoginFragment : Fragment() {
                                     appPreferencesInstance.writeString(AppPreferences.REFRESH_TOKEN_SETTING_KEY, postResult.refreshToken)
                                     appPreferencesInstance.writeInt(AppPreferences.EXPIRES_IN_TOKEN_SETTING_KEY, postResult.expiresIn)
                                     appPreferencesInstance.writeString(AppPreferences.TYPE_TOKEN_SETTING_KEY, postResult.tokenType)
-                                    (it as MainActivity).navigateToDefaultFragment()
+                                    fragmentActivity.navigateToDefaultFragment()
                                 }
                             }
                         }

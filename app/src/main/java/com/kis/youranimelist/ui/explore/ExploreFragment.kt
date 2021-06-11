@@ -10,6 +10,7 @@ import com.kis.youranimelist.MainActivity
 import com.kis.youranimelist.R
 import com.kis.youranimelist.databinding.ExploreFragmentBinding
 import com.kis.youranimelist.model.app.Anime
+import com.kis.youranimelist.navigateTo
 import com.kis.youranimelist.showSnackBar
 import com.kis.youranimelist.ui.item.ItemFragment
 import dagger.hilt.android.AndroidEntryPoint
@@ -29,7 +30,7 @@ class ExploreFragment : Fragment() {
     private val clickListener = { anime : Anime -> val
         bundle = Bundle()
         bundle.putParcelable(ItemFragment.BUNDLE_EXTRA, anime)
-        (requireActivity() as MainActivity).navivageTo(ItemFragment.newInstance(bundle))
+        requireActivity().navigateTo(ItemFragment.newInstance(bundle), true)
     }
 
     override fun onCreateView(
@@ -46,7 +47,6 @@ class ExploreFragment : Fragment() {
         viewModel.getLiveData().observe(viewLifecycleOwner, { render(it)})
         viewModel.getAnimeListByGroup()
         binding.explore.adapter = ExploreAdapter(viewModel.results, clickListener)
-
     }
 
     override fun onDestroyView() {

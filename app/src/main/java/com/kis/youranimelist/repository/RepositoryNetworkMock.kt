@@ -7,7 +7,7 @@ import com.kis.youranimelist.model.api.ranking_response.AnimeRankingItem
 import com.kis.youranimelist.model.api.ranking_response.AnimeRanked
 import com.kis.youranimelist.model.api.ranking_response.Ranking
 
-object RepositoryMock : Repository {
+object RepositoryNetworkMock : RepositoryNetwork {
 
 
     override fun getAnimeRankingList(rankingType : String, limit : Int?, offset : Int?, fields : String?): List<AnimeRanked> {
@@ -17,8 +17,8 @@ object RepositoryMock : Repository {
                 AnimeRankingItem(
                     42361,
                     "Ijiranaide, Nagatoro-san",
-                    null
-                ),
+                    null,
+                    null),
                 Ranking(1, 10)
             )
         )
