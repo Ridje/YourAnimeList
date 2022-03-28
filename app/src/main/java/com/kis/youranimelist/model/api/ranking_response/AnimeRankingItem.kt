@@ -4,7 +4,7 @@ import android.os.Parcelable
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonPropertyOrder
 import com.kis.youranimelist.model.api.MainPicture
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 @JsonPropertyOrder(
     "id",

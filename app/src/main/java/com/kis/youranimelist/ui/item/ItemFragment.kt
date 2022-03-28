@@ -42,7 +42,6 @@ class ItemFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = ItemFragmentBinding.inflate(inflater, container, false)
-        (requireActivity() as MainActivity).setVisibilityBottomNavigationMenu(View.GONE)
         return binding.root
     }
 
