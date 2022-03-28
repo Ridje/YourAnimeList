@@ -17,36 +17,16 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     private var _binding: MainActivityBinding? = null
-    val binding get() = _binding!!
+    private val binding get() = _binding!!
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         _binding = MainActivityBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
-        binding.bottomNavigationMenu.setOnNavigationItemSelectedListener { item -> switchNavigation(item.itemId) }
         if (savedInstanceState == null) {
             navigateToDefaultFragment();
         }
-    }
-
-    private fun switchNavigation(item: Int): Boolean {
-        when (item) {
-            R.id.navigation_home -> navigateToDefaultFragment()
-            R.id.navigation_favourites -> navigateTo(HistoryFragment())
-            R.id.navigation_settings -> navigateTo(SettingsFragment())
-        }
-
-        return true
-    }
-
-    fun setVisibilityBottomNavigationMenu(visibility: Int) {
-        binding.bottomNavigationMenu.visibility = visibility
-    }
-
-    override fun onBackPressed() {
-        super.onBackPressed()
-        setVisibilityBottomNavigationMenu(View.VISIBLE)
     }
 }
 

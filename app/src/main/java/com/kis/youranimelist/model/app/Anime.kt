@@ -5,7 +5,7 @@ import com.kis.youranimelist.model.api.Anime
 import com.kis.youranimelist.model.api.MainPicture
 import com.kis.youranimelist.model.api.StartSeason
 import com.kis.youranimelist.model.api.ranking_response.AnimeRankingItem
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class Anime(
