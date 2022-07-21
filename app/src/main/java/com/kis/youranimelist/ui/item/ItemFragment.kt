@@ -6,13 +6,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
-import com.kis.youranimelist.MainActivity
 import com.kis.youranimelist.R
 import com.kis.youranimelist.databinding.ItemFragmentBinding
 import com.kis.youranimelist.model.app.Anime
-import com.kis.youranimelist.navigateBack
 import com.squareup.picasso.Picasso
-import com.kis.youranimelist.showSnackBar
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -47,12 +44,11 @@ class ItemFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.buttonBack.setOnClickListener { requireActivity().navigateBack()}
 
         anime?.let { animeArgument ->
             viewModel.getLiveData().observe(viewLifecycleOwner, { render(it) })
             viewModel.getAnimeInfo(animeArgument)
-        } ?: requireActivity().navigateBack()
+        }
 
     }
 
@@ -70,10 +66,6 @@ class ItemFragment : Fragment() {
             }
             is ItemState.Error -> {
                 binding.progressBar.visibility = View.GONE
-                binding.root.showSnackBar(
-                    getString(R.string.error_during_download),
-                    getString(R.string.reload),
-                    { anime?.let { viewModel.getAnimeInfo(it) } })
             }
         }
     }

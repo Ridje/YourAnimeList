@@ -1,20 +1,20 @@
-package com.kis.youranimelist.utils
+package com.kis.youranimelist.di
 
 import android.content.Context
+import com.kis.youranimelist.utils.AppPreferences
 import dagger.Module
 import dagger.Provides
-import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.components.SingletonComponent
+import dagger.hilt.migration.DisableInstallInCheck
 import javax.inject.Singleton
 
 @Module
-@InstallIn(SingletonComponent::class)
+@DisableInstallInCheck
 class UtilsModule {
 
     @Singleton
     @Provides
     fun provideAppPreferences(@ApplicationContext context: Context): AppPreferences {
-        return AppPreferences.getInstance(context)
+        return AppPreferences(context)
     }
 }

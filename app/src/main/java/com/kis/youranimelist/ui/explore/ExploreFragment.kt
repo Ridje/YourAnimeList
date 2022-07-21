@@ -6,12 +6,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
-import com.kis.youranimelist.MainActivity
 import com.kis.youranimelist.R
 import com.kis.youranimelist.databinding.ExploreFragmentBinding
 import com.kis.youranimelist.model.app.Anime
-import com.kis.youranimelist.navigateTo
-import com.kis.youranimelist.showSnackBar
 import com.kis.youranimelist.ui.item.ItemFragment
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -30,7 +27,6 @@ class ExploreFragment : Fragment() {
     private val clickListener = { anime : Anime -> val
         bundle = Bundle()
         bundle.putParcelable(ItemFragment.BUNDLE_EXTRA, anime)
-        requireActivity().navigateTo(ItemFragment.newInstance(bundle), true)
     }
 
     override fun onCreateView(
@@ -62,7 +58,6 @@ class ExploreFragment : Fragment() {
             }
             is ExploreState.Error -> {
                 binding.progressBar.visibility = View.GONE
-                binding.root.showSnackBar(getString(R.string.error_during_download), getString(R.string.reload),  { viewModel.getAnimeListByGroup() })
             }
         }
     }

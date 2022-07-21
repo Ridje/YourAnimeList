@@ -5,8 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <com.google.android.material.textview.MaterialTextView
-        android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+    <TextView
         android:id="@+id/history_itemAnimeName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -14,17 +13,16 @@
         android:gravity="center"
         app:layout_constraintEnd_toStartOf="@+id/history_createdAt"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"></com.google.android.material.textview.MaterialTextView>
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <com.google.android.material.textview.MaterialTextView
+    <TextView
         android:id="@+id/history_createdAt"
         android:layout_width="200dp"
         android:layout_height="match_parent"
         android:gravity="center"
         android:text="Jul 25th, 2015, 15:15:45"
-        android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"></com.google.android.material.textview.MaterialTextView>
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

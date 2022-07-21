@@ -39,7 +39,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/poster_large_example" />
 
-            <com.google.android.material.imageview.ShapeableImageView
+            <ImageView
                 android:id="@+id/buttonBack"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -48,7 +48,6 @@
                 android:background="@color/background_color"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:shapeAppearanceOverlay="@style/cornedImageView"
                 app:srcCompat="@drawable/button_back" />
 
             <View
@@ -61,7 +60,7 @@
                 app:layout_constraintEnd_toEndOf="@+id/posterView"
                 app:layout_constraintStart_toStartOf="@+id/posterView" />
 
-            <com.google.android.material.textview.MaterialTextView
+            <TextView
                 android:id="@+id/itemTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -69,22 +68,20 @@
                 android:paddingHorizontal="24dp"
                 android:paddingEnd="24dp"
                 android:text="ATTACK ON TITANS"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline4"
                 app:layout_constraintStart_toStartOf="@+id/imageFade"
                 app:layout_constraintTop_toTopOf="@+id/imageFade" />
 
-            <com.google.android.material.textview.MaterialTextView
+            <TextView
                 android:id="@+id/itemYear"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingEnd="4dp"
                 android:paddingStart="24dp"
                 android:text="2020"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Overline"
                 app:layout_constraintStart_toStartOf="@+id/itemTitle"
                 app:layout_constraintTop_toBottomOf="@+id/itemTitle" />
 
-            <com.google.android.material.textview.MaterialTextView
+            <TextView
                 android:id="@+id/itemDividerOne"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -93,19 +90,18 @@
                 app:layout_constraintStart_toEndOf="@+id/itemYear"
                 app:layout_constraintTop_toTopOf="@+id/itemYear" />
 
-            <com.google.android.material.textview.MaterialTextView
+            <TextView
                 android:id="@+id/itemGenres"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingStart="4dp"
                 android:paddingEnd="4dp"
                 android:text="action, adventure, fantasy"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Overline"
                 app:layout_constraintBottom_toBottomOf="@+id/itemYear"
                 app:layout_constraintStart_toEndOf="@+id/itemDividerOne"
                 app:layout_constraintTop_toBottomOf="@+id/itemTitle" />
 
-            <com.google.android.material.textview.MaterialTextView
+            <TextView
                 android:id="@+id/itemDividerTwo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -114,38 +110,35 @@
                 app:layout_constraintStart_toEndOf="@+id/itemGenres"
                 app:layout_constraintTop_toTopOf="@+id/itemYear" />
 
-            <com.google.android.material.textview.MaterialTextView
+            <TextView
                 android:id="@+id/itemMean"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingStart="4dp"
                 android:paddingEnd="24dp"
                 android:text="9.4"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Overline"
                 app:layout_constraintBottom_toBottomOf="@+id/itemYear"
                 app:layout_constraintStart_toEndOf="@+id/itemDividerTwo"
                 app:layout_constraintTop_toBottomOf="@+id/itemTitle" />
 
-            <com.google.android.material.textfield.TextInputEditText
+            <EditText
                 android:id="@+id/itemNote"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Add your notes here"
                 android:paddingHorizontal="24dp"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Overline"
                 android:textColor="@color/primary_red"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/itemSynopsis" />
 
-            <com.google.android.material.textview.MaterialTextView
+            <TextView
                 android:id="@+id/itemSynopsis"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingHorizontal="24dp"
                 android:paddingVertical="16dp"
                 android:text="@string/anime_synopsis_example"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"

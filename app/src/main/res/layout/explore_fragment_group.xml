@@ -10,22 +10,20 @@
     android:clipChildren="false"
     android:clipToPadding="false">
 
-    <com.google.android.material.textview.MaterialTextView
+    <TextView
         android:id="@+id/categoryName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Category name"
-        android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
         android:paddingVertical="12dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <com.google.android.material.textview.MaterialTextView
+    <TextView
         android:id="@+id/seeAllItems"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="See All"
-        android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
         app:layout_constraintBottom_toTopOf="@+id/itemList"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

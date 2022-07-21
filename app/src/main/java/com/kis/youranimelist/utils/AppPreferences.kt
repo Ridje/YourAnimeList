@@ -10,7 +10,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
-class AppPreferences private constructor(val context: Context) {
+class AppPreferences constructor(val context: Context) {
 
     private val encryptedSharedPreferences : SharedPreferences = EncryptedSharedPreferences.create(
         context.packageName,
@@ -46,27 +46,8 @@ class AppPreferences private constructor(val context: Context) {
         preferences.edit().remove(key).apply()
     }
 
-    fun registerOnSharedPreferenceChangeListener(listener: OnSharedPreferenceChangeListener?) {
-        encryptedSharedPreferences.registerOnSharedPreferenceChangeListener(
-            listener
-        )
-        sharedPreferences.registerOnSharedPreferenceChangeListener(
-            listener
-        )
-    }
-
-    fun unregisterOnSharedPreferenceChangeListener(listener: OnSharedPreferenceChangeListener?) {
-        encryptedSharedPreferences.unregisterOnSharedPreferenceChangeListener(
-            listener
-        )
-        sharedPreferences.unregisterOnSharedPreferenceChangeListener(
-            listener
-        )
-    }
 
     companion object {
-
-        private var singleton: AppPreferences? = null
 
         const val ACCESS_TOKEN_SETTING_KEY = "access_token"
         const val REFRESH_TOKEN_SETTING_KEY = "refresh_token"
@@ -77,20 +58,6 @@ class AppPreferences private constructor(val context: Context) {
         const val NSFW_SETTING_KEY = "nsfw"
 
         private val masterKeys = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
-
-        fun getInstance(context: Context): AppPreferences {
-
-            var instance = singleton
-            instance ?: run {
-                synchronized(this) {
-                    singleton ?: run {
-                        singleton = AppPreferences(context)
-                        instance = singleton
-                    }
-                }
-            }
-            return instance!!
-        }
     }
 
 }

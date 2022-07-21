@@ -1,57 +1,68 @@
 package com.kis.youranimelist
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
-import com.kis.youranimelist.databinding.MainActivityBinding
-import com.kis.youranimelist.ui.explore.ExploreFragment
-import com.kis.youranimelist.ui.history.HistoryFragment
-import com.kis.youranimelist.ui.login.LoginFragment
-import com.kis.youranimelist.ui.settings.SettingsFragment
-import com.kis.youranimelist.utils.AppPreferences
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.MaterialTheme.colors
+import androidx.compose.material.MaterialTheme.shapes
+import androidx.compose.material.MaterialTheme.typography
+import androidx.compose.material.Scaffold
+import androidx.compose.material.ScaffoldState
+import androidx.compose.material.rememberScaffoldState
+import androidx.compose.runtime.Composable
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.kis.youranimelist.ui.login.LoginScreenRoute
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity() {
-
-    private var _binding: MainActivityBinding? = null
-    private val binding get() = _binding!!
+class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        _binding = MainActivityBinding.inflate(layoutInflater)
-        val view = binding.root
-        setContentView(view)
-        if (savedInstanceState == null) {
-            navigateToDefaultFragment();
+        setContent {
+            YourAnimeListTheme {
+                YourAnimeListMainScreen()
+            }
         }
     }
 }
 
-fun FragmentActivity.navigateToDefaultFragment() {
-    supportFragmentManager.beginTransaction().replace(R.id.fragment_container, getDefaultFragment()).commit()
+@Composable
+fun YourAnimeListTheme(
+    content: @Composable () -> Unit,
+) {
+    MaterialTheme(
+        colors = colors,
+        typography = typography,
+        shapes = shapes,
+        content = content
+    )
 }
 
-fun FragmentActivity.navigateTo(fragment:Fragment, addToBackStack: Boolean = false) {
-    val trans = supportFragmentManager.beginTransaction().replace(R.id.fragment_container, fragment)
-    if (addToBackStack) {
-        trans.addToBackStack(null)
+@Composable
+fun YourAnimeListMainScreen() {
+    val navController = rememberNavController()
+    val scaffoldState: ScaffoldState = rememberScaffoldState()
+    Scaffold(scaffoldState = scaffoldState) {
+        YourAnimeListNavHost(navController, scaffoldState)
     }
-    trans.commit()
 }
 
-
-fun FragmentActivity.navigateBack() {
-    supportFragmentManager.popBackStack();
+@Composable
+fun YourAnimeListNavHost(navController: NavHostController, scaffoldState: ScaffoldState) {
+    NavHost(navController, startDestination = NavigationKeys.Route.LOGIN) {
+        composable(route = NavigationKeys.Route.LOGIN) {
+            LoginScreenRoute(navController, scaffoldState)
+        }
+    }
 }
 
-fun FragmentActivity.getDefaultFragment() : Fragment {
-
-    val accessToken = AppPreferences.getInstance(applicationContext).readString(AppPreferences.ACCESS_TOKEN_SETTING_KEY)
-    return when {
-        accessToken.isBlank() -> LoginFragment()
-        else -> ExploreFragment.newInstance()
+object NavigationKeys {
+    object Route {
+        const val LOGIN = "currencies"
     }
 }

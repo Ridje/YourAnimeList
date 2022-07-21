@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import com.kis.youranimelist.R
 import com.kis.youranimelist.databinding.HistoryFragmentBinding
-import com.kis.youranimelist.showSnackBar
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -42,10 +41,6 @@ class HistoryFragment : Fragment() {
         when (state) {
             is HistoryState.Error -> {
                 binding.progressBar.visibility = View.GONE
-                binding.root.showSnackBar(
-                    getString(R.string.error_during_download),
-                    getString(R.string.reload),
-                    { viewModel.getViewHistory() })
             }
 
             is HistoryState.Loading -> {
