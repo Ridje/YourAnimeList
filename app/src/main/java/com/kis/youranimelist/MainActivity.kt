@@ -7,14 +7,12 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.MaterialTheme.shapes
 import androidx.compose.material.MaterialTheme.typography
-import androidx.compose.material.Scaffold
-import androidx.compose.material.ScaffoldState
-import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.kis.youranimelist.ui.explore.ExploreScreenRoute
 import com.kis.youranimelist.ui.login.LoginScreenRoute
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -46,17 +44,17 @@ fun YourAnimeListTheme(
 @Composable
 fun YourAnimeListMainScreen() {
     val navController = rememberNavController()
-    val scaffoldState: ScaffoldState = rememberScaffoldState()
-    Scaffold(scaffoldState = scaffoldState) {
-        YourAnimeListNavHost(navController, scaffoldState)
-    }
+    YourAnimeListNavHost(navController)
 }
 
 @Composable
-fun YourAnimeListNavHost(navController: NavHostController, scaffoldState: ScaffoldState) {
+fun YourAnimeListNavHost(navController: NavHostController) {
     NavHost(navController, startDestination = NavigationKeys.Route.LOGIN) {
         composable(route = NavigationKeys.Route.LOGIN) {
-            LoginScreenRoute(navController, scaffoldState)
+            LoginScreenRoute(navController)
+        }
+        composable(route = NavigationKeys.Route.EXPLORE) {
+            ExploreScreenRoute(navController = navController)
         }
     }
 }
@@ -64,5 +62,6 @@ fun YourAnimeListNavHost(navController: NavHostController, scaffoldState: Scaffo
 object NavigationKeys {
     object Route {
         const val LOGIN = "currencies"
+        const val EXPLORE = "explore"
     }
 }

@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Scaffold
-import androidx.compose.material.ScaffoldState
 import androidx.compose.material.SnackbarDuration
 import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Text
@@ -24,6 +23,7 @@ import androidx.navigation.NavController
 import com.google.accompanist.web.WebView
 import com.google.accompanist.web.rememberWebViewState
 import com.kis.youranimelist.BuildConfig
+import com.kis.youranimelist.NavigationKeys
 import com.kis.youranimelist.R
 import com.kis.youranimelist.utils.Pkce
 import com.kis.youranimelist.utils.Urls
@@ -34,7 +34,6 @@ import kotlinx.coroutines.flow.onEach
 @Composable
 fun LoginScreenRoute(
     navController: NavController,
-    scaffoldState: ScaffoldState,
     viewModel: LoginViewModel = hiltViewModel(),
 ) {
     val loginState by viewModel.screenState.collectAsState()
@@ -45,7 +44,7 @@ fun LoginScreenRoute(
         effectFlow,
         eventsConsumer::onLoginClick,
         eventsConsumer::onLoginSucceed,
-        { }
+        { navController.navigate(NavigationKeys.Route.EXPLORE) }
     )
 }
 
