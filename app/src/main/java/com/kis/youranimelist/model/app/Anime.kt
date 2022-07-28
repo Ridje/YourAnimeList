@@ -1,37 +1,47 @@
 package com.kis.youranimelist.model.app
 
 import android.os.Parcelable
-import com.kis.youranimelist.model.api.Anime
-import com.kis.youranimelist.model.api.MainPicture
+import com.kis.youranimelist.model.api.AnimeResponse
 import com.kis.youranimelist.model.api.StartSeason
 import com.kis.youranimelist.model.api.ranking_response.AnimeRankingItem
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class Anime(
-    var id: Int,
-    var title: String,
-    var mainPicture: MainPicture?,
-    var startSeason: StartSeason?,
-    var mean: Float?,
-    var synopsis: String? = "Description",
-    var userNote: String = ""
+    val id: Int,
+    val title: String,
+    val picture: Picture?,
+    val startSeason: StartSeason?,
+    val mean: Float?,
+    val synopsis: String? = "Description",
+    val genres: List<Genre>? = listOf(),
+    val pictures: List<Picture> = listOf(),
+    val relatedAnime: List<RelatedAnime> = listOf(),
 ) : Parcelable {
     constructor(animeRanked: AnimeRankingItem) : this(
         animeRanked.id,
         animeRanked.title,
-        animeRanked.mainPicture,
+        Picture(animeRanked.pictureResponse),
+        animeRanked.startSeason,
         null,
         null,
-        null
     )
 
-    constructor(anime: Anime) : this(
+    constructor(anime: AnimeResponse) : this(
         anime.id,
         anime.title,
-        anime.mainPicture,
+        Picture(anime.pictureResponse),
         anime.startSeason,
         anime.mean,
-        anime.synopsis
+        anime.synopsis,
+        anime.genres?.map { Genre(it.id, it.name) } ?: listOf(),
+        anime.pictures?.map { Picture(it.large, it.medium) } ?: listOf(),
+        anime.relatedAnime?.map {
+            RelatedAnime(
+                anime = Anime(it.node),
+                relatedTypeFormatted = it.relationTypeFormatted,
+                relatedType = it.relationType,
+            )
+        } ?: listOf(),
     )
 }

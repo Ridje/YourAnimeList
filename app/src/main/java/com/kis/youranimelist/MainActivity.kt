@@ -1,77 +1,107 @@
+@file:OptIn(ExperimentalAnimationApi::class)
+
 package com.kis.youranimelist
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
-import com.kis.youranimelist.databinding.MainActivityBinding
-import com.kis.youranimelist.ui.explore.ExploreFragment
-import com.kis.youranimelist.ui.history.HistoryFragment
-import com.kis.youranimelist.ui.login.LoginFragment
-import com.kis.youranimelist.ui.settings.SettingsFragment
-import com.kis.youranimelist.utils.AppPreferences
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.MaterialTheme.colors
+import androidx.compose.material.MaterialTheme.shapes
+import androidx.compose.material.MaterialTheme.typography
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
+import androidx.navigation.NavHostController
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
+import com.google.accompanist.navigation.animation.AnimatedNavHost
+import com.google.accompanist.navigation.animation.composable
+import com.google.accompanist.navigation.animation.rememberAnimatedNavController
+import com.kis.youranimelist.ui.Theme
+import com.kis.youranimelist.ui.explore.ExploreScreenRoute
+import com.kis.youranimelist.ui.item.ItemScreenRoute
+import com.kis.youranimelist.ui.login.LoginScreenRoute
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity() {
-
-    private var _binding: MainActivityBinding? = null
-    val binding get() = _binding!!
+class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        _binding = MainActivityBinding.inflate(layoutInflater)
-        val view = binding.root
-        setContentView(view)
-        binding.bottomNavigationMenu.setOnNavigationItemSelectedListener { item -> switchNavigation(item.itemId) }
-        if (savedInstanceState == null) {
-            navigateToDefaultFragment();
+        setContent {
+            YourAnimeListTheme {
+                YourAnimeListMainScreen()
+            }
         }
     }
+}
 
-    private fun switchNavigation(item: Int): Boolean {
-        when (item) {
-            R.id.navigation_home -> navigateToDefaultFragment()
-            R.id.navigation_favourites -> navigateTo(HistoryFragment())
-            R.id.navigation_settings -> navigateTo(SettingsFragment())
+@Composable
+fun YourAnimeListTheme(
+    content: @Composable () -> Unit,
+) {
+    MaterialTheme(
+        colors = colors.copy(
+            surface = Theme.Colors.background,
+            background = Theme.Colors.background,
+            onPrimary = Theme.Colors.onPrimary,
+            onBackground = Theme.Colors.onPrimary,
+        ),
+        typography = typography,
+        shapes = shapes,
+        content = content
+    )
+}
+
+@OptIn(ExperimentalAnimationApi::class)
+@Composable
+fun YourAnimeListMainScreen() {
+    val navController = rememberAnimatedNavController()
+    YourAnimeListNavHost(navController)
+}
+
+@Composable
+fun YourAnimeListNavHost(navController: NavHostController) {
+    AnimatedNavHost(navController, startDestination = NavigationKeys.Route.LOGIN) {
+        composable(route = NavigationKeys.Route.LOGIN) {
+            LoginScreenRoute(navController)
         }
-
-        return true
-    }
-
-    fun setVisibilityBottomNavigationMenu(visibility: Int) {
-        binding.bottomNavigationMenu.visibility = visibility
-    }
-
-    override fun onBackPressed() {
-        super.onBackPressed()
-        setVisibilityBottomNavigationMenu(View.VISIBLE)
+        composable(
+            route = NavigationKeys.Route.EXPLORE,
+        ) {
+            ExploreScreenRoute(navController = navController)
+        }
+        composable(
+            route = "${NavigationKeys.Route.EXPLORE}/{anime}",
+            arguments = listOf(
+                navArgument("anime") { type = NavType.IntType }
+            ),
+            enterTransition = {
+                slideInVertically(
+                    animationSpec = tween(500),
+                    initialOffsetY = { it * 2 }
+                )
+            },
+            popExitTransition = {
+                slideOutVertically(
+                    animationSpec = tween(500),
+                    targetOffsetY = { (it * 1.5).toInt() }
+                )
+            },
+        ) {
+            ItemScreenRoute(navController)
+        }
     }
 }
 
-fun FragmentActivity.navigateToDefaultFragment() {
-    supportFragmentManager.beginTransaction().replace(R.id.fragment_container, getDefaultFragment()).commit()
-}
 
-fun FragmentActivity.navigateTo(fragment:Fragment, addToBackStack: Boolean = false) {
-    val trans = supportFragmentManager.beginTransaction().replace(R.id.fragment_container, fragment)
-    if (addToBackStack) {
-        trans.addToBackStack(null)
-    }
-    trans.commit()
-}
-
-
-fun FragmentActivity.navigateBack() {
-    supportFragmentManager.popBackStack();
-}
-
-fun FragmentActivity.getDefaultFragment() : Fragment {
-
-    val accessToken = AppPreferences.getInstance(applicationContext).readString(AppPreferences.ACCESS_TOKEN_SETTING_KEY)
-    return when {
-        accessToken.isBlank() -> LoginFragment()
-        else -> ExploreFragment.newInstance()
+object NavigationKeys {
+    object Route {
+        const val LOGIN = "currencies"
+        const val EXPLORE = "explore"
     }
 }

@@ -14,7 +14,7 @@ object Pkce {
     private fun String.Companion.random(stringLength : Int = 120) : String {
 
         return (1..stringLength)
-            .map { i -> Random.nextInt(0, CODE_VERIFIER_CHAR_POOL.length) }
+            .map { Random.nextInt(0, CODE_VERIFIER_CHAR_POOL.length) }
             .map(CODE_VERIFIER_CHAR_POOL::get)
             .joinToString("")
     }

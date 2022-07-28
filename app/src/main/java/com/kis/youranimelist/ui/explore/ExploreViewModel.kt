@@ -1,78 +1,70 @@
 package com.kis.youranimelist.ui.explore
 
-import android.content.Context
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.kis.youranimelist.R
-import com.kis.youranimelist.model.app.Anime
 import com.kis.youranimelist.model.app.AnimeCategory
-import com.kis.youranimelist.repository.RepositoryNetwork
-import com.kis.youranimelist.utils.AppPreferences
+import com.kis.youranimelist.repository.AnimeRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.stream.Collectors
 import javax.inject.Inject
 
 @HiltViewModel
-class ExploreViewModel @Inject constructor(private val repositoryNetwork: RepositoryNetwork,
-                                           @ApplicationContext val context: Context) : ViewModel() {
+class ExploreViewModel @Inject constructor(
+    private val animeRepository: AnimeRepository,
+) : ViewModel() {
 
-    private val limit = 20
-    private val liveDataToObserve: MutableLiveData<ExploreState> = MutableLiveData()
-
-    @Inject
-    lateinit var appPreferences: AppPreferences
-
-    val results = mutableListOf(
-        AnimeCategory("Top ranked") { repositoryNetwork.getAnimeRankingList("all", limit, null, fields) },
-        AnimeCategory("Airing") { repositoryNetwork.getAnimeRankingList("airing", limit, null, fields) },
-        AnimeCategory("Popular") { repositoryNetwork.getAnimeRankingList("bypopularity", limit, null, fields) },
-        AnimeCategory("Favorite") { repositoryNetwork.getAnimeRankingList("favorite", limit, null, fields) }
+    val screenState: MutableStateFlow<ExploreScreenContract.ScreenState> = MutableStateFlow(
+        ExploreScreenContract.ScreenState(
+            listOf()
+        )
     )
 
-    val handler = CoroutineExceptionHandler { _, exception ->
-        exception.printStackTrace()
-        liveDataToObserve.value = ExploreState.Error(exception)
+    val effectStream: MutableSharedFlow<ExploreScreenContract.Effect> = MutableSharedFlow()
+
+    private val limit = 20
+    private val requests = mutableListOf(
+        AnimeCategory("Top ranked", "all", listOf()),
+        AnimeCategory("Airing", "airing", listOf()),
+        AnimeCategory("Popular", "bypopularity", listOf()),
+//        AnimeCategory("Favorite", "favourite")
+    )
+
+    init {
+        getAnimeListByGroup()
     }
 
-    fun getLiveData() = liveDataToObserve
-
-    @Synchronized
-    fun updateResults() {
-        liveDataToObserve.value = ExploreState.LoadingResult(results)
-    }
-
-    fun getAnimeListByGroup() {
-        liveDataToObserve.value = ExploreState.LoadingResult(results)
-
-        val nsfwSettingValue = appPreferences.readString(AppPreferences.NSFW_SETTING_KEY)
-        val nsfwValues = context.resources.getStringArray(R.array.nsfw_values)
-
-        viewModelScope.launch(handler) {
-            val categories = results
-
-            for (i in categories.indices) {
+    private fun getAnimeListByGroup() {
+        viewModelScope.launch(Dispatchers.IO) {
+            for (i in requests.indices) {
                 val result = withContext(Dispatchers.IO) {
-                    val requestResult = categories[i].networkGetter.invoke()
-                    return@withContext requestResult.stream().filter { allowedContent(nsfwValues, nsfwSettingValue, it.anime.nsfw)}.map { Anime(it.anime) }.collect(Collectors.toList())
+                    return@withContext animeRepository.getRankingAnimeList(requests[i].tag,
+                        limit,
+                        null,
+                        fields)
                 }
-                categories[i].animeList = result
-                updateResults()
+                val currentList = screenState.value.categories.toMutableList()
+                currentList.add(AnimeCategory(requests[i].name, requests[i].tag, result))
+                screenState.value = ExploreScreenContract.ScreenState(
+                    currentList
+                )
             }
-
         }
     }
 
-    private fun allowedContent(nsfwValues: Array<String>, userValue: String, itemValue: String?): Boolean {
-        return itemValue == null || userValue.isEmpty() || nsfwValues.indexOf(itemValue) <= nsfwValues.indexOf(userValue)
+    private fun allowedContent(
+        nsfwValues: Array<String>,
+        userValue: String,
+        itemValue: String?,
+    ): Boolean {
+        return itemValue == null || userValue.isEmpty() || nsfwValues.indexOf(itemValue) <= nsfwValues.indexOf(
+            userValue)
     }
 
     companion object {
-        const val fields = "id, title, main_picture, nsfw"
+        const val fields = "id, title, main_picture, start_season"
     }
 }

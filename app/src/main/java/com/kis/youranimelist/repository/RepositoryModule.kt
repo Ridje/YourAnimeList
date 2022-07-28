@@ -15,19 +15,29 @@ object RepositoryModule {
 
     @Singleton
     @Provides
-    fun provideRepositoryNetwork(
+    fun provideAnimeRepository(
+        remoteDataSource: RemoteDataSource,
+    ): AnimeRepository {
+        return AnimeRepositoryImpl(
+            remoteDataSource,
+        )
+    }
+
+    @Singleton
+    @Provides
+    fun provideRemoteDataSource(
         malService: MyAnimeListAPI,
-        malOauthService: MyAnimeListOAuthAPI
-    ) : RepositoryNetwork {
-        return RepositoryNetworkImpl(malService, malOauthService)
+        malOauthService: MyAnimeListOAuthAPI,
+    ): RemoteDataSource {
+        return RemoteDataSourceImpl(malService, malOauthService)
     }
 
 
     @Singleton
     @Provides
-    fun provideRepositoryLocal(
-        roomService: UserDatabase
-    ): RepositoryLocal {
-        return RepositoryLocalImpl(roomService)
+    fun provideLocalDataSource(
+        roomService: UserDatabase,
+    ): LocalDataSource {
+        return LocalDataSourceImpl(roomService)
     }
 }
