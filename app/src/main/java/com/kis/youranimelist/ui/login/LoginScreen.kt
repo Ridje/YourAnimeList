@@ -1,8 +1,10 @@
 package com.kis.youranimelist.ui.login
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
@@ -53,6 +55,7 @@ fun LoginScreenRoute(
     )
 }
 
+@SuppressLint("SetJavaScriptEnabled")
 @Composable
 fun LoginScreen(
     isWebViewVisible: Boolean,
@@ -70,7 +73,7 @@ fun LoginScreen(
             }
         }.collect {}
     }
-    Scaffold {
+    Scaffold { paddingValues ->
         if (isWebViewVisible) {
             val codeVerifier = Pkce.generateCodeVerifier()
             val webViewState =
@@ -87,7 +90,7 @@ fun LoginScreen(
             Column(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier.fillMaxSize().padding(paddingValues),
             ) {
                 Text(
                     stringResource(R.string.app_name),

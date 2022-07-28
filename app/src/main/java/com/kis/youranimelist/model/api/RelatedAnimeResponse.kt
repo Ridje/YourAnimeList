@@ -1,9 +1,11 @@
 package com.kis.youranimelist.model.api
 
-import com.fasterxml.jackson.annotation.JsonProperty
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class RelatedAnimeResponse(
-    @JsonProperty("node") val node: AnimeResponse,
-    @JsonProperty("relation_type") val relationType: String,
-    @JsonProperty("relation_type_formatted") val relationTypeFormatted: String,
+    @SerialName("node") val node: AnimeResponse,
+    @SerialName("relation_type") val relationType: String,
+    @SerialName("relation_type_formatted") val relationTypeFormatted: String,
 )

@@ -2,7 +2,7 @@ package com.kis.youranimelist.model.app
 
 import android.os.Parcelable
 import com.kis.youranimelist.model.api.AnimeResponse
-import com.kis.youranimelist.model.api.StartSeason
+import com.kis.youranimelist.model.api.StartSeasonResponse
 import com.kis.youranimelist.model.api.ranking_response.AnimeRankingItem
 import kotlinx.parcelize.Parcelize
 
@@ -11,7 +11,7 @@ data class Anime(
     val id: Int,
     val title: String,
     val picture: Picture?,
-    val startSeason: StartSeason?,
+    val startSeason: Season?,
     val mean: Float?,
     val synopsis: String? = "Description",
     val genres: List<Genre>? = listOf(),
@@ -22,7 +22,7 @@ data class Anime(
         animeRanked.id,
         animeRanked.title,
         Picture(animeRanked.pictureResponse),
-        animeRanked.startSeason,
+        Season(animeRanked.startSeasonResponse),
         null,
         null,
     )
@@ -31,7 +31,7 @@ data class Anime(
         anime.id,
         anime.title,
         Picture(anime.pictureResponse),
-        anime.startSeason,
+        Season(anime.startSeasonResponse),
         anime.mean,
         anime.synopsis,
         anime.genres?.map { Genre(it.id, it.name) } ?: listOf(),

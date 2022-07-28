@@ -1,5 +1,6 @@
 package com.kis.youranimelist.network
 
+import android.util.Log
 import okhttp3.Interceptor
 import okhttp3.Response
 import javax.inject.Inject
@@ -19,6 +20,7 @@ class AuthInterceptor @Inject constructor() : Interceptor {
     }
 
     override fun intercept(chain: Interceptor.Chain): Response {
+        Log.d("YOURANIMELIST", "OUR CREDENTIALS - $authType $authToken")
         var request = chain.request()
         if (authType?.isNotBlank() == true) {
             val builder =

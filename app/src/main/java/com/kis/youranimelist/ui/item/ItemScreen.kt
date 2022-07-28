@@ -2,6 +2,7 @@ package com.kis.youranimelist.ui.item
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.clipScrollableContainer
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -81,7 +82,8 @@ fun ItemScreen(
     Scaffold { paddingValues ->
         ConstraintLayout(modifier = Modifier
             .verticalScroll(rememberScrollState())
-            .padding(paddingValues)) {
+            .padding(paddingValues)
+        ) {
             val (image, content) = createRefs()
             val pagerState = rememberPagerState()
             HorizontalPager(
@@ -255,14 +257,15 @@ fun RelatedItems(
 ) {
     Row(modifier = Modifier
         .horizontalScroll(rememberScrollState())
-        .padding(6.dp, 6.dp)
         .height(IntrinsicSize.Max)
     ) {
         for (relatedAnime in relatedAnimeItem) {
             AnimeCategoryListItemRounded(
                 relatedAnime.picture,
                 relatedAnime.title,
-                relatedAnime.relationType
+                relatedAnime.relationType,
+                130.dp,
+                3,
             ) { onItemClick.invoke(relatedAnime.id) }
             Divider(
                 color = Color.Transparent,

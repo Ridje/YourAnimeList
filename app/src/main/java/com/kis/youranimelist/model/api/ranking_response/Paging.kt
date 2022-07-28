@@ -1,5 +1,7 @@
 package com.kis.youranimelist.model.api.ranking_response
 
-import com.fasterxml.jackson.annotation.JsonProperty
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-data class Paging(@JsonProperty("next") var next : String)
+@Serializable
+data class Paging(@SerialName("next") var next: String)
