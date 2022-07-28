@@ -3,10 +3,10 @@ package com.kis.youranimelist.ui.login
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import com.google.accompanist.web.AccompanistWebViewClient
-import com.kis.youranimelist.repository.RepositoryNetwork
+import com.kis.youranimelist.repository.RemoteDataSource
 import com.kis.youranimelist.utils.Urls
 
-class LoginWebViewComponent(
+class LoginWebViewClient(
     private val redirectCallback: (String, String) -> Unit,
     private val codeVerifier: String,
 ) : AccompanistWebViewClient() {
@@ -17,7 +17,7 @@ class LoginWebViewComponent(
     ): Boolean {
         request?.let {
             if ((it.url.host + request.url.path) == Urls.appRedirectUrl) {
-                it.url.getQueryParameter(RepositoryNetwork.CODE_FIELD)?.let { token ->
+                it.url.getQueryParameter(RemoteDataSource.CODE_FIELD)?.let { token ->
                     redirectCallback.invoke(
                         token,
                         codeVerifier,

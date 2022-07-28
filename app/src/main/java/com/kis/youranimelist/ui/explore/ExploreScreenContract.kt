@@ -2,7 +2,7 @@ package com.kis.youranimelist.ui.explore
 
 import com.kis.youranimelist.model.app.AnimeCategory
 
-class ExploreScreenContract {
+object ExploreScreenContract {
 
     data class ScreenState(
         val categories: List<AnimeCategory>,

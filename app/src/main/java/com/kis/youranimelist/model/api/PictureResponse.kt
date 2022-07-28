@@ -8,4 +8,4 @@ import kotlinx.parcelize.Parcelize
 @JsonPropertyOrder("medium","large")
 
 @Parcelize
-data class MainPicture(@JsonProperty("large") var large : String?, @JsonProperty("medium") var medium : String) : Parcelable
+data class PictureResponse(@JsonProperty("large") var large : String?, @JsonProperty("medium") var medium : String) : Parcelable

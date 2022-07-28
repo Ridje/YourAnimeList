@@ -1,44 +1,46 @@
 package com.kis.youranimelist.ui.item
 
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import com.kis.youranimelist.model.app.Anime
-import com.kis.youranimelist.repository.RepositoryLocal
-import com.kis.youranimelist.repository.RepositoryNetwork
+import androidx.lifecycle.viewModelScope
+import com.kis.youranimelist.repository.AnimeRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class ItemViewModel @Inject constructor(val repositoryNetwork: RepositoryNetwork, val repositoryLocal: RepositoryLocal) : ViewModel() {
+class ItemViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle,
+    private val animeRepository: AnimeRepository,
+) : ViewModel() {
 
-    private val liveDataToObserve = MutableLiveData<ItemState>()
-    fun getLiveData() = liveDataToObserve
+    val screenState: MutableStateFlow<ItemScreenContract.ScreenState> = MutableStateFlow(
+        ItemScreenContract.ScreenState(
+            item = ItemScreenMapper.map(null)
+        )
+    )
 
-    fun getAnimeInfo(anime : Anime) {
-        liveDataToObserve.value = ItemState.Loading
-        Thread {
-            try {
-                repositoryLocal.addAnimeViewHistory(anime.id, anime.title)
-                val anime = Anime(
-                    repositoryNetwork.getAnimeInfo(
-                        anime.id,
-                        fields))
-                anime.userNote = repositoryLocal.getUserNote(anime.id)?.userNote ?: ""
-                liveDataToObserve.postValue(ItemState.Success(anime))
-            } catch (e: Exception) {
-                liveDataToObserve.postValue(ItemState.Error(e))
-                e.printStackTrace()
-            }
-        }.start()
+    init {
+        getAnimeInfo(savedStateHandle.get<Int>("anime")
+            ?: throw RuntimeException("WTF"))
     }
 
-    fun writeAnimeNote(anime: Anime) {
-        Thread {
-            repositoryLocal.writeUserNote(anime.id, anime.userNote)
-        }.start()
+    private fun getAnimeInfo(animeID: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            animeRepository.getAnimeDetailedData(
+                animeID,
+                fields
+            ).collect { anime ->
+                screenState.value = ItemScreenContract.ScreenState(
+                    item = ItemScreenMapper.map(anime)
+                )
+            }
+        }
     }
 
     companion object {
-        const val fields = "id, title, mean, main_picture, start_season, synopsis"
+        const val fields = "id, title, mean, main_picture, start_season, synopsis, genres, pictures, related_anime"
     }
 }

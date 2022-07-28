@@ -3,6 +3,7 @@ package com.kis.youranimelist.ui.login
 object LoginScreenContract {
     data class ScreenState(
         val webViewVisible: Boolean = false,
+        val isLoading: Boolean = false,
     )
 
     sealed class Effect {

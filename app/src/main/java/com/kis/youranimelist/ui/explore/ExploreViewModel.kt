@@ -1,15 +1,10 @@
 package com.kis.youranimelist.ui.explore
 
-import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.kis.youranimelist.R
-import com.kis.youranimelist.model.app.Anime
 import com.kis.youranimelist.model.app.AnimeCategory
-import com.kis.youranimelist.repository.RepositoryNetwork
-import com.kis.youranimelist.utils.AppPreferences
+import com.kis.youranimelist.repository.AnimeRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,8 +14,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ExploreViewModel @Inject constructor(
-    private val repositoryNetwork: RepositoryNetwork,
-    @ApplicationContext val context: Context,
+    private val animeRepository: AnimeRepository,
 ) : ViewModel() {
 
     val screenState: MutableStateFlow<ExploreScreenContract.ScreenState> = MutableStateFlow(
@@ -32,30 +26,32 @@ class ExploreViewModel @Inject constructor(
     val effectStream: MutableSharedFlow<ExploreScreenContract.Effect> = MutableSharedFlow()
 
     private val limit = 20
-
-    val results = mutableListOf(
-        AnimeCategory("Top ranked", "all"),
-        AnimeCategory("Airing", "airing"),
-        AnimeCategory("Popular", "bypopularity"),
-        AnimeCategory("Favorite", "favourite")
+    private val requests = mutableListOf(
+        AnimeCategory("Top ranked", "all", listOf()),
+        AnimeCategory("Airing", "airing", listOf()),
+        AnimeCategory("Popular", "bypopularity", listOf()),
+//        AnimeCategory("Favorite", "favourite")
     )
 
     init {
         getAnimeListByGroup()
     }
 
-    fun getAnimeListByGroup() {
-        viewModelScope.launch {
-            for (i in results.indices) {
+    private fun getAnimeListByGroup() {
+        viewModelScope.launch(Dispatchers.IO) {
+            for (i in requests.indices) {
                 val result = withContext(Dispatchers.IO) {
-                    val requestResult =
-                        repositoryNetwork.getAnimeRankingList(results[i].tag, limit, null, fields)
-                    return@withContext requestResult.map { Anime(it.anime) }
+                    return@withContext animeRepository.getRankingAnimeList(requests[i].tag,
+                        limit,
+                        null,
+                        fields)
                 }
-                results[i] = results[i].copy(animeList = result)
+                val currentList = screenState.value.categories.toMutableList()
+                currentList.add(AnimeCategory(requests[i].name, requests[i].tag, result))
+                screenState.value = ExploreScreenContract.ScreenState(
+                    currentList
+                )
             }
-
-            screenState.value = screenState.value.copy(categories = results)
         }
     }
 
@@ -69,6 +65,6 @@ class ExploreViewModel @Inject constructor(
     }
 
     companion object {
-        const val fields = "id, title, main_picture, nsfw"
+        const val fields = "id, title, main_picture, start_season"
     }
 }
