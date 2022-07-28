@@ -18,7 +18,7 @@ Client for myanimelist.net
 
 ### Planned closest features:
 1. Bottom navigation.
-2. Check compose lists performance in release assembly.
+2. ~Check compose lists performance in release assembly.~ :white_check_mark:
 3. Prolong beaver key on expiration.
 4. Profile screen.
 5. Explicit domain layer.
