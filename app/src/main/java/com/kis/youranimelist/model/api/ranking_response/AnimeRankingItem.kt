@@ -1,23 +1,15 @@
 package com.kis.youranimelist.model.api.ranking_response
 
-import android.os.Parcelable
-import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.annotation.JsonPropertyOrder
 import com.kis.youranimelist.model.api.PictureResponse
-import com.kis.youranimelist.model.api.StartSeason
-import kotlinx.parcelize.Parcelize
+import com.kis.youranimelist.model.api.StartSeasonResponse
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-@JsonPropertyOrder(
-    "id",
-    "title",
-    "main_picture"
-)
-
-@Parcelize
+@Serializable
 data class AnimeRankingItem(
-    @JsonProperty("id") var id: Int,
-    @JsonProperty("title") var title: String,
-    @JsonProperty("main_picture") var pictureResponse: PictureResponse?,
-    @JsonProperty("nsfw") var nsfw: String?,
-    @JsonProperty("start_season") var startSeason: StartSeason?,
-) : Parcelable
+    @SerialName("id") var id: Int,
+    @SerialName("title") var title: String,
+    @SerialName("main_picture") var pictureResponse: PictureResponse?,
+    @SerialName("nsfw") var nsfw: String?,
+    @SerialName("start_season") var startSeasonResponse: StartSeasonResponse?,
+)

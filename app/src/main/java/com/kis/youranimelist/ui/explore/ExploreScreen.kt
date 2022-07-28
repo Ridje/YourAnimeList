@@ -67,7 +67,7 @@ fun ExploreScreen(
                             AnimeCategoryListItemRounded(
                                 cover = anime.picture?.large,
                                 firstLine = anime.title,
-                                secondLine = "${anime.startSeason?.year} ${anime.startSeason?.season}"
+                                secondLine = "${anime.startSeason?.year} ${anime.startSeason?.season}",
                             ) { onItemClick.invoke(anime.id) }
                             Divider(
                                 color = Color.Transparent,

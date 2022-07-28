@@ -1,8 +1,10 @@
 package com.kis.youranimelist.model.api
 
-import com.fasterxml.jackson.annotation.JsonProperty
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class GenreResponse(
-    @JsonProperty("id") val id: Int,
-    @JsonProperty("name") val name: String,
+    @SerialName("id") val id: Int,
+    @SerialName("name") val name: String,
 )

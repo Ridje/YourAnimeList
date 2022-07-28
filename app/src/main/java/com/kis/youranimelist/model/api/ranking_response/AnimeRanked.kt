@@ -1,11 +1,10 @@
 package com.kis.youranimelist.model.api.ranking_response
 
-import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.annotation.JsonPropertyOrder
-import com.kis.youranimelist.model.api.StartSeason
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-@JsonPropertyOrder("node", "ranking")
+@Serializable
 data class AnimeRanked(
-    @JsonProperty("node") var anime: AnimeRankingItem,
-    @JsonProperty("ranking") var ranking: Ranking,
+    @SerialName("node") var anime: AnimeRankingItem,
+    @SerialName("ranking") var ranking: Ranking,
 )

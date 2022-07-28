@@ -1,10 +1,12 @@
 package com.kis.youranimelist.ui.explore
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kis.youranimelist.model.app.AnimeCategory
 import com.kis.youranimelist.repository.AnimeRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -38,7 +40,10 @@ class ExploreViewModel @Inject constructor(
     }
 
     private fun getAnimeListByGroup() {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, throwable ->
+            Log.d("YOURANIMELIST", throwable.message ?: "НЕПОНЯТНО ЧТО ЗА ОШИБОКА")
+        }
+        ) {
             for (i in requests.indices) {
                 val result = withContext(Dispatchers.IO) {
                     return@withContext animeRepository.getRankingAnimeList(requests[i].tag,

@@ -1,5 +1,6 @@
 package com.kis.youranimelist.di
 
+import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import com.kis.youranimelist.network.AuthInterceptor
 import com.kis.youranimelist.network.MyAnimeListAPI
 import com.kis.youranimelist.network.MyAnimeListOAuthAPI
@@ -8,20 +9,29 @@ import com.kis.youranimelist.utils.Urls
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.migration.DisableInstallInCheck
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.json.Json
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Converter
 import retrofit2.Retrofit
-import retrofit2.converter.jackson.JacksonConverterFactory
 import javax.inject.Singleton
 
 @Module
 @DisableInstallInCheck
 object NetworkModule {
 
+    @OptIn(ExperimentalSerializationApi::class)
     @Singleton
     @Provides
-    fun provideJacksonBuilder(): Converter.Factory = JacksonConverterFactory.create()
+    fun provideConverterFactory(): Converter.Factory {
+        val contentType = "application/json".toMediaType()
+        return Json {
+            ignoreUnknownKeys = true
+            explicitNulls = false
+        }.asConverterFactory(contentType)
+    }
 
     @Singleton
     @Provides

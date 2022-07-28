@@ -19,6 +19,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 
@@ -27,11 +28,13 @@ fun AnimeCategoryListItemRounded(
     cover: String?,
     firstLine: String,
     secondLine: String,
+    size: Dp = 160.dp,
+    maxLines: Int = 1,
     onClick: () -> Unit,
 ) {
     Column(horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
-            .width(160.dp)
+            .width(size)
             .wrapContentHeight()
             .clip(RoundedCornerShape(20.dp))
             .clickable { onClick.invoke() }
@@ -40,7 +43,7 @@ fun AnimeCategoryListItemRounded(
             model = cover,
             contentDescription = null,
             modifier = Modifier
-                .width(160.dp)
+                .width(size)
                 .aspectRatio(0.7f)
                 .clip(RoundedCornerShape(20.dp)),
             contentScale = ContentScale.Crop,
@@ -50,14 +53,14 @@ fun AnimeCategoryListItemRounded(
             text = firstLine,
             style = MaterialTheme.typography.body2,
             fontWeight = FontWeight.Bold,
-            maxLines = 1,
+            maxLines = maxLines,
             overflow = TextOverflow.Ellipsis
         )
         Text(
             text = secondLine,
             style = MaterialTheme.typography.caption,
             textAlign = TextAlign.Center,
-            maxLines = 1,
+            maxLines = maxLines,
             overflow = TextOverflow.Ellipsis
         )
     }
@@ -71,6 +74,6 @@ fun AnimeCategoryListItemRoundedPreview() {
         null,
         "Youkoso Jitsuryoku Shijou Shugi no Kyoushitsu e (TV) 2nd Season",
         "1996 spring",
-        {},
     )
+    {}
 }

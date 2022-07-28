@@ -14,7 +14,6 @@ import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.MaterialTheme.shapes
 import androidx.compose.material.MaterialTheme.typography
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
@@ -83,13 +82,25 @@ fun YourAnimeListNavHost(navController: NavHostController) {
             enterTransition = {
                 slideInVertically(
                     animationSpec = tween(500),
-                    initialOffsetY = { it * 2 }
+                    initialOffsetY = { it }
+                )
+            },
+            exitTransition = {
+                slideOutVertically(
+                    animationSpec = tween(500),
+                    targetOffsetY = { -it }
+                )
+            },
+            popEnterTransition = {
+                slideInVertically(
+                    animationSpec = tween(500),
+                    initialOffsetY = { -it }
                 )
             },
             popExitTransition = {
                 slideOutVertically(
                     animationSpec = tween(500),
-                    targetOffsetY = { (it * 1.5).toInt() }
+                    targetOffsetY = { it }
                 )
             },
         ) {
