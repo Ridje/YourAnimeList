@@ -1,7 +1,9 @@
 package com.kis.youranimelist.di
 
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
+import com.kis.youranimelist.domain.AuthUseCase
 import com.kis.youranimelist.network.AuthInterceptor
+import com.kis.youranimelist.network.MALTokenAuthenticator
 import com.kis.youranimelist.network.MyAnimeListAPI
 import com.kis.youranimelist.network.MyAnimeListOAuthAPI
 import com.kis.youranimelist.utils.AppPreferences
@@ -22,6 +24,14 @@ import javax.inject.Singleton
 @DisableInstallInCheck
 object NetworkModule {
 
+    @Singleton
+    @Provides
+    fun provideMALTokenAuthenticator(
+        authUseCase: AuthUseCase,
+    ): MALTokenAuthenticator {
+        return MALTokenAuthenticator(authUseCase = authUseCase)
+    }
+
     @OptIn(ExperimentalSerializationApi::class)
     @Singleton
     @Provides
@@ -35,8 +45,12 @@ object NetworkModule {
 
     @Singleton
     @Provides
-    fun provideOkHTTPClient(authInterceptor: AuthInterceptor): OkHttpClient {
+    fun provideOkHTTPClient(
+        authInterceptor: AuthInterceptor,
+        malTokenAuthenticator: MALTokenAuthenticator,
+    ): OkHttpClient {
         return OkHttpClient.Builder()
+            .authenticator(malTokenAuthenticator)
             .addInterceptor(authInterceptor)
             .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
             .build()
@@ -48,7 +62,8 @@ object NetworkModule {
         return AuthInterceptor().apply {
             setAuthorization(
                 appPreferences.readString(AppPreferences.TYPE_TOKEN_SETTING_KEY),
-                appPreferences.readString(AppPreferences.ACCESS_TOKEN_SETTING_KEY)
+                appPreferences.readString(AppPreferences.ACCESS_TOKEN_SETTING_KEY),
+                appPreferences.readString(AppPreferences.REFRESH_TOKEN_SETTING_KEY)
             )
         }
     }

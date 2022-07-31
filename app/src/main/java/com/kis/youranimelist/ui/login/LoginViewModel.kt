@@ -3,13 +3,8 @@ package com.kis.youranimelist.ui.login
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kis.youranimelist.BuildConfig
-import com.kis.youranimelist.network.AuthInterceptor
+import com.kis.youranimelist.domain.AuthUseCase
 import com.kis.youranimelist.repository.RemoteDataSource
-import com.kis.youranimelist.utils.AppPreferences
-import com.kis.youranimelist.utils.AppPreferences.Companion.ACCESS_TOKEN_SETTING_KEY
-import com.kis.youranimelist.utils.AppPreferences.Companion.EXPIRES_IN_TOKEN_SETTING_KEY
-import com.kis.youranimelist.utils.AppPreferences.Companion.REFRESH_TOKEN_SETTING_KEY
-import com.kis.youranimelist.utils.AppPreferences.Companion.TYPE_TOKEN_SETTING_KEY
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -21,8 +16,7 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val remoteDataSource: RemoteDataSource,
-    private val appPreferences: AppPreferences,
-    private val authInterceptor: AuthInterceptor,
+    private val authUsecase: AuthUseCase,
 ) : ViewModel(),
     LoginScreenContract.LoginScreenEventsConsumer {
 
@@ -35,7 +29,7 @@ class LoginViewModel @Inject constructor(
     init {
         viewModelScope.launch(Dispatchers.IO) {
             delay(500L)
-            if (authInterceptor.authorizationValid()) {
+            if (authUsecase.isAuthDataValid()) {
                 effectStream.emit(LoginScreenContract.Effect.AuthDataSaved)
             } else {
                 screenState.value = screenState.value.copy(isLoading = false)
@@ -51,24 +45,17 @@ class LoginViewModel @Inject constructor(
         token: String,
         codeVerifier: String,
     ) {
-        screenState.value = LoginScreenContract.ScreenState(webViewVisible = false, isLoading = true)
+        screenState.value =
+            LoginScreenContract.ScreenState(webViewVisible = false, isLoading = true)
         viewModelScope.launch(Dispatchers.IO) {
             val postResult = remoteDataSource.getAccessToken(BuildConfig.CLIENT_ID,
                 token,
                 codeVerifier,
                 "authorization_code")
-            appPreferences.writeString(ACCESS_TOKEN_SETTING_KEY,
-                postResult.accessToken)
-            appPreferences.writeString(REFRESH_TOKEN_SETTING_KEY,
-                postResult.refreshToken)
-            appPreferences.writeInt(EXPIRES_IN_TOKEN_SETTING_KEY,
-                postResult.expiresIn)
-            appPreferences.writeString(TYPE_TOKEN_SETTING_KEY,
+            authUsecase.setAuthData(postResult.accessToken,
+                postResult.refreshToken,
+                postResult.expiresIn,
                 postResult.tokenType)
-            authInterceptor.setAuthorization(
-                postResult.tokenType,
-                postResult.accessToken,
-            )
             effectStream.emit(LoginScreenContract.Effect.AuthDataSaved)
         }
     }

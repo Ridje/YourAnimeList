@@ -28,7 +28,7 @@ import com.kis.youranimelist.utils.Pkce
 import com.kis.youranimelist.utils.Urls
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun LoginScreenRoute(
@@ -67,11 +67,11 @@ fun LoginScreen(
 ) {
 
     LaunchedEffect(effectFlow) {
-        effectFlow.onEach { effect ->
+        effectFlow.collectLatest { effect ->
             when (effect) {
                 is LoginScreenContract.Effect.AuthDataSaved -> onAuthDataSaved.invoke()
             }
-        }.collect {}
+        }
     }
     Scaffold { paddingValues ->
         if (isWebViewVisible) {
@@ -90,7 +90,9 @@ fun LoginScreen(
             Column(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxSize().padding(paddingValues),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues),
             ) {
                 Text(
                     stringResource(R.string.app_name),

@@ -25,7 +25,7 @@ class RemoteDataSourceImpl(
         return if (result.isSuccessful) {
             result.body()?.data ?: throw NetworkErrorException("Request wasn't successful")
         } else {
-            throw NetworkErrorException("Request wasn't successful")
+            throw NetworkErrorException()
         }
     }
 
