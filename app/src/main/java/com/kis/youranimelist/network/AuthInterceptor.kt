@@ -1,30 +1,44 @@
 package com.kis.youranimelist.network
 
-import android.util.Log
 import okhttp3.Interceptor
 import okhttp3.Response
 import javax.inject.Inject
 
 class AuthInterceptor @Inject constructor() : Interceptor {
 
-    private var authType: String? = null
-    private var authToken: String? = null
+    private var tokenType: String? = null
+        private set
+    private var accessToken: String? = null
+        private set
+    var refreshToken: String? = null
+        private set
 
-    fun setAuthorization(authType: String, authToken: String) {
-        this.authType = authType
-        this.authToken = authToken
+
+    fun setAuthorization(
+        tokenType: String? = this.tokenType,
+        accessToken: String? = this.accessToken,
+        refreshToken: String? = this.refreshToken,
+    ) {
+        this.tokenType = tokenType
+        this.accessToken = accessToken
+        this.refreshToken = refreshToken
     }
 
     fun authorizationValid(): Boolean {
-        return (authType?.isNotBlank() == true) && (authToken?.isNotBlank() == true)
+        return (tokenType?.isNotBlank() == true) && (accessToken?.isNotBlank() == true)
+    }
+
+    fun clearAuthorization() {
+        accessToken = null
+        tokenType = null
+        refreshToken = null
     }
 
     override fun intercept(chain: Interceptor.Chain): Response {
-        Log.d("YOURANIMELIST", "OUR CREDENTIALS - $authType $authToken")
         var request = chain.request()
-        if (authType?.isNotBlank() == true) {
+        if (tokenType?.isNotBlank() == true) {
             val builder =
-                chain.request().newBuilder().header("Authorization", "$authType $authToken")
+                chain.request().newBuilder().header("Authorization", "$tokenType $accessToken")
             request = builder.build()
         }
 

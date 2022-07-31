@@ -14,17 +14,22 @@ import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.MaterialTheme.shapes
 import androidx.compose.material.MaterialTheme.typography
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
+import androidx.navigation.navDeepLink
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
+import com.kis.youranimelist.ui.NavigationViewModel
 import com.kis.youranimelist.ui.Theme
 import com.kis.youranimelist.ui.explore.ExploreScreenRoute
 import com.kis.youranimelist.ui.item.ItemScreenRoute
 import com.kis.youranimelist.ui.login.LoginScreenRoute
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -64,9 +69,23 @@ fun YourAnimeListMainScreen() {
 }
 
 @Composable
-fun YourAnimeListNavHost(navController: NavHostController) {
+fun YourAnimeListNavHost(
+    navController: NavHostController,
+    viewModel: NavigationViewModel = hiltViewModel(),
+) {
+    viewModel.navigateEffects
+    LaunchedEffect(viewModel.navigateEffects) {
+        viewModel
+            .navigateEffects
+            .collectLatest {
+                navController.navigate(NavigationKeys.Route.LOGIN)
+            }
+    }
     AnimatedNavHost(navController, startDestination = NavigationKeys.Route.LOGIN) {
-        composable(route = NavigationKeys.Route.LOGIN) {
+        composable(
+            route = NavigationKeys.Route.LOGIN,
+            deepLinks = listOf(navDeepLink { uriPattern = "http://youranimelist.com" })
+        ) {
             LoginScreenRoute(navController)
         }
         composable(

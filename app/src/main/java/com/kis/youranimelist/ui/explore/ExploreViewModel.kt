@@ -40,8 +40,7 @@ class ExploreViewModel @Inject constructor(
     }
 
     private fun getAnimeListByGroup() {
-        viewModelScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, throwable ->
-            Log.d("YOURANIMELIST", throwable.message ?: "НЕПОНЯТНО ЧТО ЗА ОШИБОКА")
+        viewModelScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, _ ->
         }
         ) {
             for (i in requests.indices) {

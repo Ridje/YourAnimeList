@@ -8,20 +8,27 @@
     <application
         android:name=".YourAnimeListApplication"
         android:allowBackup="false"
+        android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:launchMode="singleTask"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.YourAnimeList"
-        android:dataExtractionRules="@xml/data_extraction_rules">
-        <activity android:name=".MainActivity"
-            android:screenOrientation="portrait"
+        android:theme="@style/Theme.YourAnimeList">
+        <activity
+            android:name=".MainActivity"
             android:exported="true"
+            android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity">
-            <intent-filter >
+            <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <data
+                    android:host="youranimelist.com"
+                    android:scheme="https" />
             </intent-filter>
         </activity>
     </application>
