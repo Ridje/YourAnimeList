@@ -9,25 +9,32 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.MaterialTheme.shapes
 import androidx.compose.material.MaterialTheme.typography
+import androidx.compose.material.Scaffold
+import androidx.compose.material.ScaffoldState
+import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
-import androidx.navigation.navDeepLink
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.kis.youranimelist.ui.NavigationViewModel
 import com.kis.youranimelist.ui.Theme
+import com.kis.youranimelist.ui.bottomnavigation.BottomNavigationDestinaton
+import com.kis.youranimelist.ui.bottomnavigation.MainScreenBottomNavigation
 import com.kis.youranimelist.ui.explore.ExploreScreenRoute
 import com.kis.youranimelist.ui.item.ItemScreenRoute
 import com.kis.youranimelist.ui.login.LoginScreenRoute
+import com.kis.youranimelist.ui.mylist.MyListScreenRoute
+import com.kis.youranimelist.ui.profile.ProfileScreenRoute
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 
@@ -65,12 +72,31 @@ fun YourAnimeListTheme(
 @Composable
 fun YourAnimeListMainScreen() {
     val navController = rememberAnimatedNavController()
-    YourAnimeListNavHost(navController)
+    val scaffoldState = rememberScaffoldState()
+    Scaffold(
+        bottomBar = {
+            MainScreenBottomNavigation(
+                navController,
+                listOf(
+                    BottomNavigationDestinaton.Explore,
+                    BottomNavigationDestinaton.MyList,
+                    BottomNavigationDestinaton.Profile,
+                )
+            )
+        },
+        scaffoldState = scaffoldState,
+    ) { paddingValues ->
+        YourAnimeListNavHost(
+            navController,
+            paddingValues,
+        )
+    }
 }
 
 @Composable
 fun YourAnimeListNavHost(
     navController: NavHostController,
+    paddingValues: PaddingValues,
     viewModel: NavigationViewModel = hiltViewModel(),
 ) {
     viewModel.navigateEffects
@@ -83,15 +109,14 @@ fun YourAnimeListNavHost(
     }
     AnimatedNavHost(navController, startDestination = NavigationKeys.Route.LOGIN) {
         composable(
-            route = NavigationKeys.Route.LOGIN,
-            deepLinks = listOf(navDeepLink { uriPattern = "http://youranimelist.com" })
+            route = NavigationKeys.Route.LOGIN
         ) {
             LoginScreenRoute(navController)
         }
         composable(
             route = NavigationKeys.Route.EXPLORE,
         ) {
-            ExploreScreenRoute(navController = navController)
+            ExploreScreenRoute(navController = navController, paddingValues = paddingValues)
         }
         composable(
             route = "${NavigationKeys.Route.EXPLORE}/{anime}",
@@ -125,6 +150,12 @@ fun YourAnimeListNavHost(
         ) {
             ItemScreenRoute(navController)
         }
+        composable(route = NavigationKeys.Route.MY_LIST) {
+            MyListScreenRoute(navController)
+        }
+        composable(route = NavigationKeys.Route.PROFILE) {
+            ProfileScreenRoute(navController = navController)
+        }
     }
 }
 
@@ -133,5 +164,7 @@ object NavigationKeys {
     object Route {
         const val LOGIN = "currencies"
         const val EXPLORE = "explore"
+        const val MY_LIST = "my-list"
+        const val PROFILE = "profile"
     }
 }
