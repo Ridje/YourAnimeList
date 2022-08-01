@@ -32,7 +32,6 @@ class ExploreViewModel @Inject constructor(
         AnimeCategory("Top ranked", "all", listOf()),
         AnimeCategory("Airing", "airing", listOf()),
         AnimeCategory("Popular", "bypopularity", listOf()),
-//        AnimeCategory("Favorite", "favourite")
     )
 
     init {

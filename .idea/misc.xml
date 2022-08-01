@@ -33,6 +33,7 @@
         <entry key="../../../../layout/compose-model-1659033051266.xml" value="0.20092592592592592" />
         <entry key="../../../../layout/compose-model-1659107221048.xml" value="0.28040540540540543" />
         <entry key="../../../../layout/compose-model-1659182510660.xml" value="0.22550675675675674" />
+        <entry key="../../../../layout/compose-model-1659357245129.xml" value="0.9590909090909091" />
         <entry key="app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.181" />
         <entry key="app/src/main/res/drawable/button_back.xml" value="0.181" />
         <entry key="app/src/main/res/drawable/fade_image.xml" value="0.181" />
@@ -42,11 +43,14 @@
         <entry key="app/src/main/res/drawable/ic_button_back.xml" value="0.148" />
         <entry key="app/src/main/res/drawable/ic_chevron_down_solid.xml" value="0.181" />
         <entry key="app/src/main/res/drawable/ic_chevron_up_solid.xml" value="0.181" />
+        <entry key="app/src/main/res/drawable/ic_explore.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/ic_heart_regular.xml" value="0.181" />
         <entry key="app/src/main/res/drawable/ic_home_solid.xml" value="0.181" />
         <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.181" />
+        <entry key="app/src/main/res/drawable/ic_list_ol.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/ic_settings_solid.xml" value="0.181" />
         <entry key="app/src/main/res/drawable/ic_star_solid.xml" value="0.181" />
+        <entry key="app/src/main/res/drawable/ic_user.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/navigation_background_rounded.xml" value="0.181" />
         <entry key="app/src/main/res/drawable/navigation_bottom_colorized.xml" value="0.181" />
         <entry key="app/src/main/res/layout/explore_fragment.xml" value="0.17592592592592593" />

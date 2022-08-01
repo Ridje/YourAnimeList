@@ -4,9 +4,7 @@ import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
@@ -73,38 +71,35 @@ fun LoginScreen(
             }
         }
     }
-    Scaffold { paddingValues ->
-        if (isWebViewVisible) {
-            val codeVerifier = Pkce.generateCodeVerifier()
-            val webViewState =
-                rememberWebViewState(url = "${Urls.oauthBaseUrl}authorize?response_type=code&client_id=${BuildConfig.CLIENT_ID}&code_challenge=${codeVerifier}")
-            WebView(
-                state = webViewState,
-                client = LoginWebViewClient(
-                    onLoginSucceed,
-                    codeVerifier,
-                ),
-                onCreated = { it.settings.javaScriptEnabled = true }
+    if (isWebViewVisible) {
+        val codeVerifier = Pkce.generateCodeVerifier()
+        val webViewState =
+            rememberWebViewState(url = "${Urls.oauthBaseUrl}authorize?response_type=code&client_id=${BuildConfig.CLIENT_ID}&code_challenge=${codeVerifier}")
+        WebView(
+            state = webViewState,
+            client = LoginWebViewClient(
+                onLoginSucceed,
+                codeVerifier,
+            ),
+            onCreated = { it.settings.javaScriptEnabled = true }
+        )
+    } else {
+        Column(
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxSize(),
+        ) {
+            Text(
+                stringResource(R.string.app_name),
             )
-        } else {
-            Column(
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues),
-            ) {
-                Text(
-                    stringResource(R.string.app_name),
-                )
-                TextButton(onClick = {
-                    onLoginClick()
-                }) {
-                    if (isLoading) {
-                        CircularProgressIndicator()
-                    } else {
-                        Text(text = stringResource(id = R.string.login))
-                    }
+            TextButton(onClick = {
+                onLoginClick()
+            }) {
+                if (isLoading) {
+                    CircularProgressIndicator()
+                } else {
+                    Text(text = stringResource(id = R.string.login))
                 }
             }
         }
