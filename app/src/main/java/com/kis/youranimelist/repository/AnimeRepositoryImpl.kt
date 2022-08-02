@@ -31,6 +31,11 @@ class AnimeRepositoryImpl(
             emit(animeCache[animeID])
             val result = remoteDataSource.getAnimeInfo(animeID, keys)
             animeCache[result.id] = Anime(result)
+            result.relatedAnime?.let { relatedAnime ->
+                for (anime in relatedAnime) {
+                    animeCache[anime.node.id] = Anime(anime.node)
+                }
+            }
             emit(animeCache[animeID])
         }
     }

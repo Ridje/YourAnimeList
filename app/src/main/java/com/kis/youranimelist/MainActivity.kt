@@ -15,10 +15,11 @@ import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.MaterialTheme.shapes
 import androidx.compose.material.MaterialTheme.typography
 import androidx.compose.material.Scaffold
-import androidx.compose.material.ScaffoldState
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -107,6 +108,8 @@ fun YourAnimeListNavHost(
                 navController.navigate(NavigationKeys.Route.LOGIN)
             }
     }
+//    val screenSize = LocalConfiguration.current
+//    val density = LocalDensity.current
     AnimatedNavHost(navController, startDestination = NavigationKeys.Route.LOGIN) {
         composable(
             route = NavigationKeys.Route.LOGIN
