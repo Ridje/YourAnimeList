@@ -1,8 +1,6 @@
 package com.kis.youranimelist.ui.explore
 
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -10,14 +8,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.ScaffoldState
 import androidx.compose.material.Text
-import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
@@ -53,33 +50,37 @@ fun ExploreScreen(
 ) {
     LazyColumn {
         items(animeCategories) { category ->
-            if (category.animeList.isNotEmpty()) {
-                Row(horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier.fillMaxWidth()) {
-                    Text(text = category.name,
-                        Modifier.padding(6.dp),
-                        style = MaterialTheme.typography.h6)
-                    Text(text = "See all",
-                        Modifier.padding(6.dp),
-                        style = MaterialTheme.typography.body1)
-                }
-                Row(modifier = Modifier
-                    .horizontalScroll(rememberScrollState())
-                    .padding(6.dp, 6.dp)
-                    .height(IntrinsicSize.Max)
-                ) {
-                    for (anime in category.animeList) {
-                        AnimeCategoryListItemRounded(
-                            cover = anime.picture?.large,
-                            firstLine = anime.title,
-                            secondLine = "${anime.startSeason?.year} ${anime.startSeason?.season}",
-                        ) { onItemClick.invoke(anime.id) }
-                        Divider(
-                            color = Color.Transparent,
-                            modifier = Modifier
-                                .width(16.dp)
-                        )
+            Row(horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()) {
+                Text(text = category.name,
+                    Modifier.padding(6.dp),
+                    style = MaterialTheme.typography.h6)
+                Text(text = "See all",
+                    Modifier.padding(6.dp),
+                    style = MaterialTheme.typography.body1)
+            }
+            LazyRow(modifier = Modifier
+                .wrapContentHeight()
+                .height(280.dp),
+                contentPadding = PaddingValues(horizontal = 6.dp, vertical = 0.dp)
+            ) {
+                items(category.animeList) { anime ->
+                    AnimeCategoryListItemRounded(
+                        cover = anime?.picture?.large,
+                        firstLine = anime?.title ?: "Loading",
+                        secondLine = anime?.let { "${anime.startSeason?.year} ${anime.startSeason?.season}" }
+                            ?: "",
+                        showPlaceholder = anime == null
+                    ) {
+                        anime?.let { clickedAnime ->
+                            onItemClick.invoke(clickedAnime.id)
+                        }
                     }
+                    Divider(
+                        color = Color.Transparent,
+                        modifier = Modifier
+                            .width(16.dp)
+                    )
                 }
             }
         }

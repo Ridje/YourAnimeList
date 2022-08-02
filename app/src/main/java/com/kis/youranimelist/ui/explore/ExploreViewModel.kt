@@ -3,11 +3,13 @@ package com.kis.youranimelist.ui.explore
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.kis.youranimelist.model.app.Anime
 import com.kis.youranimelist.model.app.AnimeCategory
 import com.kis.youranimelist.repository.AnimeRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -19,20 +21,33 @@ class ExploreViewModel @Inject constructor(
     private val animeRepository: AnimeRepository,
 ) : ViewModel() {
 
+    private val requests = mutableListOf(
+        AnimeCategory("Top ranked", "all", listOf(
+            null,
+            null,
+            null,
+            null,
+        )),
+        AnimeCategory("Airing", "airing", listOf(
+            null,
+            null,
+            null,
+            null,
+        )),
+        AnimeCategory("Popular", "bypopularity", listOf(
+            null,
+            null,
+            null,
+            null
+        )),
+    )
     val screenState: MutableStateFlow<ExploreScreenContract.ScreenState> = MutableStateFlow(
         ExploreScreenContract.ScreenState(
-            listOf()
+            requests
         )
     )
 
-    val effectStream: MutableSharedFlow<ExploreScreenContract.Effect> = MutableSharedFlow()
-
     private val limit = 20
-    private val requests = mutableListOf(
-        AnimeCategory("Top ranked", "all", listOf()),
-        AnimeCategory("Airing", "airing", listOf()),
-        AnimeCategory("Popular", "bypopularity", listOf()),
-    )
 
     init {
         getAnimeListByGroup()
@@ -50,7 +65,7 @@ class ExploreViewModel @Inject constructor(
                         fields)
                 }
                 val currentList = screenState.value.categories.toMutableList()
-                currentList.add(AnimeCategory(requests[i].name, requests[i].tag, result))
+                currentList[i] = AnimeCategory(requests[i].name, requests[i].tag, result)
                 screenState.value = ExploreScreenContract.ScreenState(
                     currentList
                 )

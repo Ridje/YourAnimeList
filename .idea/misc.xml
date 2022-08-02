@@ -34,6 +34,8 @@
         <entry key="../../../../layout/compose-model-1659107221048.xml" value="0.28040540540540543" />
         <entry key="../../../../layout/compose-model-1659182510660.xml" value="0.22550675675675674" />
         <entry key="../../../../layout/compose-model-1659357245129.xml" value="0.9590909090909091" />
+        <entry key="../../../../layout/compose-model-1659430886004.xml" value="0.25227272727272726" />
+        <entry key="../../../../layout/compose-model-1659432365968.xml" value="0.10277777777777777" />
         <entry key="app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.181" />
         <entry key="app/src/main/res/drawable/button_back.xml" value="0.181" />
         <entry key="app/src/main/res/drawable/fade_image.xml" value="0.181" />
@@ -61,6 +63,7 @@
         <entry key="app/src/main/res/layout/history_fragment_item.xml" value="0.1" />
         <entry key="app/src/main/res/layout/item_fragment.xml" value="0.36049382716049383" />
         <entry key="app/src/main/res/layout/main_activity.xml" value="0.23333333333333334" />
+        <entry key="app/src/main/res/menu/bottom_navigation.xml" value="0.2552083333333333" />
         <entry key="app/src/main/res/xml/root_preferences.xml" value="0.409375" />
       </map>
     </option>
