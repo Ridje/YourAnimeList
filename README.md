@@ -20,7 +20,7 @@ Client for myanimelist.net
 1. ~Bottom navigation.~ :white_check_mark:
 2. ~Check compose lists performance in release assembly.~ :white_check_mark:
 3. ~Prolong beaver key on expiration.~ :white_check_mark:
-4. Explore screen animations and optimization.
+4. ~Explore screen animations and optimization.~ :white_check_mark:
 5. Profile screen.
 6. Explicit domain layer.
 
