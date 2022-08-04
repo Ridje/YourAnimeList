@@ -2,7 +2,6 @@ package com.kis.youranimelist.repository
 
 import com.kis.youranimelist.model.api.Token
 import com.kis.youranimelist.model.app.Anime
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
@@ -47,5 +46,9 @@ class AnimeRepositoryImpl(
         grantType: String,
     ): Token {
         return remoteDataSource.getAccessToken(clientID, code, codeVerifier, grantType)
+    }
+
+    override fun getFavouriteAnime(): Anime? {
+        return animeCache.values.randomOrNull()
     }
 }

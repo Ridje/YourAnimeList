@@ -20,4 +20,6 @@ interface AnimeRepository {
         codeVerifier: String,
         grantType: String,
     ): Token
+
+    fun getFavouriteAnime(): Anime?
 }
