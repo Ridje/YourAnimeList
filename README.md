@@ -22,7 +22,9 @@ Client for myanimelist.net
 3. ~Prolong beaver key on expiration.~ :white_check_mark:
 4. ~Explore screen animations and optimization.~ :white_check_mark:
 5. ~Profile screen~ :white_check_mark:.
-6. Explicit domain layer.
+6. All items paging
+7. Search
+8. Explicit domain layer.
 
 ### Short video presentation:
 https://user-images.githubusercontent.com/4568712/181566167-30221523-64eb-46c3-a931-1cb545bc5e02.mp4
