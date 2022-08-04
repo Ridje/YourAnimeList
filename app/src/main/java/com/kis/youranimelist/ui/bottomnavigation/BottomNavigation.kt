@@ -24,7 +24,6 @@ fun MainScreenBottomNavigation(
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     if (navigationList.map { it.screen_route }.contains(navBackStackEntry?.destination?.route)) {
         BottomNavigation(
-            backgroundColor = Color.Red,
             contentColor = Color.Black,
             modifier = Modifier
                 .padding(end = 40.dp, start = 40.dp, bottom = 6.dp, top = 6.dp)

@@ -9,5 +9,18 @@ While the workflow remains the same, Mob isn't just blindly following Reigen aro
     <string name="reload">Try again?</string>
     <string name="error_during_download">Error during download!</string>
     <string name="nsfw_settings_key">nsfw</string>
+    <string name="watching_items">Watching (%1$s)</string>
+    <string name="completed_item">Completed (%1$s)</string>
+    <string name="on_hold_items">On hold (%1$s)</string>
+    <string name="dropped_items">Dropped (%1$s)</string>
+    <string name="plan_to_watch_items">Plan to watch (%1$s)</string>
+    <string name="total_items">Total (%1$s)</string>
+    <string name="unknown">Unknown</string>
+    <string name="default_content_description">content not described yet</string>
+    <string name="anime">Anime</string>
+    <string name="days_spent">Days spent</string>
+    <string name="mean_score">Mean score</string>
+    <string name="episodes_watched">Episodes watched</string>
+    <string name="link_to_user">"@"</string>
 
 </resources>

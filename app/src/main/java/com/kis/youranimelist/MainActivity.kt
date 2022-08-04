@@ -62,6 +62,7 @@ fun YourAnimeListTheme(
             background = Theme.Colors.background,
             onPrimary = Theme.Colors.onPrimary,
             onBackground = Theme.Colors.onPrimary,
+            primary = Theme.Colors.primary
         ),
         typography = typography,
         shapes = shapes,
@@ -108,8 +109,6 @@ fun YourAnimeListNavHost(
                 navController.navigate(NavigationKeys.Route.LOGIN)
             }
     }
-//    val screenSize = LocalConfiguration.current
-//    val density = LocalDensity.current
     AnimatedNavHost(navController, startDestination = NavigationKeys.Route.LOGIN) {
         composable(
             route = NavigationKeys.Route.LOGIN

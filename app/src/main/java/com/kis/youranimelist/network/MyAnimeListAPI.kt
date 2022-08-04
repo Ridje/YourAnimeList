@@ -1,6 +1,7 @@
 package com.kis.youranimelist.network
 
 import com.kis.youranimelist.model.api.AnimeResponse
+import com.kis.youranimelist.model.api.UserResponse
 import com.kis.youranimelist.model.api.ranking_response.Root
 import retrofit2.Call
 import retrofit2.http.GET
@@ -21,4 +22,9 @@ interface MyAnimeListAPI {
         @Path("anime_id") animeID : Int,
         @Query("fields") fields : String?
     ) : Call<AnimeResponse>
+
+    @GET("users/@me")
+    fun userProfile(
+        @Query("fields") fields: String?,
+    ) : Call<UserResponse>
 }

@@ -7,7 +7,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class NavigationViewModel @Inject constructor(
-    authUsecase: AuthUseCase,
+    authUseCase: AuthUseCase,
 ) : ViewModel() {
-    val navigateEffects = authUsecase.observerAuthErrors()
+    val navigateEffects = authUseCase.observerAuthErrors()
 }
