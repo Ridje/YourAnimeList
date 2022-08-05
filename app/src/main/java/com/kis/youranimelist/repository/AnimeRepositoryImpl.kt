@@ -11,7 +11,7 @@ class AnimeRepositoryImpl(
 
     override val animeCache: HashMap<Int, Anime> = HashMap()
 
-    override fun getRankingAnimeList(
+    override suspend fun getRankingAnimeList(
         rankingType: String,
         limit: Int?,
         offset: Int?,

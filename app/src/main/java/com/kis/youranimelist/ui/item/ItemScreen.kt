@@ -99,7 +99,7 @@ fun ItemScreen(
                 contentDescription = "test",
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(550.dp)
+                    .aspectRatio(0.8f)
                     .graphicsLayer { alpha = 0.99f }
                     .drawWithContent {
                         val colors = listOf(

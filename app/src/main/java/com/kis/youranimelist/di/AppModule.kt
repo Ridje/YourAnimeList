@@ -4,6 +4,7 @@ import android.content.Context
 import com.kis.youranimelist.core.ResourceProvider
 import com.kis.youranimelist.core.ResourceProviderImpl
 import com.kis.youranimelist.domain.AuthUseCase
+import com.kis.youranimelist.domain.RankingListUseCase
 import com.kis.youranimelist.domain.UserUseCase
 import com.kis.youranimelist.network.AuthInterceptor
 import com.kis.youranimelist.network.MyAnimeListOAuthAPI
@@ -37,7 +38,6 @@ object AppModule {
     }
 
     @Provides
-    @Singleton
     fun provideAuthUseCase(
         appPreferences: AppPreferences,
         authInterceptor: AuthInterceptor,
@@ -47,7 +47,6 @@ object AppModule {
     }
 
     @Provides
-    @Singleton
     fun provideUserUseCase(
         userRepository: UserRepository,
         animeRepository: AnimeRepository,
