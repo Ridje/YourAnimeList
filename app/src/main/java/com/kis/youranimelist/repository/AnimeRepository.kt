@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface AnimeRepository {
     val animeCache: Map<Int, Anime>
-    fun getRankingAnimeList(
+    suspend fun getRankingAnimeList(
         rankingType: String,
         limit: Int?,
         offset: Int?,

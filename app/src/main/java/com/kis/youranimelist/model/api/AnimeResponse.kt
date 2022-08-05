@@ -14,4 +14,6 @@ data class AnimeResponse(
     @SerialName("genres") val genres: List<GenreResponse>?,
     @SerialName("pictures") val pictures: List<PictureResponse>?,
     @SerialName("related_anime") val relatedAnime: List<RelatedAnimeResponse>?,
+    @SerialName("media_type") val mediaType: String?,
+    @SerialName("num_episodes") val numEpisodes: Int?,
 )

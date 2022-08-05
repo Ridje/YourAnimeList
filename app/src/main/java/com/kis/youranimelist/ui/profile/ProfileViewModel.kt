@@ -10,6 +10,7 @@ import com.kis.youranimelist.ui.Theme
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import me.bytebeats.views.charts.pie.PieChartData
 import java.text.DateFormat
@@ -30,7 +31,7 @@ class ProfileViewModel @Inject constructor(
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            userUseCase.getUserData().collect { resultUser ->
+            userUseCase.getUserData().collectLatest { resultUser ->
                 viewState.value = ProfileScreenContract.ScreeState(
                     isLoading = false,
                     user = User(

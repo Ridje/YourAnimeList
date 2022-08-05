@@ -1,6 +1,5 @@
 package com.kis.youranimelist.ui.profile
 
-import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -22,7 +21,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
@@ -34,15 +32,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.kis.youranimelist.R
 import com.kis.youranimelist.ui.Theme
+import com.kis.youranimelist.ui.widget.IconWithText
 import com.kis.youranimelist.utils.Urls.malProfile
 import me.bytebeats.views.charts.pie.PieChart
 import me.bytebeats.views.charts.pie.PieChartData
@@ -99,7 +96,7 @@ fun ProfileScreen(
                 contentDescription = stringResource(id = R.string.default_content_description),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .aspectRatio(2f),
+                    .aspectRatio(1.55f),
                 contentScale = ContentScale.Crop
             )
             Column(
@@ -114,7 +111,7 @@ fun ProfileScreen(
                         model = pictureURL,
                         contentDescription = stringResource(id = R.string.default_content_description),
                         modifier = Modifier
-                            .height(150.dp)
+                            .height(130.dp)
                             .clip(RoundedCornerShape(20))
                             .background(Theme.Colors.background)
                             .padding(start = 4.dp, end = 4.dp, top = 4.dp)
@@ -222,29 +219,4 @@ fun ProfileScreen(
     }
 }
 
-@Composable
-fun IconWithText(
-    text: String?,
-    textStyle: TextStyle,
-    @DrawableRes
-    icon: Int,
-) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Icon(
-            painter = painterResource(id = icon),
-            contentDescription = stringResource(id = R.string.default_content_description),
-            modifier = Modifier.size(textStyle.fontSize.value.dp)
-        )
-        Spacer(modifier = Modifier.width(8.dp))
-        Text(
-            text = if (text?.isNotBlank() == true) {
-                text
-            } else {
-                stringResource(id = R.string.unknown)
-            },
-            style = textStyle,
-        )
-    }
-}
+

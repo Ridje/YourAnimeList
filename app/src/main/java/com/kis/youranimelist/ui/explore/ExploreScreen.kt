@@ -1,5 +1,6 @@
 package com.kis.youranimelist.ui.explore
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -12,13 +13,16 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -39,6 +43,7 @@ fun ExploreScreenRoute(
         animeCategories = screenState.value.categories,
         paddingValues = paddingValues,
         onItemClick = { animeId: Int -> navController.navigate(NavigationKeys.Route.EXPLORE + "/$animeId") },
+        onRankingListClick = { rankType: String -> navController.navigate(NavigationKeys.Route.RANKING_LIST + "/$rankType") },
     )
 }
 
@@ -47,17 +52,25 @@ fun ExploreScreen(
     animeCategories: List<AnimeCategory>,
     paddingValues: PaddingValues,
     onItemClick: (Int) -> Unit,
+    onRankingListClick: (String) -> Unit,
 ) {
     LazyColumn {
         items(animeCategories) { category ->
             Row(horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier.fillMaxWidth()) {
                 Text(text = category.name,
-                    Modifier.padding(6.dp),
+                    modifier = Modifier.padding(6.dp),
                     style = MaterialTheme.typography.h6)
-                Text(text = "See all",
-                    Modifier.padding(6.dp),
-                    style = MaterialTheme.typography.body1)
+                Text(
+                    text = "See all",
+                    modifier = Modifier
+                        .padding(6.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                        .clickable { onRankingListClick.invoke(category.tag) }
+                        .padding(6.dp),
+                    style = MaterialTheme.typography.body1,
+                    textDecoration = TextDecoration.Underline,
+                )
             }
             LazyRow(modifier = Modifier
                 .wrapContentHeight()
@@ -68,7 +81,7 @@ fun ExploreScreen(
                     AnimeCategoryListItemRounded(
                         cover = anime?.picture?.large,
                         firstLine = anime?.title ?: "Loading",
-                        secondLine = anime?.let { "${anime.startSeason?.year} ${anime.startSeason?.season}" }
+                        secondLine = anime?.let { "${anime.startSeason?.year ?: ""} ${anime.startSeason?.season ?: ""}" }
                             ?: "",
                         showPlaceholder = anime == null
                     ) {
@@ -92,7 +105,6 @@ fun ExploreScreen(
 
 @Composable
 @Preview
-
 fun ExploreScreePreview() {
     ExploreScreen(
         animeCategories = listOf(
@@ -155,6 +167,7 @@ fun ExploreScreePreview() {
             )
         ),
         PaddingValues(0.dp),
+        {},
         {},
     )
 }

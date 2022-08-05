@@ -4,37 +4,38 @@ import android.accounts.NetworkErrorException
 import com.kis.youranimelist.model.api.AnimeResponse
 import com.kis.youranimelist.model.api.Token
 import com.kis.youranimelist.model.api.UserResponse
-import com.kis.youranimelist.model.api.ranking_response.AnimeRanked
-import com.kis.youranimelist.model.mapper.UserMapper
+import com.kis.youranimelist.model.api.ranking_response.AnimeRankedResponse
 import com.kis.youranimelist.network.MyAnimeListAPI
 import com.kis.youranimelist.network.MyAnimeListOAuthAPI
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 
 class RemoteDataSourceImpl(
     private val malService: MyAnimeListAPI,
     private val malOauthService: MyAnimeListOAuthAPI,
-    private val userMapper: UserMapper,
 ) : RemoteDataSource {
 
     companion object {
-        private const val USER_FIELDS = "id, name, picture, gender, birthday, location, joined_at, anime_statistics"
+        private const val USER_FIELDS =
+            "id, name, picture, gender, birthday, location, joined_at, anime_statistics"
     }
 
-    override fun getAnimeRankingList(
+    override suspend fun getAnimeRankingList(
         rankingType: String,
         limit: Int?,
         offset: Int?,
         fields: String?,
-    ): List<AnimeRanked> {
-
+    ): List<AnimeRankedResponse> = withContext(Dispatchers.IO) {
         val result = malService.animeRanking(rankingType, limit, offset, fields).execute()
 
-        return if (result.isSuccessful) {
+        if (result.isSuccessful) {
             result.body()?.data ?: throw NetworkErrorException("Request wasn't successful")
         } else {
             throw NetworkErrorException()
         }
     }
+
 
     override fun getAnimeInfo(animeID: Int, keys: String?): AnimeResponse {
 

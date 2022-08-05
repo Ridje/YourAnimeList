@@ -1,16 +1,12 @@
 package com.kis.youranimelist.ui.explore
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.kis.youranimelist.model.app.Anime
 import com.kis.youranimelist.model.app.AnimeCategory
 import com.kis.youranimelist.repository.AnimeRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -35,6 +31,24 @@ class ExploreViewModel @Inject constructor(
             null,
         )),
         AnimeCategory("Popular", "bypopularity", listOf(
+            null,
+            null,
+            null,
+            null
+        )),
+        AnimeCategory("Upcoming", "upcoming", listOf(
+            null,
+            null,
+            null,
+            null
+        )),
+        AnimeCategory("Movies", "movie", listOf(
+            null,
+            null,
+            null,
+            null
+        )),
+        AnimeCategory("Favorite", "favorite", listOf(
             null,
             null,
             null,

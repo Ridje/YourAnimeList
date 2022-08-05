@@ -18,8 +18,6 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalDensity
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -31,6 +29,7 @@ import com.kis.youranimelist.ui.NavigationViewModel
 import com.kis.youranimelist.ui.Theme
 import com.kis.youranimelist.ui.bottomnavigation.BottomNavigationDestinaton
 import com.kis.youranimelist.ui.bottomnavigation.MainScreenBottomNavigation
+import com.kis.youranimelist.ui.endlesslist.EndlessListScreenRoute
 import com.kis.youranimelist.ui.explore.ExploreScreenRoute
 import com.kis.youranimelist.ui.item.ItemScreenRoute
 import com.kis.youranimelist.ui.login.LoginScreenRoute
@@ -158,6 +157,12 @@ fun YourAnimeListNavHost(
         composable(route = NavigationKeys.Route.PROFILE) {
             ProfileScreenRoute(navController = navController)
         }
+        composable(
+            route = "${NavigationKeys.Route.RANKING_LIST}/{rank-type}",
+            arguments = listOf(navArgument("rank-type") { type = NavType.StringType })
+        ) {
+            EndlessListScreenRoute(navController = navController)
+        }
     }
 }
 
@@ -168,5 +173,6 @@ object NavigationKeys {
         const val EXPLORE = "explore"
         const val MY_LIST = "my-list"
         const val PROFILE = "profile"
+        const val RANKING_LIST = "ranking"
     }
 }
