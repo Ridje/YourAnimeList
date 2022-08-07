@@ -60,9 +60,10 @@
         <entry key="app/src/main/res/drawable/ic_home_solid.xml" value="0.181" />
         <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.181" />
         <entry key="app/src/main/res/drawable/ic_list_ol.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/ic_location.xml" value="0.1965" />
         <entry key="app/src/main/res/drawable/ic_settings_solid.xml" value="0.181" />
         <entry key="app/src/main/res/drawable/ic_star_solid.xml" value="0.181" />
-        <entry key="app/src/main/res/drawable/ic_user.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/ic_user.xml" value="0.11" />
         <entry key="app/src/main/res/drawable/navigation_background_rounded.xml" value="0.181" />
         <entry key="app/src/main/res/drawable/navigation_bottom_colorized.xml" value="0.181" />
         <entry key="app/src/main/res/layout/explore_fragment.xml" value="0.17592592592592593" />
