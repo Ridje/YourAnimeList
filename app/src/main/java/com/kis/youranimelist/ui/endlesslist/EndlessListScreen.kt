@@ -1,6 +1,7 @@
 package com.kis.youranimelist.ui.endlesslist
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,6 +33,7 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
 import coil.compose.AsyncImage
+import com.kis.youranimelist.NavigationKeys
 import com.kis.youranimelist.R
 import com.kis.youranimelist.ui.widget.IconWithText
 
@@ -43,6 +45,7 @@ fun EndlessListScreenRoute(
     val screenState = viewModel.screenState.collectAsState()
     EndlessListScreen(
         listItems = screenState.value.items.collectAsLazyPagingItems(),
+        { itemId: Int -> navController.navigate(NavigationKeys.Route.EXPLORE + "/$itemId") }
     )
 }
 
@@ -50,13 +53,21 @@ fun EndlessListScreenRoute(
 @Composable
 fun EndlessListScreen(
     listItems: LazyPagingItems<Item>,
+    onItemClick: (Int) -> Unit,
 ) {
     LazyColumn(contentPadding = PaddingValues(top = 20.dp,
         bottom = 0.dp,
         start = 6.dp,
         end = 6.dp)) {
         items(listItems) { item ->
-            Card(modifier = Modifier.height(200.dp)) {
+            Card(
+                modifier = Modifier
+                    .height(200.dp)
+                    .clip(RoundedCornerShape(20.dp))
+                    .clickable {
+                        item?.id?.let(onItemClick)
+                    }
+            ) {
                 Row {
                     Box {
                         AsyncImage(
@@ -95,7 +106,7 @@ fun EndlessListScreen(
                         )
                         Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                             IconWithText(
-                                text = item?.mean?.toString() ?: "0.0",
+                                text = item?.mean?.toString(),
                                 textStyle = MaterialTheme.typography.body1,
                                 icon = R.drawable.ic_star_solid,
                                 tint = Color.Yellow,
@@ -108,7 +119,8 @@ fun EndlessListScreen(
                             )
                         }
                         Text(
-                            text = item?.description ?: "No description",
+                            text = item?.description
+                                ?: stringResource(id = R.string.default_content_description),
                             style = MaterialTheme.typography.caption,
                             modifier = Modifier.padding(vertical = 8.dp),
                             overflow = TextOverflow.Ellipsis,

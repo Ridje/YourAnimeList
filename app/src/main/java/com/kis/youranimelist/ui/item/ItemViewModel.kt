@@ -3,6 +3,7 @@ package com.kis.youranimelist.ui.item
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.kis.youranimelist.NavigationKeys
 import com.kis.youranimelist.repository.AnimeRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -23,8 +24,10 @@ class ItemViewModel @Inject constructor(
     )
 
     init {
-        getAnimeInfo(savedStateHandle.get<Int>("anime")
-            ?: throw RuntimeException("WTF"))
+        getAnimeInfo(
+            savedStateHandle.get<Int>(NavigationKeys.Argument.ANIME_ID)
+                ?: throw RuntimeException("WTF")
+        )
     }
 
     private fun getAnimeInfo(animeID: Int) {
@@ -41,6 +44,7 @@ class ItemViewModel @Inject constructor(
     }
 
     companion object {
-        const val fields = "id, title, mean, main_picture, start_season, synopsis, genres, pictures, related_anime"
+        const val fields =
+            "id, title, mean, main_picture, start_season, synopsis, genres, pictures, related_anime"
     }
 }
