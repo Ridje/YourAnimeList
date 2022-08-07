@@ -1,5 +1,6 @@
 package com.kis.youranimelist.ui.item
 
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -60,7 +61,8 @@ fun ItemScreenRoute(
     ItemScreen(
         screeState.value.item,
         { navController.popBackStack() },
-        { animeId: Int -> navController.navigate(NavigationKeys.Route.EXPLORE + "/$animeId") }
+        { navController.popBackStack(NavigationKeys.Route.EXPLORE, false, false) },
+        { animeId: Int -> navController.navigate(NavigationKeys.Route.EXPLORE + "/$animeId") },
     )
 }
 
@@ -70,6 +72,7 @@ fun ItemScreenRoute(
 fun ItemScreen(
     anime: AnimeItem,
     onBackButtonPressed: () -> Unit,
+    onHomeButtonPressed: () -> Unit,
     onRelatedAnimeClicked: (Int) -> Unit,
 ) {
     ConstraintLayout(modifier = Modifier
@@ -112,10 +115,20 @@ fun ItemScreen(
                 contentScale = ContentScale.Crop,
             )
         }
-        ButtonBack(
-            modifier = Modifier.padding(20.dp),
-            onBackButtonPressed = onBackButtonPressed,
-        )
+        Row (modifier = Modifier.padding(20.dp)) {
+            NavigateButton(
+                onButtonPressed = onBackButtonPressed,
+                iconRes = R.drawable.ic_arrow_left_solid,
+            )
+            Divider(
+                modifier = Modifier.width(10.dp),
+                color = Color.Transparent,
+            )
+            NavigateButton(
+                onButtonPressed = onHomeButtonPressed,
+                iconRes = R.drawable.ic_home_solid,
+            )
+        }
         Column(
             modifier = Modifier
                 .constrainAs(content) {
@@ -172,21 +185,23 @@ fun ItemScreen(
 
 
 @Composable
-fun ButtonBack(
-    onBackButtonPressed: () -> Unit,
+fun NavigateButton(
+    onButtonPressed: () -> Unit,
+    @DrawableRes iconRes: Int,
     modifier: Modifier = Modifier,
 ) {
-    Button(onClick = onBackButtonPressed,
+    Button(onClick = onButtonPressed,
         shape = RoundedCornerShape(8.dp),
         colors = ButtonDefaults.buttonColors(
-            backgroundColor = Theme.Colors.background),
+            backgroundColor = MaterialTheme.colors.background,
+            contentColor = MaterialTheme.colors.primary
+        ),
         modifier = modifier.size(40.dp),
         contentPadding = PaddingValues(4.dp)
     ) {
         Icon(
-            painter = painterResource(id = R.drawable.ic_arrow_left_solid),
+            painter = painterResource(id = iconRes),
             contentDescription = stringResource(id = R.string.default_content_description),
-            tint = Color.Red,
             modifier = Modifier
                 .width(20.dp)
                 .aspectRatio(1f)
