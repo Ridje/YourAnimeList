@@ -120,9 +120,9 @@ fun YourAnimeListNavHost(
             ExploreScreenRoute(navController = navController, paddingValues = paddingValues)
         }
         composable(
-            route = "${NavigationKeys.Route.EXPLORE}/{anime}",
+            route = "${NavigationKeys.Route.EXPLORE}/{${NavigationKeys.Argument.ANIME_ID}}",
             arguments = listOf(
-                navArgument("anime") { type = NavType.IntType }
+                navArgument(NavigationKeys.Argument.ANIME_ID) { type = NavType.IntType }
             ),
             enterTransition = {
                 slideInVertically(
@@ -158,8 +158,10 @@ fun YourAnimeListNavHost(
             ProfileScreenRoute(navController = navController)
         }
         composable(
-            route = "${NavigationKeys.Route.RANKING_LIST}/{rank-type}",
-            arguments = listOf(navArgument("rank-type") { type = NavType.StringType })
+            route = "${NavigationKeys.Route.RANKING_LIST}/{${NavigationKeys.Argument.RANK}}",
+            arguments = listOf(navArgument(NavigationKeys.Argument.RANK) {
+                type = NavType.StringType
+            })
         ) {
             EndlessListScreenRoute(navController = navController)
         }
@@ -174,5 +176,10 @@ object NavigationKeys {
         const val MY_LIST = "my-list"
         const val PROFILE = "profile"
         const val RANKING_LIST = "ranking"
+    }
+
+    object Argument {
+        const val RANK = "rank-type"
+        const val ANIME_ID = "anime"
     }
 }
