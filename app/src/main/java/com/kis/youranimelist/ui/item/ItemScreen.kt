@@ -1,10 +1,7 @@
 package com.kis.youranimelist.ui.item
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
@@ -30,10 +27,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
@@ -43,6 +36,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -56,6 +50,7 @@ import com.kis.youranimelist.NavigationKeys
 import com.kis.youranimelist.R
 import com.kis.youranimelist.ui.Theme
 import com.kis.youranimelist.ui.widget.AnimeCategoryListItemRounded
+import com.kis.youranimelist.ui.widget.ExpandableText
 
 @Composable
 fun ItemScreenRoute(
@@ -66,7 +61,8 @@ fun ItemScreenRoute(
     ItemScreen(
         screeState.value.item,
         { navController.popBackStack() },
-        { animeId: Int -> navController.navigate(NavigationKeys.Route.EXPLORE + "/$animeId") }
+        { navController.popBackStack(NavigationKeys.Route.EXPLORE, false, false) },
+        { animeId: Int -> navController.navigate(NavigationKeys.Route.EXPLORE + "/$animeId") },
     )
 }
 
@@ -76,6 +72,7 @@ fun ItemScreenRoute(
 fun ItemScreen(
     anime: AnimeItem,
     onBackButtonPressed: () -> Unit,
+    onHomeButtonPressed: () -> Unit,
     onRelatedAnimeClicked: (Int) -> Unit,
 ) {
     ConstraintLayout(modifier = Modifier
@@ -96,7 +93,7 @@ fun ItemScreen(
             AsyncImage(
                 model =
                 anime.images[page],
-                contentDescription = "test",
+                contentDescription = stringResource(id = R.string.default_content_description),
                 modifier = Modifier
                     .fillMaxWidth()
                     .aspectRatio(0.8f)
@@ -118,10 +115,20 @@ fun ItemScreen(
                 contentScale = ContentScale.Crop,
             )
         }
-        ButtonBack(
-            modifier = Modifier.padding(20.dp),
-            onBackButtonPressed = onBackButtonPressed,
-        )
+        Row (modifier = Modifier.padding(20.dp)) {
+            NavigateButton(
+                onButtonPressed = onBackButtonPressed,
+                iconRes = R.drawable.ic_arrow_left_solid,
+            )
+            Divider(
+                modifier = Modifier.width(10.dp),
+                color = Color.Transparent,
+            )
+            NavigateButton(
+                onButtonPressed = onHomeButtonPressed,
+                iconRes = R.drawable.ic_home_solid,
+            )
+        }
         Column(
             modifier = Modifier
                 .constrainAs(content) {
@@ -176,70 +183,25 @@ fun ItemScreen(
     }
 }
 
-@Composable
-fun ExpandableText(
-    text: String,
-) {
-    var isExpanded by remember { mutableStateOf(value = false) }
-    val onClick = { isExpanded = !isExpanded }
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.clickable(onClick = onClick,
-            indication = null,
-            interactionSource = remember { MutableInteractionSource() })) {
-        Box {
-            Text(
-                text = text, style = MaterialTheme.typography.body2,
-                maxLines = if (isExpanded) Int.MAX_VALUE else 3,
-                modifier = Modifier
-                    .align(Alignment.TopCenter)
-                    .fillMaxWidth()
-            )
-            if (!isExpanded) {
-                Spacer(
-                    Modifier
-                        .fillMaxWidth()
-                        .height(50.dp)
-                        .background(
-                            brush = Brush.verticalGradient(
-                                colors = listOf(
-                                    Color.Transparent,
-                                    MaterialTheme.colors.background
-                                )
-                            )
-                        )
-                        .align(Alignment.BottomCenter)
-                )
-            }
-        }
-        Icon(painter = painterResource(
-            id = if (isExpanded) {
-                R.drawable.ic_chevron_up_solid
-            } else {
-                R.drawable.ic_chevron_down_solid
-            }),
-            contentDescription = "test", tint = Color.Red,
-            modifier = Modifier.requiredHeightIn(max = 14.dp)
-        )
-    }
-}
 
 @Composable
-fun ButtonBack(
-    onBackButtonPressed: () -> Unit,
+fun NavigateButton(
+    onButtonPressed: () -> Unit,
+    @DrawableRes iconRes: Int,
     modifier: Modifier = Modifier,
 ) {
-    Button(onClick = onBackButtonPressed,
+    Button(onClick = onButtonPressed,
         shape = RoundedCornerShape(8.dp),
         colors = ButtonDefaults.buttonColors(
-            backgroundColor = Theme.Colors.background),
+            backgroundColor = MaterialTheme.colors.background,
+            contentColor = MaterialTheme.colors.primary
+        ),
         modifier = modifier.size(40.dp),
         contentPadding = PaddingValues(4.dp)
     ) {
         Icon(
-            painter = painterResource(id = R.drawable.ic_arrow_left_solid),
-            contentDescription = "test",
-            tint = Color.Red,
+            painter = painterResource(id = iconRes),
+            contentDescription = stringResource(id = R.string.default_content_description),
             modifier = Modifier
                 .width(20.dp)
                 .aspectRatio(1f)

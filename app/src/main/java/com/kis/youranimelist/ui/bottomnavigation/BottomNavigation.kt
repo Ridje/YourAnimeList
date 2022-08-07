@@ -1,6 +1,7 @@
 package com.kis.youranimelist.ui.bottomnavigation
 
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
@@ -36,7 +37,8 @@ fun MainScreenBottomNavigation(
                 BottomNavigationItem(
                     icon = {
                         Icon(painterResource(item.icon),
-                            contentDescription = stringResource(id = R.string.default_content_description))
+                            contentDescription = stringResource(id = R.string.default_content_description),
+                            modifier = Modifier.size(26.dp))
                     },
                     selectedContentColor = Color.White,
                     unselectedContentColor = Color.White.copy(0.5f),
