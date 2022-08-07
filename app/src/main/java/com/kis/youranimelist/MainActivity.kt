@@ -15,6 +15,7 @@ import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.MaterialTheme.shapes
 import androidx.compose.material.MaterialTheme.typography
 import androidx.compose.material.Scaffold
+import androidx.compose.material.ScaffoldState
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -90,6 +91,7 @@ fun YourAnimeListMainScreen() {
         YourAnimeListNavHost(
             navController,
             paddingValues,
+            scaffoldState,
         )
     }
 }
@@ -98,6 +100,7 @@ fun YourAnimeListMainScreen() {
 fun YourAnimeListNavHost(
     navController: NavHostController,
     paddingValues: PaddingValues,
+    scaffoldState: ScaffoldState = rememberScaffoldState(),
     viewModel: NavigationViewModel = hiltViewModel(),
 ) {
     viewModel.navigateEffects
@@ -152,7 +155,7 @@ fun YourAnimeListNavHost(
             ItemScreenRoute(navController)
         }
         composable(route = NavigationKeys.Route.MY_LIST) {
-            MyListScreenRoute(navController)
+            MyListScreenRoute(navController, scaffoldState = scaffoldState)
         }
         composable(route = NavigationKeys.Route.PROFILE) {
             ProfileScreenRoute(navController = navController)

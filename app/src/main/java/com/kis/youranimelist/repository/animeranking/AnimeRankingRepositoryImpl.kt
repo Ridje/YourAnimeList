@@ -5,9 +5,9 @@ import androidx.paging.PagingState
 import com.kis.youranimelist.model.app.Anime
 import com.kis.youranimelist.model.mapper.AnimeMapper
 import com.kis.youranimelist.repository.RemoteDataSource
-import dagger.assisted.AssistedInject
+import javax.inject.Inject
 
-class AnimeRankingRepositoryImpl @AssistedInject constructor(
+class AnimeRankingRepositoryImpl @Inject constructor(
     private val remoteDataSource: RemoteDataSource,
     private val animeMapper: AnimeMapper,
 ) : AnimeRankingRepository {

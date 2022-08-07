@@ -3,6 +3,7 @@ package com.kis.youranimelist.repository
 import com.kis.youranimelist.model.api.AnimeResponse
 import com.kis.youranimelist.model.api.Token
 import com.kis.youranimelist.model.api.UserResponse
+import com.kis.youranimelist.model.api.personal_list.PersonalAnimeListResponse
 import com.kis.youranimelist.model.api.ranking_response.AnimeRankedResponse
 
 interface RemoteDataSource {
@@ -15,4 +16,5 @@ interface RemoteDataSource {
     fun getAnimeInfo(animeID : Int, keys : String?) : AnimeResponse
     fun getAccessToken(clientID : String, code: String, codeVerifier: String, grantType : String) : Token
     fun getUserData(): UserResponse
+    suspend fun getUserAnime(status: String?, sort: String?, limit: Int, offset: Int): PersonalAnimeListResponse
 }

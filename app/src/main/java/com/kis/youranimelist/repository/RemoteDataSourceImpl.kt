@@ -4,6 +4,7 @@ import android.accounts.NetworkErrorException
 import com.kis.youranimelist.model.api.AnimeResponse
 import com.kis.youranimelist.model.api.Token
 import com.kis.youranimelist.model.api.UserResponse
+import com.kis.youranimelist.model.api.personal_list.PersonalAnimeListResponse
 import com.kis.youranimelist.model.api.ranking_response.AnimeRankedResponse
 import com.kis.youranimelist.network.MyAnimeListAPI
 import com.kis.youranimelist.network.MyAnimeListOAuthAPI
@@ -19,6 +20,8 @@ class RemoteDataSourceImpl(
     companion object {
         private const val USER_FIELDS =
             "id, name, picture, gender, birthday, location, joined_at, anime_statistics"
+        private const val USER_ANIME_FIELDS =
+            "id, title, main_picture, synopsis"
     }
 
     override suspend fun getAnimeRankingList(
@@ -71,6 +74,23 @@ class RemoteDataSourceImpl(
             result.isSuccessful -> result.body()
                 ?: throw NetworkErrorException()
             else -> throw NetworkErrorException()
+        }
+    }
+
+    override suspend fun getUserAnime(
+        status: String?,
+        sort: String?,
+        limit: Int,
+        offset: Int,
+    ): PersonalAnimeListResponse {
+        return withContext(Dispatchers.IO) {
+            val result =
+                malService.userAnime(status, sort, limit, offset, USER_ANIME_FIELDS).execute()
+            if (result.isSuccessful) {
+                result.body() ?: throw NetworkErrorException("Request wasn't successful")
+            } else {
+                throw NetworkErrorException()
+            }
         }
     }
 }

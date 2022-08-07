@@ -2,6 +2,7 @@ package com.kis.youranimelist.network
 
 import com.kis.youranimelist.model.api.AnimeResponse
 import com.kis.youranimelist.model.api.UserResponse
+import com.kis.youranimelist.model.api.personal_list.PersonalAnimeListResponse
 import com.kis.youranimelist.model.api.ranking_response.Root
 import retrofit2.Call
 import retrofit2.http.GET
@@ -27,4 +28,13 @@ interface MyAnimeListAPI {
     fun userProfile(
         @Query("fields") fields: String?,
     ) : Call<UserResponse>
+
+    @GET("users/@me/animelist")
+    fun userAnime(
+        @Query("status") status: String?,
+        @Query("sort") sort: String?,
+        @Query("limit") limit: Int = 100,
+        @Query("offset") offset: Int = 0,
+        @Query("fields") fields: String?,
+    ): Call<PersonalAnimeListResponse>
 }
