@@ -13,7 +13,8 @@ class AnimeRankingRepositoryImpl @AssistedInject constructor(
 ) : AnimeRankingRepository {
 
     companion object {
-        private const val fields = "id, title, main_picture, synopsis, genres, start_season, mean, media_type, num_episodes"
+        private const val fields =
+            "id, title, main_picture, synopsis, genres, start_season, mean, media_type, num_episodes"
     }
 
     override fun getDataSource(rankingType: String): PagingSource<Int, Anime> {
