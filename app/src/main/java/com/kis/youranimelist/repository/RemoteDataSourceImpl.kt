@@ -21,7 +21,7 @@ class RemoteDataSourceImpl(
         private const val USER_FIELDS =
             "id, name, picture, gender, birthday, location, joined_at, anime_statistics"
         private const val USER_ANIME_FIELDS =
-            "id, title, main_picture, synopsis"
+            "id, title, main_picture, list_status, media_type, num_episodes, mean"
     }
 
     override suspend fun getAnimeRankingList(
@@ -77,7 +77,7 @@ class RemoteDataSourceImpl(
         }
     }
 
-    override suspend fun getUserAnime(
+    override suspend fun getPersonalAnimeList(
         status: String?,
         sort: String?,
         limit: Int,

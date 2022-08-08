@@ -96,7 +96,7 @@ fun ItemScreen(
                 contentDescription = stringResource(id = R.string.default_content_description),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .aspectRatio(0.8f)
+                    .aspectRatio(0.75f)
                     .graphicsLayer { alpha = 0.99f }
                     .drawWithContent {
                         val colors = listOf(

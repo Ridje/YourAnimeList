@@ -1,10 +1,10 @@
 package com.kis.youranimelist.repository.personalanime
 
-import androidx.paging.PagingSource
-import com.kis.youranimelist.model.app.Anime
+import com.kis.youranimelist.model.api.personal_list.PersonalAnimeListResponse
 import com.kis.youranimelist.model.app.AnimeStatus
+import kotlinx.coroutines.flow.Flow
 
 interface PersonalAnimeRepository {
-    fun getDataSource(status: String): PagingSource<Int, AnimeStatus>
-    suspend fun fetchData(limit: Int, offset: Int): List<AnimeStatus>
+    fun getAllDataProducer(): Flow<List<AnimeStatus>>
+    suspend fun fetchData(limit: Int, offset: Int): PersonalAnimeListResponse
 }

@@ -1,12 +1,15 @@
 package com.kis.youranimelist.model.app
 
-sealed class AnimeStatusValue {
-    object Watching : AnimeStatusValue()
-    object Completed : AnimeStatusValue()
-    object OnHold : AnimeStatusValue()
-    object Dropped : AnimeStatusValue()
-    object PlanToWatch : AnimeStatusValue()
-    object Unknown : AnimeStatusValue()
+import androidx.compose.ui.graphics.Color
+import com.kis.youranimelist.ui.Theme
+
+sealed class AnimeStatusValue(val presentIndex: String, val color: Color) {
+    object Watching : AnimeStatusValue("watching", Theme.Colors.watchingItemColor)
+    object Completed : AnimeStatusValue("completed", Theme.Colors.completedItemColor)
+    object OnHold : AnimeStatusValue("on_hold", Theme.Colors.onHoldItemColor)
+    object Dropped : AnimeStatusValue("dropped", Theme.Colors.droppedItemColor)
+    object PlanToWatch : AnimeStatusValue("plan_to_watch", Theme.Colors.planToWatchItemColor)
+    object Unknown : AnimeStatusValue("unknown", Color.Gray)
 
     object Fabric {
         fun getAnimeStatusByValue(value: String): AnimeStatusValue {

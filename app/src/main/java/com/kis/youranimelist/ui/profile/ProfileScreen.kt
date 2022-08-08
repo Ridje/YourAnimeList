@@ -113,7 +113,7 @@ fun ProfileScreen(
                         modifier = Modifier
                             .height(130.dp)
                             .clip(RoundedCornerShape(20))
-                            .background(Theme.Colors.background)
+                            .background(MaterialTheme.colors.background)
                             .padding(start = 4.dp, end = 4.dp, top = 4.dp)
                             .clip(RoundedCornerShape(20))
                     )

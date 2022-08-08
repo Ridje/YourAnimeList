@@ -6,6 +6,7 @@ import com.kis.youranimelist.R
 import com.kis.youranimelist.core.ResourceProvider
 import com.kis.youranimelist.di.Medium
 import com.kis.youranimelist.domain.UserUseCase
+import com.kis.youranimelist.model.app.AnimeStatusValue
 import com.kis.youranimelist.ui.Theme
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -52,43 +53,43 @@ class ProfileViewModel @Inject constructor(
                         slices = listOf(
                             PieChartData.Slice(
                                 value = resultUser.animeStatistics?.itemsCompleted?.toFloat() ?: 0f,
-                                color = Theme.Colors.completedItemColor,
+                                color = AnimeStatusValue.Completed.color,
                             ),
                             PieChartData.Slice(
                                 value = resultUser.animeStatistics?.itemsWatching?.toFloat() ?: 0f,
-                                color = Theme.Colors.watchingItemColor,
+                                color = AnimeStatusValue.Watching.color,
                             ),
                             PieChartData.Slice(
                                 value = resultUser.animeStatistics?.itemsOnHold?.toFloat() ?: 0f,
-                                color = Theme.Colors.onHoldItemColor,
+                                color = AnimeStatusValue.OnHold.color,
                             ),
                             PieChartData.Slice(
                                 value = resultUser.animeStatistics?.itemsDropped?.toFloat() ?: 0f,
-                                color = Theme.Colors.droppedItemColor,
+                                color = AnimeStatusValue.Dropped.color,
                             ),
                             PieChartData.Slice(
                                 value = resultUser.animeStatistics?.itemsPlanToWatch?.toFloat()
                                     ?: 0f,
-                                color = Theme.Colors.planToWatchItemColor,
+                                color = AnimeStatusValue.PlanToWatch.color,
                             )
                         )
                     ),
                     legend = listOf(
                         Pair(resourceProvider.getString(R.string.completed_item,
                             resultUser.animeStatistics?.itemsCompleted ?: ""),
-                            Theme.Colors.completedItemColor),
+                            AnimeStatusValue.Completed.color),
                         Pair(resourceProvider.getString(R.string.watching_items,
                             resultUser.animeStatistics?.itemsWatching ?: ""),
-                            Theme.Colors.watchingItemColor),
+                            AnimeStatusValue.Watching.color),
                         Pair(resourceProvider.getString(R.string.on_hold_items,
                             resultUser.animeStatistics?.itemsOnHold ?: ""),
-                            Theme.Colors.onHoldItemColor),
+                            AnimeStatusValue.OnHold.color),
                         Pair(resourceProvider.getString(R.string.dropped_items,
                             resultUser.animeStatistics?.itemsDropped ?: ""),
-                            Theme.Colors.droppedItemColor),
+                            AnimeStatusValue.Dropped.color),
                         Pair(resourceProvider.getString(R.string.plan_to_watch_items,
                             resultUser.animeStatistics?.itemsPlanToWatch ?: ""),
-                            Theme.Colors.planToWatchItemColor),
+                            AnimeStatusValue.PlanToWatch.color),
                         Pair(resourceProvider.getString(R.string.total_items,
                             resultUser.animeStatistics?.items ?: ""), null),
                     ),

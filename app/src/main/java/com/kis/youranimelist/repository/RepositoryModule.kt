@@ -1,11 +1,14 @@
 package com.kis.youranimelist.repository
 
 import com.kis.youranimelist.model.mapper.AnimeMapper
+import com.kis.youranimelist.model.mapper.AnimeStatusMapper
 import com.kis.youranimelist.model.mapper.UserMapper
 import com.kis.youranimelist.network.MyAnimeListAPI
 import com.kis.youranimelist.network.MyAnimeListOAuthAPI
 import com.kis.youranimelist.repository.animeranking.AnimeRankingRepository
 import com.kis.youranimelist.repository.animeranking.AnimeRankingRepositoryImpl
+import com.kis.youranimelist.repository.personalanime.PersonalAnimeRepository
+import com.kis.youranimelist.repository.personalanime.PersonalAnimeRepositoryImpl
 import com.kis.youranimelist.repository.user.UserRepository
 import com.kis.youranimelist.repository.user.UserRepositoryImpl
 import com.kis.youranimelist.room.UserDatabase
@@ -42,7 +45,7 @@ object RepositoryModule {
     fun provideUserRepository(
         remoteDataSource: RemoteDataSource,
         userMapper: UserMapper,
-    ) : UserRepository {
+    ): UserRepository {
         return UserRepositoryImpl(remoteDataSource, userMapper)
     }
 
@@ -62,5 +65,14 @@ object RepositoryModule {
         roomService: UserDatabase,
     ): LocalDataSource {
         return LocalDataSourceImpl(roomService)
+    }
+
+    @Singleton
+    @Provides
+    fun providePersonalAnimeRepository(
+        remoteDataSource: RemoteDataSource,
+        animeStatusMapper: AnimeStatusMapper,
+    ): PersonalAnimeRepository {
+        return PersonalAnimeRepositoryImpl(remoteDataSource, animeStatusMapper)
     }
 }

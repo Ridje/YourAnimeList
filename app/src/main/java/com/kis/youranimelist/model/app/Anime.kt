@@ -38,6 +38,8 @@ data class Anime(
         synopsis = anime.synopsis,
         genres = anime.genres?.map { Genre(it.id, it.name) } ?: listOf(),
         pictures = anime.pictures?.map { Picture(it.large, it.medium) } ?: listOf(),
+        mediaType = anime.mediaType,
+        numEpisodes = anime.numEpisodes,
         relatedAnime = anime.relatedAnime?.map {
             RelatedAnime(
                 anime = Anime(it.node),
