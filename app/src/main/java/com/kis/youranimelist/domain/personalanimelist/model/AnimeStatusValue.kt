@@ -8,12 +8,12 @@ sealed class AnimeStatusValue(val presentIndex: String, val color: Color) {
     companion object {
         fun listOfIndices(): List<String> {
             return listOf(
-                AnimeStatusValue.All.presentIndex,
-                AnimeStatusValue.Watching.presentIndex,
-                AnimeStatusValue.Completed.presentIndex,
-                AnimeStatusValue.OnHold.presentIndex,
-                AnimeStatusValue.Dropped.presentIndex,
-                AnimeStatusValue.PlanToWatch.presentIndex,
+                All.presentIndex,
+                Watching.presentIndex,
+                Completed.presentIndex,
+                OnHold.presentIndex,
+                Dropped.presentIndex,
+                PlanToWatch.presentIndex,
             )
         }
 

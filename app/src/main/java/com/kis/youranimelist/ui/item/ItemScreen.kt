@@ -48,6 +48,7 @@ import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.google.accompanist.pager.rememberPagerState
 import com.kis.youranimelist.R
 import com.kis.youranimelist.ui.Theme
+import com.kis.youranimelist.ui.Theme.StringValues.separator
 import com.kis.youranimelist.ui.navigation.NavigationKeys
 import com.kis.youranimelist.ui.widget.AnimeCategoryListItemRounded
 import com.kis.youranimelist.ui.widget.ExpandableText
@@ -152,14 +153,14 @@ fun ItemScreen(
                     modifier = Modifier
                         .wrapContentWidth()
                 )
-                Text(text = " | ", style = MaterialTheme.typography.caption)
+                Text(text = separator, style = MaterialTheme.typography.caption)
                 Text(
                     text = anime.genres,
                     style = MaterialTheme.typography.caption,
                     maxLines = 1,
                     modifier = Modifier.weight(1f, false)
                 )
-                Text(text = " | ", style = MaterialTheme.typography.caption)
+                Text(text = separator, style = MaterialTheme.typography.caption)
                 Icon(
                     painter = painterResource(id = R.drawable.ic_star_solid),
                     contentDescription = "mean",

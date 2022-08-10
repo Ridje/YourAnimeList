@@ -13,9 +13,10 @@ object Theme {
         val onHoldItemColor = Color(0xFFF57F17)
         val droppedItemColor = Color(0xFFB71C1C)
         val planToWatchItemColor = Color(0xFFA2A2A2)
+        val userScore = completedItemColor
     }
 
-    object Values {
-        val separator = " | "
+    object StringValues {
+        const val separator = " | "
     }
 }

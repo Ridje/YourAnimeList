@@ -1,6 +1,5 @@
 package com.kis.youranimelist.ui.mylist
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -55,6 +54,7 @@ import coil.compose.AsyncImage
 import com.kis.youranimelist.R
 import com.kis.youranimelist.domain.personalanimelist.model.AnimeStatusValue
 import com.kis.youranimelist.ui.Theme
+import com.kis.youranimelist.ui.Theme.StringValues.separator
 import com.kis.youranimelist.ui.navigation.NavigationKeys
 import com.kis.youranimelist.ui.widget.IconWithText
 import kotlinx.coroutines.launch
@@ -83,7 +83,6 @@ fun MyListScreenRoute(
     )
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MyListScreen(
     scaffoldState: ScaffoldState,
@@ -98,7 +97,6 @@ fun MyListScreen(
     onSnackbarPerformedAction: () -> Unit,
     onSnackbarDismissedAction: () -> Unit,
 ) {
-    val scope = rememberCoroutineScope()
     Column(modifier = Modifier.fillMaxSize()) {
         ScrollableTabRow(
             selectedTabIndex = currentTab,
@@ -122,7 +120,8 @@ fun MyListScreen(
                 }
             }
         }
-        if (isError) {
+        if (isError && listItems.isEmpty()) {
+            val scope = rememberCoroutineScope()
             val context = LocalContext.current
             scope.launch {
                 val snackResult = scaffoldState.snackbarHostState.showSnackbar(
@@ -153,7 +152,6 @@ fun MyListScreen(
                     Card(
                         shape = RoundedCornerShape(10),
                         modifier = Modifier
-                            .animateItemPlacement()
                             .fillMaxWidth()
                             .height(140.dp)
                             .clickable { onItemClicked.invoke(item.id) },
@@ -191,7 +189,8 @@ fun MyListScreen(
                                             },
                                                 style = MaterialTheme.typography.body2)
                                         }
-                                        Text(text = Theme.Values.separator, style = MaterialTheme.typography.body2)
+                                        Text(text = separator,
+                                            style = MaterialTheme.typography.body2)
                                         Text(
                                             text = stringArrayResource(id = R.array.personal_list_statuses)[tabs.indexOf(
                                                 item.status)],
@@ -203,7 +202,7 @@ fun MyListScreen(
                                         if (item.score != null && item.score > 0) {
                                             Box(
                                                 modifier = Modifier
-                                                    .background(color = Theme.Colors.watchingItemColor,
+                                                    .background(color = Theme.Colors.userScore,
                                                         shape = CircleShape)
                                                     .width(26.dp)
                                                     .aspectRatio(1f),
@@ -224,8 +223,7 @@ fun MyListScreen(
                                         )
                                     }
                                 }
-                                Column(
-                                ) {
+                                Column {
                                     Text(text = "${item.finishedEpisodes}/${item.totalNumOfEpisodes}",
                                         style = MaterialTheme.typography.subtitle2,
                                         modifier = Modifier.padding(horizontal = 8.dp,
