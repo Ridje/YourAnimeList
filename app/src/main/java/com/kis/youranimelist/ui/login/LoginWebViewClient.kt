@@ -3,8 +3,8 @@ package com.kis.youranimelist.ui.login
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import com.google.accompanist.web.AccompanistWebViewClient
-import com.kis.youranimelist.repository.RemoteDataSource
-import com.kis.youranimelist.utils.Urls
+import com.kis.youranimelist.data.repository.RemoteDataSource
+import com.kis.youranimelist.core.utils.Urls
 
 class LoginWebViewClient(
     private val redirectCallback: (String, String) -> Unit,

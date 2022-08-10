@@ -3,8 +3,8 @@ package com.kis.youranimelist.ui.login
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kis.youranimelist.BuildConfig
-import com.kis.youranimelist.domain.AuthUseCase
-import com.kis.youranimelist.repository.RemoteDataSource
+import com.kis.youranimelist.domain.auth.AuthUseCase
+import com.kis.youranimelist.data.repository.RemoteDataSource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay

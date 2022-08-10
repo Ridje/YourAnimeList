@@ -1,7 +1,7 @@
 package com.kis.youranimelist.di
 
 import android.content.Context
-import com.kis.youranimelist.utils.AppPreferences
+import com.kis.youranimelist.core.utils.AppPreferences
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.android.qualifiers.ApplicationContext

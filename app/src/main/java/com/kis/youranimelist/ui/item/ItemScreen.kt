@@ -46,9 +46,9 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.google.accompanist.pager.rememberPagerState
-import com.kis.youranimelist.NavigationKeys
 import com.kis.youranimelist.R
 import com.kis.youranimelist.ui.Theme
+import com.kis.youranimelist.ui.navigation.NavigationKeys
 import com.kis.youranimelist.ui.widget.AnimeCategoryListItemRounded
 import com.kis.youranimelist.ui.widget.ExpandableText
 
@@ -115,7 +115,7 @@ fun ItemScreen(
                 contentScale = ContentScale.Crop,
             )
         }
-        Row (modifier = Modifier.padding(20.dp)) {
+        Row(modifier = Modifier.padding(20.dp)) {
             NavigateButton(
                 onButtonPressed = onBackButtonPressed,
                 iconRes = R.drawable.ic_arrow_left_solid,

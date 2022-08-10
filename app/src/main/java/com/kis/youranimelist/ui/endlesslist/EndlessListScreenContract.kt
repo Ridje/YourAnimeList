@@ -1,7 +1,7 @@
 package com.kis.youranimelist.ui.endlesslist
 
 import androidx.paging.PagingData
-import com.kis.youranimelist.model.app.Anime
+import com.kis.youranimelist.domain.rankinglist.model.Anime
 import kotlinx.coroutines.flow.Flow
 
 object EndlessListScreenContract {

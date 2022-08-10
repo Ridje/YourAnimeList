@@ -1,13 +1,13 @@
 package com.kis.youranimelist.di
 
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
-import com.kis.youranimelist.domain.AuthUseCase
-import com.kis.youranimelist.network.AuthInterceptor
-import com.kis.youranimelist.network.MALTokenAuthenticator
-import com.kis.youranimelist.network.MyAnimeListAPI
-import com.kis.youranimelist.network.MyAnimeListOAuthAPI
-import com.kis.youranimelist.utils.AppPreferences
-import com.kis.youranimelist.utils.Urls
+import com.kis.youranimelist.domain.auth.AuthUseCase
+import com.kis.youranimelist.data.network.AuthInterceptor
+import com.kis.youranimelist.data.network.MALTokenAuthenticator
+import com.kis.youranimelist.data.network.api.MyAnimeListAPI
+import com.kis.youranimelist.data.network.api.MyAnimeListOAuthAPI
+import com.kis.youranimelist.core.utils.AppPreferences
+import com.kis.youranimelist.core.utils.Urls
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.migration.DisableInstallInCheck

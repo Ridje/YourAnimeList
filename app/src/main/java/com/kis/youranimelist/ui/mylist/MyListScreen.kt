@@ -47,10 +47,10 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import com.kis.youranimelist.NavigationKeys
 import com.kis.youranimelist.R
-import com.kis.youranimelist.model.app.AnimeStatusValue
+import com.kis.youranimelist.domain.personalanimelist.model.AnimeStatusValue
 import com.kis.youranimelist.ui.Theme
+import com.kis.youranimelist.ui.navigation.NavigationKeys
 import com.kis.youranimelist.ui.widget.IconWithText
 
 @Composable

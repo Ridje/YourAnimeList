@@ -3,8 +3,8 @@ package com.kis.youranimelist.ui.item
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.kis.youranimelist.NavigationKeys
-import com.kis.youranimelist.repository.AnimeRepository
+import com.kis.youranimelist.data.repository.AnimeRepository
+import com.kis.youranimelist.ui.navigation.NavigationKeys
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow

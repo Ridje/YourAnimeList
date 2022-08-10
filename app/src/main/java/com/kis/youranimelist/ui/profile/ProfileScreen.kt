@@ -40,7 +40,7 @@ import coil.compose.AsyncImage
 import com.kis.youranimelist.R
 import com.kis.youranimelist.ui.Theme
 import com.kis.youranimelist.ui.widget.IconWithText
-import com.kis.youranimelist.utils.Urls.malProfile
+import com.kis.youranimelist.core.utils.Urls.malProfile
 import me.bytebeats.views.charts.pie.PieChart
 import me.bytebeats.views.charts.pie.PieChartData
 import me.bytebeats.views.charts.pie.render.SimpleSliceDrawer

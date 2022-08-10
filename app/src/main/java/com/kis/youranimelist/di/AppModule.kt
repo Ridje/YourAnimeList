@@ -3,13 +3,10 @@ package com.kis.youranimelist.di
 import android.content.Context
 import com.kis.youranimelist.core.ResourceProvider
 import com.kis.youranimelist.core.ResourceProviderImpl
-import com.kis.youranimelist.domain.AuthUseCase
-import com.kis.youranimelist.domain.UserUseCase
-import com.kis.youranimelist.network.AuthInterceptor
-import com.kis.youranimelist.network.MyAnimeListOAuthAPI
-import com.kis.youranimelist.repository.AnimeRepository
-import com.kis.youranimelist.repository.user.UserRepository
-import com.kis.youranimelist.utils.AppPreferences
+import com.kis.youranimelist.domain.auth.AuthUseCase
+import com.kis.youranimelist.data.network.AuthInterceptor
+import com.kis.youranimelist.data.network.api.MyAnimeListOAuthAPI
+import com.kis.youranimelist.core.utils.AppPreferences
 import dagger.Lazy
 import dagger.Module
 import dagger.Provides
