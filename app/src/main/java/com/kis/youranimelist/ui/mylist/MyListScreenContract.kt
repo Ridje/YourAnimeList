@@ -1,19 +1,15 @@
 package com.kis.youranimelist.ui.mylist
 
 import androidx.compose.ui.graphics.Color
+import com.kis.youranimelist.domain.personalanimelist.model.AnimeStatusValue
 
 object MyListScreenContract {
     data class ScreenState(
         val isLoading: Boolean = false,
+        val isError: Boolean = false,
+        val errorText: String? = null,
         val items: List<Item>,
-        val tabs: List<String> = listOf(
-            "all",
-            "watching",
-            "completed",
-            "on_hold",
-            "dropped",
-            "plan_to_watch",
-        ),
+        val tabs: List<String> = AnimeStatusValue.listOfIndices(),
         val currentTab: Int = 0,
     )
 
@@ -29,4 +25,11 @@ object MyListScreenContract {
         val score: Int?,
         val mean: Float?,
     )
+
+
+    interface ScreenEventsListener {
+        fun onTabClicked(tab: Int)
+        fun onReloadClicked()
+        fun onResetStateClicked()
+    }
 }

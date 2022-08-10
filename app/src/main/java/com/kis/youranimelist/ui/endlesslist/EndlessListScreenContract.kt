@@ -34,7 +34,7 @@ object EndlessListScreenMapper {
             description = anime?.synopsis,
             mean = anime?.mean,
             rank = anime?.rank,
-            genres = anime?.genres?.map { it.name }?.take(3)?.joinToString(separator = ", " ) ?: "",
+            genres = anime?.genres?.map { it.name }?.take(3)?.joinToString(separator = ", ") ?: "",
             year = anime?.startSeason?.year,
             mediaType = anime?.mediaType,
             numEpisodes = anime?.numEpisodes,

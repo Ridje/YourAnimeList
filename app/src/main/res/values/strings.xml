@@ -22,6 +22,8 @@ While the workflow remains the same, Mob isn't just blindly following Reigen aro
     <string name="mean_score">Mean score</string>
     <string name="episodes_watched">Episodes watched</string>
     <string name="link_to_user">"@"</string>
+    <string name="data_not_loaded_error">Can\'t load data</string>
+    <string name="reload_data">Reload</string>
 
     <string-array name="personal_list_statuses">
         <item>all</item>

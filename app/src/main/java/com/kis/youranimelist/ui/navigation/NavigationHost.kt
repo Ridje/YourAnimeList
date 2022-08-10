@@ -84,7 +84,7 @@ fun YourAnimeListNavHost(
             ItemScreenRoute(navController)
         }
         composable(route = NavigationKeys.Route.MY_LIST) {
-            MyListScreenRoute(navController = navController, paddingValues = paddingValues)
+            MyListScreenRoute(navController = navController, paddingValues = paddingValues, scaffoldState = scaffoldState)
         }
         composable(route = NavigationKeys.Route.PROFILE) {
             ProfileScreenRoute(navController = navController)

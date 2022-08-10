@@ -25,19 +25,24 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.ScaffoldState
 import androidx.compose.material.ScrollableTabRow
+import androidx.compose.material.SnackbarDuration
+import androidx.compose.material.SnackbarResult
 import androidx.compose.material.Tab
 import androidx.compose.material.TabRowDefaults
 import androidx.compose.material.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -52,36 +57,48 @@ import com.kis.youranimelist.domain.personalanimelist.model.AnimeStatusValue
 import com.kis.youranimelist.ui.Theme
 import com.kis.youranimelist.ui.navigation.NavigationKeys
 import com.kis.youranimelist.ui.widget.IconWithText
+import kotlinx.coroutines.launch
 
 @Composable
 fun MyListScreenRoute(
     navController: NavController,
     paddingValues: PaddingValues = PaddingValues(0.dp),
+    scaffoldState: ScaffoldState,
     viewModel: MyListViewModel = hiltViewModel(),
 ) {
     val screenState = viewModel.screenState.collectAsState()
+    val screenEventsListener = viewModel as MyListScreenContract.ScreenEventsListener
     MyListScreen(
+        scaffoldState = scaffoldState,
         isLoading = screenState.value.isLoading,
+        isError = screenState.value.isError,
         listItems = screenState.value.items,
         tabs = screenState.value.tabs,
         currentTab = screenState.value.currentTab,
         paddingValues = paddingValues,
-        onTabClicked = { tab: Int -> viewModel.onTabClicked(tab) },
-        onItemClicked = { itemId: Int -> navController.navigate(NavigationKeys.Route.EXPLORE + "/$itemId") }
+        onTabClicked = screenEventsListener::onTabClicked,
+        onItemClicked = { itemId: Int -> navController.navigate(NavigationKeys.Route.EXPLORE + "/$itemId") },
+        onSnackbarPerformedAction = screenEventsListener::onReloadClicked,
+        onSnackbarDismissedAction = screenEventsListener::onResetStateClicked
     )
 }
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MyListScreen(
+    scaffoldState: ScaffoldState,
     isLoading: Boolean,
+    isError: Boolean,
     listItems: List<MyListScreenContract.Item>,
     tabs: List<String>,
     currentTab: Int,
     paddingValues: PaddingValues = PaddingValues(0.dp),
     onTabClicked: (Int) -> Unit,
     onItemClicked: (Int) -> Unit,
+    onSnackbarPerformedAction: () -> Unit,
+    onSnackbarDismissedAction: () -> Unit,
 ) {
+    val scope = rememberCoroutineScope()
     Column(modifier = Modifier.fillMaxSize()) {
         ScrollableTabRow(
             selectedTabIndex = currentTab,
@@ -105,7 +122,20 @@ fun MyListScreen(
                 }
             }
         }
-        if (isLoading) {
+        if (isError) {
+            val context = LocalContext.current
+            scope.launch {
+                val snackResult = scaffoldState.snackbarHostState.showSnackbar(
+                    message = context.resources.getString(R.string.data_not_loaded_error),
+                    actionLabel = context.resources.getString(R.string.reload_data),
+                    duration = SnackbarDuration.Indefinite
+                )
+                when (snackResult) {
+                    SnackbarResult.Dismissed -> onSnackbarDismissedAction.invoke()
+                    SnackbarResult.ActionPerformed -> onSnackbarPerformedAction.invoke()
+                }
+            }
+        } else if (isLoading) {
             Column(modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = CenterHorizontally) {
@@ -161,7 +191,7 @@ fun MyListScreen(
                                             },
                                                 style = MaterialTheme.typography.body2)
                                         }
-                                        Text(text = " | ", style = MaterialTheme.typography.body2)
+                                        Text(text = Theme.Values.separator, style = MaterialTheme.typography.body2)
                                         Text(
                                             text = stringArrayResource(id = R.array.personal_list_statuses)[tabs.indexOf(
                                                 item.status)],

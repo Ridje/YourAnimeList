@@ -8,6 +8,7 @@ import androidx.paging.PagingSource
 import androidx.paging.map
 import com.kis.youranimelist.domain.rankinglist.RankingListUseCase
 import com.kis.youranimelist.domain.rankinglist.model.Anime
+import com.kis.youranimelist.ui.navigation.InvalidNavArgumentException
 import com.kis.youranimelist.ui.navigation.NavigationKeys
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,7 +27,7 @@ class EndlessListScreenViewModel @Inject constructor(
         rankingPageSource =
             rankingListUseCase.getRankingListProducer(
                 savedStateHandle.get<String>(NavigationKeys.Argument.RANK)
-                    ?: throw RuntimeException("WTF")
+                    ?: throw InvalidNavArgumentException(NavigationKeys.Argument.RANK)
             )
     }
 

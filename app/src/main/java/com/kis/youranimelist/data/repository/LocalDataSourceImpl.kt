@@ -1,17 +1,20 @@
 package com.kis.youranimelist.data.repository
 
 import androidx.room.Transaction
-import com.kis.youranimelist.domain.personalanimelist.model.AnimeStatus
+import com.kis.youranimelist.data.cache.dao.AnimeDAO
+import com.kis.youranimelist.data.cache.dao.PersonalAnimeDAO
 import com.kis.youranimelist.data.cache.model.AnimePersistence
 import com.kis.youranimelist.data.cache.model.AnimePersonalStatusEntity
 import com.kis.youranimelist.data.cache.model.AnimeStatusPersistence
 import com.kis.youranimelist.data.cache.model.AnimeWithPersonalStatusPersistence
-import com.kis.youranimelist.data.cache.dao.AnimeDAO
-import com.kis.youranimelist.data.cache.dao.PersonalAnimeDAO
+import com.kis.youranimelist.domain.personalanimelist.model.AnimeStatus
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class LocalDataSourceImpl(
     private val personalAnimeDAO: PersonalAnimeDAO,
     private val animeDAO: AnimeDAO,
+    private val dispatcher: Dispatchers,
 ) : LocalDataSource {
 
     @Transaction
@@ -66,6 +69,8 @@ class LocalDataSourceImpl(
     }
 
     override suspend fun getPersonalAnimeStatusFromCache(): List<AnimeWithPersonalStatusPersistence> {
-        return personalAnimeDAO.getAllAnimeWithPersonalStatuses()
+        return withContext(dispatcher.IO) {
+            personalAnimeDAO.getAllAnimeWithPersonalStatuses()
+        }
     }
 }

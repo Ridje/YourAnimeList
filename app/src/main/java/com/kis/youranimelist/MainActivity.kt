@@ -11,8 +11,11 @@ import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.MaterialTheme.shapes
 import androidx.compose.material.MaterialTheme.typography
 import androidx.compose.material.Scaffold
+import androidx.compose.material.Snackbar
+import androidx.compose.material.SnackbarHost
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.kis.youranimelist.ui.Theme
 import com.kis.youranimelist.ui.bottomnavigation.BottomNavigationDestinaton
@@ -43,7 +46,8 @@ fun YourAnimeListTheme(
             background = Theme.Colors.background,
             onPrimary = Theme.Colors.onPrimary,
             onBackground = Theme.Colors.onPrimary,
-            primary = Theme.Colors.primary
+            primary = Theme.Colors.primary,
+            onSurface = Theme.Colors.onSurface,
         ),
         typography = typography,
         shapes = shapes,
