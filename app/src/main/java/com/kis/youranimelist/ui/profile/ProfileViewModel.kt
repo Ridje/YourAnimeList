@@ -5,8 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.kis.youranimelist.R
 import com.kis.youranimelist.core.ResourceProvider
 import com.kis.youranimelist.di.Medium
-import com.kis.youranimelist.domain.UserUseCase
-import com.kis.youranimelist.ui.Theme
+import com.kis.youranimelist.domain.user.UserUseCase
+import com.kis.youranimelist.domain.personalanimelist.model.AnimeStatusValue
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -51,51 +51,51 @@ class ProfileViewModel @Inject constructor(
                     statisticsPieData = PieChartData(
                         slices = listOf(
                             PieChartData.Slice(
-                                value = resultUser.animeStatistics?.itemsCompleted?.toFloat() ?: 0f,
-                                color = Theme.Colors.completedItemColor,
+                                value = resultUser.userAnimeStatistic?.itemsCompleted?.toFloat() ?: 0f,
+                                color = AnimeStatusValue.Completed.color,
                             ),
                             PieChartData.Slice(
-                                value = resultUser.animeStatistics?.itemsWatching?.toFloat() ?: 0f,
-                                color = Theme.Colors.watchingItemColor,
+                                value = resultUser.userAnimeStatistic?.itemsWatching?.toFloat() ?: 0f,
+                                color = AnimeStatusValue.Watching.color,
                             ),
                             PieChartData.Slice(
-                                value = resultUser.animeStatistics?.itemsOnHold?.toFloat() ?: 0f,
-                                color = Theme.Colors.onHoldItemColor,
+                                value = resultUser.userAnimeStatistic?.itemsOnHold?.toFloat() ?: 0f,
+                                color = AnimeStatusValue.OnHold.color,
                             ),
                             PieChartData.Slice(
-                                value = resultUser.animeStatistics?.itemsDropped?.toFloat() ?: 0f,
-                                color = Theme.Colors.droppedItemColor,
+                                value = resultUser.userAnimeStatistic?.itemsDropped?.toFloat() ?: 0f,
+                                color = AnimeStatusValue.Dropped.color,
                             ),
                             PieChartData.Slice(
-                                value = resultUser.animeStatistics?.itemsPlanToWatch?.toFloat()
+                                value = resultUser.userAnimeStatistic?.itemsPlanToWatch?.toFloat()
                                     ?: 0f,
-                                color = Theme.Colors.planToWatchItemColor,
+                                color = AnimeStatusValue.PlanToWatch.color,
                             )
                         )
                     ),
                     legend = listOf(
                         Pair(resourceProvider.getString(R.string.completed_item,
-                            resultUser.animeStatistics?.itemsCompleted ?: ""),
-                            Theme.Colors.completedItemColor),
+                            resultUser.userAnimeStatistic?.itemsCompleted ?: ""),
+                            AnimeStatusValue.Completed.color),
                         Pair(resourceProvider.getString(R.string.watching_items,
-                            resultUser.animeStatistics?.itemsWatching ?: ""),
-                            Theme.Colors.watchingItemColor),
+                            resultUser.userAnimeStatistic?.itemsWatching ?: ""),
+                            AnimeStatusValue.Watching.color),
                         Pair(resourceProvider.getString(R.string.on_hold_items,
-                            resultUser.animeStatistics?.itemsOnHold ?: ""),
-                            Theme.Colors.onHoldItemColor),
+                            resultUser.userAnimeStatistic?.itemsOnHold ?: ""),
+                            AnimeStatusValue.OnHold.color),
                         Pair(resourceProvider.getString(R.string.dropped_items,
-                            resultUser.animeStatistics?.itemsDropped ?: ""),
-                            Theme.Colors.droppedItemColor),
+                            resultUser.userAnimeStatistic?.itemsDropped ?: ""),
+                            AnimeStatusValue.Dropped.color),
                         Pair(resourceProvider.getString(R.string.plan_to_watch_items,
-                            resultUser.animeStatistics?.itemsPlanToWatch ?: ""),
-                            Theme.Colors.planToWatchItemColor),
+                            resultUser.userAnimeStatistic?.itemsPlanToWatch ?: ""),
+                            AnimeStatusValue.PlanToWatch.color),
                         Pair(resourceProvider.getString(R.string.total_items,
-                            resultUser.animeStatistics?.items ?: ""), null),
+                            resultUser.userAnimeStatistic?.items ?: ""), null),
                     ),
                     bottomStatisticsData = BottomStatisticsData(
-                        days = resultUser.animeStatistics?.days.toString(),
-                        episodes = resultUser.animeStatistics?.episodes.toString(),
-                        meanScore = resultUser.animeStatistics?.meanScore.toString(),
+                        days = resultUser.userAnimeStatistic?.days.toString(),
+                        episodes = resultUser.userAnimeStatistic?.episodes.toString(),
+                        meanScore = resultUser.userAnimeStatistic?.meanScore.toString(),
                     )
                 )
             }

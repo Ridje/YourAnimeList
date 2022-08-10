@@ -1,7 +1,7 @@
 package com.kis.youranimelist.ui.endlesslist
 
 import androidx.paging.PagingData
-import com.kis.youranimelist.model.app.Anime
+import com.kis.youranimelist.domain.rankinglist.model.Anime
 import kotlinx.coroutines.flow.Flow
 
 object EndlessListScreenContract {
@@ -34,7 +34,7 @@ object EndlessListScreenMapper {
             description = anime?.synopsis,
             mean = anime?.mean,
             rank = anime?.rank,
-            genres = anime?.genres?.map { it.name }?.take(3)?.joinToString(separator = ", " ) ?: "",
+            genres = anime?.genres?.map { it.name }?.take(3)?.joinToString(separator = ", ") ?: "",
             year = anime?.startSeason?.year,
             mediaType = anime?.mediaType,
             numEpisodes = anime?.numEpisodes,

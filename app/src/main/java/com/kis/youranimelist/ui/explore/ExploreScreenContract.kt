@@ -1,6 +1,6 @@
 package com.kis.youranimelist.ui.explore
 
-import com.kis.youranimelist.model.app.AnimeCategory
+import com.kis.youranimelist.domain.rankinglist.model.AnimeCategory
 
 object ExploreScreenContract {
 

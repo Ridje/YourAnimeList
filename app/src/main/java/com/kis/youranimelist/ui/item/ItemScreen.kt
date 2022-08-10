@@ -46,9 +46,10 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.google.accompanist.pager.rememberPagerState
-import com.kis.youranimelist.NavigationKeys
 import com.kis.youranimelist.R
 import com.kis.youranimelist.ui.Theme
+import com.kis.youranimelist.ui.Theme.StringValues.separator
+import com.kis.youranimelist.ui.navigation.NavigationKeys
 import com.kis.youranimelist.ui.widget.AnimeCategoryListItemRounded
 import com.kis.youranimelist.ui.widget.ExpandableText
 
@@ -96,7 +97,7 @@ fun ItemScreen(
                 contentDescription = stringResource(id = R.string.default_content_description),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .aspectRatio(0.8f)
+                    .aspectRatio(0.75f)
                     .graphicsLayer { alpha = 0.99f }
                     .drawWithContent {
                         val colors = listOf(
@@ -115,7 +116,7 @@ fun ItemScreen(
                 contentScale = ContentScale.Crop,
             )
         }
-        Row (modifier = Modifier.padding(20.dp)) {
+        Row(modifier = Modifier.padding(20.dp)) {
             NavigateButton(
                 onButtonPressed = onBackButtonPressed,
                 iconRes = R.drawable.ic_arrow_left_solid,
@@ -152,14 +153,14 @@ fun ItemScreen(
                     modifier = Modifier
                         .wrapContentWidth()
                 )
-                Text(text = " | ", style = MaterialTheme.typography.caption)
+                Text(text = separator, style = MaterialTheme.typography.caption)
                 Text(
                     text = anime.genres,
                     style = MaterialTheme.typography.caption,
                     maxLines = 1,
                     modifier = Modifier.weight(1f, false)
                 )
-                Text(text = " | ", style = MaterialTheme.typography.caption)
+                Text(text = separator, style = MaterialTheme.typography.caption)
                 Icon(
                     painter = painterResource(id = R.drawable.ic_star_solid),
                     contentDescription = "mean",

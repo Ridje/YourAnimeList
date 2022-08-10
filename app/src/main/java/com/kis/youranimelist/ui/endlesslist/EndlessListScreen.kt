@@ -36,8 +36,8 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
 import coil.compose.AsyncImage
-import com.kis.youranimelist.NavigationKeys
 import com.kis.youranimelist.R
+import com.kis.youranimelist.ui.navigation.NavigationKeys
 import com.kis.youranimelist.ui.widget.IconWithText
 
 @Composable

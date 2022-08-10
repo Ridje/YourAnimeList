@@ -1,7 +1,7 @@
 package com.kis.youranimelist.ui.bottomnavigation
 
-import com.kis.youranimelist.NavigationKeys
 import com.kis.youranimelist.R
+import com.kis.youranimelist.ui.navigation.NavigationKeys
 
 sealed class BottomNavigationDestinaton(
     val title: String?,

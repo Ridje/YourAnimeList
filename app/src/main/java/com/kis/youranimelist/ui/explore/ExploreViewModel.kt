@@ -2,8 +2,8 @@ package com.kis.youranimelist.ui.explore
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.kis.youranimelist.model.app.AnimeCategory
-import com.kis.youranimelist.repository.AnimeRepository
+import com.kis.youranimelist.domain.rankinglist.model.AnimeCategory
+import com.kis.youranimelist.data.repository.AnimeRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers

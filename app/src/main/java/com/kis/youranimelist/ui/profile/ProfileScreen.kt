@@ -40,7 +40,7 @@ import coil.compose.AsyncImage
 import com.kis.youranimelist.R
 import com.kis.youranimelist.ui.Theme
 import com.kis.youranimelist.ui.widget.IconWithText
-import com.kis.youranimelist.utils.Urls.malProfile
+import com.kis.youranimelist.core.utils.Urls.malProfile
 import me.bytebeats.views.charts.pie.PieChart
 import me.bytebeats.views.charts.pie.PieChartData
 import me.bytebeats.views.charts.pie.render.SimpleSliceDrawer
@@ -113,7 +113,7 @@ fun ProfileScreen(
                         modifier = Modifier
                             .height(130.dp)
                             .clip(RoundedCornerShape(20))
-                            .background(Theme.Colors.background)
+                            .background(MaterialTheme.colors.background)
                             .padding(start = 4.dp, end = 4.dp, top = 4.dp)
                             .clip(RoundedCornerShape(20))
                     )

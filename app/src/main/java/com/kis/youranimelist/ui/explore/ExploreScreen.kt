@@ -27,9 +27,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.kis.youranimelist.NavigationKeys
-import com.kis.youranimelist.model.app.Anime
-import com.kis.youranimelist.model.app.AnimeCategory
+import com.kis.youranimelist.domain.rankinglist.model.Anime
+import com.kis.youranimelist.domain.rankinglist.model.AnimeCategory
+import com.kis.youranimelist.ui.navigation.NavigationKeys
 import com.kis.youranimelist.ui.widget.AnimeCategoryListItemRounded
 
 @Composable

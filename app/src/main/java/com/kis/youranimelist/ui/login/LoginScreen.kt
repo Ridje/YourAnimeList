@@ -20,10 +20,10 @@ import androidx.navigation.NavController
 import com.google.accompanist.web.WebView
 import com.google.accompanist.web.rememberWebViewState
 import com.kis.youranimelist.BuildConfig
-import com.kis.youranimelist.NavigationKeys
 import com.kis.youranimelist.R
-import com.kis.youranimelist.utils.Pkce
-import com.kis.youranimelist.utils.Urls
+import com.kis.youranimelist.core.utils.Pkce
+import com.kis.youranimelist.core.utils.Urls
+import com.kis.youranimelist.ui.navigation.NavigationKeys
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.collectLatest

@@ -1,6 +1,6 @@
 package com.kis.youranimelist.ui.item
 
-import com.kis.youranimelist.model.app.Anime
+import com.kis.youranimelist.domain.rankinglist.model.Anime
 import okhttp3.internal.toImmutableList
 
 object ItemScreenContract {
