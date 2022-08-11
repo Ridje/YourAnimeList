@@ -18,13 +18,10 @@ class PersonalAnimeRepositoryImpl @Inject constructor(
 ) : PersonalAnimeRepository {
 
     override fun getAllDataProducer() = flow {
-        try {
-            val personalAnimeLocalCache = localDataSource.getPersonalAnimeStatusFromCache()
-            if (personalAnimeLocalCache.isNotEmpty()) {
-                emit(personalAnimeLocalCache.map { animeStatusMapper.map(it) })
-            }
-        } catch (e: Exception) {
-            Log.d(TAG, "Error during cache loading, error message: ${e.message}")
+
+        val personalAnimeLocalCache = localDataSource.getPersonalAnimeStatusFromCache()
+        if (personalAnimeLocalCache.isNotEmpty()) {
+            emit(personalAnimeLocalCache.map { animeStatusMapper.map(it) })
         }
 
         var hasNext = true;

@@ -2,7 +2,7 @@ package com.kis.youranimelist.ui.navigation
 
 object NavigationKeys {
     object Route {
-        const val LOGIN = "currencies"
+        const val LOGIN = "login"
         const val EXPLORE = "explore"
         const val MY_LIST = "my-list"
         const val PROFILE = "profile"

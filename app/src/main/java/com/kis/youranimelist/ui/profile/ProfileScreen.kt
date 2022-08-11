@@ -2,6 +2,7 @@ package com.kis.youranimelist.ui.profile
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,20 +18,26 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.ScaffoldState
+import androidx.compose.material.SnackbarDuration
+import androidx.compose.material.SnackbarResult
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -38,9 +45,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.kis.youranimelist.R
-import com.kis.youranimelist.ui.Theme
-import com.kis.youranimelist.ui.widget.IconWithText
 import com.kis.youranimelist.core.utils.Urls.malProfile
+import com.kis.youranimelist.ui.navigation.NavigationKeys
+import com.kis.youranimelist.ui.widget.IconWithText
+import kotlinx.coroutines.launch
 import me.bytebeats.views.charts.pie.PieChart
 import me.bytebeats.views.charts.pie.PieChartData
 import me.bytebeats.views.charts.pie.render.SimpleSliceDrawer
@@ -49,10 +57,13 @@ import me.bytebeats.views.charts.pie.render.SimpleSliceDrawer
 fun ProfileScreenRoute(
     navController: NavController,
     viewModel: ProfileViewModel = hiltViewModel(),
+    scaffoldState: ScaffoldState,
 ) {
-    val data = viewModel.viewState.collectAsState()
+    val data = viewModel.screenState.collectAsState()
+    val listener = viewModel as ProfileScreenContract.ScreenEventsListener
     ProfileScreen(
         data.value.isLoading,
+        data.value.isError,
         data.value.user?.pictureUrl,
         data.value.user?.backgroundUrl,
         data.value.user?.name,
@@ -62,12 +73,21 @@ fun ProfileScreenRoute(
         data.value.statisticsPieData,
         data.value.legend,
         data.value.bottomStatisticsData,
+        scaffoldState,
+        {
+            data.value.user?.pictureAnimeId?.let { animeId ->
+                navController.navigate(NavigationKeys.Route.EXPLORE + "/${animeId}")
+            }
+        },
+        onSnackbarPerformedAction = listener::onReloadClicked,
+        onSnackbarDismissedAction = listener::onResetStateClicked,
     )
 }
 
 @Composable
 fun ProfileScreen(
     isLoading: Boolean,
+    isError: Boolean,
     pictureURL: String?,
     backgroundUrl: String?,
     userName: String?,
@@ -77,12 +97,30 @@ fun ProfileScreen(
     statisticsPieData: PieChartData?,
     statisticsLegend: List<Pair<String, Color?>>?,
     bottomStatisticsData: BottomStatisticsData?,
+    scaffoldState: ScaffoldState,
+    onImageClick: () -> Unit,
+    onSnackbarPerformedAction: () -> Unit,
+    onSnackbarDismissedAction: () -> Unit,
 ) {
     if (isLoading) {
         Column(modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally) {
             CircularProgressIndicator()
+        }
+    } else if (isError && userName.isNullOrBlank()) {
+        val scope = rememberCoroutineScope()
+        val context = LocalContext.current
+        scope.launch {
+            val snackResult = scaffoldState.snackbarHostState.showSnackbar(
+                message = context.resources.getString(R.string.data_not_loaded_error),
+                actionLabel = context.resources.getString(R.string.reload_data),
+                duration = SnackbarDuration.Indefinite
+            )
+            when (snackResult) {
+                SnackbarResult.Dismissed -> onSnackbarDismissedAction.invoke()
+                SnackbarResult.ActionPerformed -> onSnackbarPerformedAction.invoke()
+            }
         }
     } else {
         val uriHandler = LocalUriHandler.current
@@ -96,7 +134,8 @@ fun ProfileScreen(
                 contentDescription = stringResource(id = R.string.default_content_description),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .aspectRatio(1.55f),
+                    .aspectRatio(1.55f)
+                    .clickable { onImageClick.invoke() },
                 contentScale = ContentScale.Crop
             )
             Column(
@@ -116,6 +155,7 @@ fun ProfileScreen(
                             .background(MaterialTheme.colors.background)
                             .padding(start = 4.dp, end = 4.dp, top = 4.dp)
                             .clip(RoundedCornerShape(20))
+                            .widthIn(max = 150.dp)
                     )
                     TextButton(onClick = { userName?.let { uriHandler.openUri("$malProfile/$userName") } }
                     ) {

@@ -1,8 +1,8 @@
 package com.kis.youranimelist.di
 
-import android.util.Log
 import com.kis.youranimelist.data.cache.dao.AnimeDAO
 import com.kis.youranimelist.data.cache.dao.PersonalAnimeDAO
+import com.kis.youranimelist.data.cache.dao.UserDAO
 import com.kis.youranimelist.data.network.api.MyAnimeListAPI
 import com.kis.youranimelist.data.network.api.MyAnimeListOAuthAPI
 import com.kis.youranimelist.data.repository.AnimeRepository
@@ -24,7 +24,6 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import javax.inject.Qualifier
 import javax.inject.Singleton
@@ -54,10 +53,11 @@ object RepositoryModule {
     @Singleton
     @Provides
     fun provideUserRepository(
+        localDataSource: LocalDataSource,
         remoteDataSource: RemoteDataSource,
         userMapper: UserMapper,
     ): UserRepository {
-        return UserRepositoryImpl(remoteDataSource, userMapper)
+        return UserRepositoryImpl(localDataSource, remoteDataSource, userMapper)
     }
 
     @Singleton
@@ -75,9 +75,10 @@ object RepositoryModule {
     fun provideLocalDataSource(
         animeDAO: AnimeDAO,
         personalAnimeDAO: PersonalAnimeDAO,
+        userDAO: UserDAO,
         dispatchers: Dispatchers,
     ): LocalDataSource {
-        return LocalDataSourceImpl(personalAnimeDAO, animeDAO, dispatchers)
+        return LocalDataSourceImpl(personalAnimeDAO, animeDAO, userDAO, dispatchers)
     }
 
     @Singleton

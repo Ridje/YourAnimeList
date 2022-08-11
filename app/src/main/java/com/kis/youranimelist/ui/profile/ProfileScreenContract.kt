@@ -6,11 +6,17 @@ import me.bytebeats.views.charts.pie.PieChartData
 object ProfileScreenContract {
     data class ScreeState(
         val isLoading: Boolean = true,
+        val isError: Boolean = false,
         val user: User? = null,
         val statisticsPieData: PieChartData? = null,
         val legend: List<Pair<String, Color?>>? = null,
         val bottomStatisticsData: BottomStatisticsData? = null,
     )
+
+    interface ScreenEventsListener {
+        fun onReloadClicked()
+        fun onResetStateClicked()
+    }
 }
 
 data class User(
@@ -22,6 +28,7 @@ data class User(
     val location: String?,
     val joinedAt: String?,
     val backgroundUrl: String? = null,
+    val pictureAnimeId: Int?,
 )
 
 data class BottomStatisticsData(

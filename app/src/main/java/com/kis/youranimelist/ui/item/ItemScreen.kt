@@ -62,7 +62,12 @@ fun ItemScreenRoute(
     ItemScreen(
         screeState.value.item,
         { navController.popBackStack() },
-        { navController.popBackStack(NavigationKeys.Route.EXPLORE, false, false) },
+        {
+            val currentRoute = navController.currentDestination?.route ?: ""
+            val newRoute =
+                navController.backQueue.last { it.destination.route != currentRoute }.destination.id
+            navController.popBackStack(newRoute, false, false)
+        },
         { animeId: Int -> navController.navigate(NavigationKeys.Route.EXPLORE + "/$animeId") },
     )
 }

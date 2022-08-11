@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 3,
-    "identityHash": "8a8fb634d7a3cb339dda0bd53b533b56",
+    "identityHash": "f4f8bb41ec32eed59ec3913c0736f4b5",
     "entities": [
       {
         "tableName": "anime",
@@ -153,12 +153,152 @@
         },
         "indices": [],
         "foreignKeys": []
+      },
+      {
+        "tableName": "user",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `name` TEXT NOT NULL, `gender` TEXT, `picture` TEXT, `birthday` TEXT, `location` TEXT, `joined_at` TEXT, `items_watching` INTEGER, `items_completed` INTEGER, `items_on_hold` INTEGER, `items_dropped` INTEGER, `items_plan_to_watch` INTEGER, `items` INTEGER, `days_watched` REAL, `days_watching` REAL, `days_completed` REAL, `days_on_hold` REAL, `days_dropped` REAL, `days` REAL, `episodes` INTEGER, `meanScore` REAL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "gender",
+            "columnName": "gender",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "picture",
+            "columnName": "picture",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "birthday",
+            "columnName": "birthday",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "location",
+            "columnName": "location",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "joinedAt",
+            "columnName": "joined_at",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "itemsWatching",
+            "columnName": "items_watching",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "itemsCompleted",
+            "columnName": "items_completed",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "itemsOnHold",
+            "columnName": "items_on_hold",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "itemsDropped",
+            "columnName": "items_dropped",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "itemsPlanToWatch",
+            "columnName": "items_plan_to_watch",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "items",
+            "columnName": "items",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "daysWatched",
+            "columnName": "days_watched",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "daysWatching",
+            "columnName": "days_watching",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "daysCompleted",
+            "columnName": "days_completed",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "daysOnHold",
+            "columnName": "days_on_hold",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "daysDropped",
+            "columnName": "days_dropped",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "days",
+            "columnName": "days",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "episodes",
+            "columnName": "episodes",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "meanScore",
+            "columnName": "meanScore",
+            "affinity": "REAL",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
       }
     ],
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '8a8fb634d7a3cb339dda0bd53b533b56')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'f4f8bb41ec32eed59ec3913c0736f4b5')"
     ]
   }
 }
