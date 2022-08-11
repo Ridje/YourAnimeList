@@ -87,7 +87,7 @@ fun YourAnimeListNavHost(
             MyListScreenRoute(navController = navController, paddingValues = paddingValues, scaffoldState = scaffoldState)
         }
         composable(route = NavigationKeys.Route.PROFILE) {
-            ProfileScreenRoute(navController = navController)
+            ProfileScreenRoute(navController = navController, scaffoldState = scaffoldState)
         }
         composable(
             route = "${NavigationKeys.Route.RANKING_LIST}/{${NavigationKeys.Argument.RANK}}",

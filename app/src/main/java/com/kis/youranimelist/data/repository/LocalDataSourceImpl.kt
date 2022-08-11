@@ -70,7 +70,11 @@ class LocalDataSourceImpl(
 
     override suspend fun getPersonalAnimeStatusFromCache(): List<AnimeWithPersonalStatusPersistence> {
         return withContext(dispatcher.IO) {
-            personalAnimeDAO.getAllAnimeWithPersonalStatuses()
+            try {
+                personalAnimeDAO.getAllAnimeWithPersonalStatuses()
+            } catch (e: Exception) {
+                listOf()
+            }
         }
     }
 }
