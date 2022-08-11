@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -154,6 +155,7 @@ fun ProfileScreen(
                             .background(MaterialTheme.colors.background)
                             .padding(start = 4.dp, end = 4.dp, top = 4.dp)
                             .clip(RoundedCornerShape(20))
+                            .widthIn(max = 150.dp)
                     )
                     TextButton(onClick = { userName?.let { uriHandler.openUri("$malProfile/$userName") } }
                     ) {

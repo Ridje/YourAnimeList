@@ -1,13 +1,13 @@
 package com.kis.youranimelist.data.repository
 
 import android.accounts.NetworkErrorException
+import com.kis.youranimelist.data.network.api.MyAnimeListAPI
+import com.kis.youranimelist.data.network.api.MyAnimeListOAuthAPI
 import com.kis.youranimelist.data.network.model.AnimeResponse
 import com.kis.youranimelist.data.network.model.TokenResponse
 import com.kis.youranimelist.data.network.model.UserResponse
 import com.kis.youranimelist.data.network.model.personal_list.PersonalAnimeListResponse
 import com.kis.youranimelist.data.network.model.ranking_response.AnimeRankedResponse
-import com.kis.youranimelist.data.network.api.MyAnimeListAPI
-import com.kis.youranimelist.data.network.api.MyAnimeListOAuthAPI
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -67,13 +67,16 @@ class RemoteDataSourceImpl(
         }
     }
 
-    override fun getUserData(): UserResponse {
-
-        val result = malService.userProfile(USER_FIELDS).execute()
-        return when {
-            result.isSuccessful -> result.body()
-                ?: throw NetworkErrorException()
-            else -> throw NetworkErrorException()
+    override fun getUserData(): UserResponse? {
+        try {
+            val result = malService.userProfile(USER_FIELDS).execute()
+            return when {
+                result.isSuccessful -> result.body()
+                    ?: throw NetworkErrorException()
+                else -> throw NetworkErrorException()
+            }
+        } catch (e: Exception) {
+            return null
         }
     }
 

@@ -5,6 +5,7 @@ import androidx.room.Room
 import com.kis.youranimelist.data.cache.UserDatabase
 import com.kis.youranimelist.data.cache.dao.AnimeDAO
 import com.kis.youranimelist.data.cache.dao.PersonalAnimeDAO
+import com.kis.youranimelist.data.cache.dao.UserDAO
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -46,5 +47,13 @@ class RoomModule() {
         database: UserDatabase
     ): PersonalAnimeDAO {
         return database.personalAnimeStatusesDAO()
+    }
+
+    @Singleton
+    @Provides
+    fun provideUserDAO(
+        database: UserDatabase,
+    ): UserDAO {
+        return database.userDAO()
     }
 }

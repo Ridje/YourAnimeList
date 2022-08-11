@@ -7,6 +7,8 @@ import com.kis.youranimelist.domain.rankinglist.model.Anime
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.transform
 import javax.inject.Inject
 
@@ -23,10 +25,11 @@ class PersonalAnimeListUseCase @Inject constructor(
             }
     }
 
-    suspend fun getRandomFavouriteAnime(): Anime? {
+    fun getRandomFavouriteAnimeProducer(): Flow<Anime?> {
         return personalAnimeRepository.getAllDataProducer()
-            .first()
-            .filter { it.score > 7 }
-            .randomOrNull()?.anime
+            .take(1)
+            .map {
+                it.filter { anime -> anime.score > 7 }.randomOrNull()?.anime
+            }
     }
 }
