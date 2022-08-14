@@ -3,7 +3,7 @@ package com.kis.youranimelist.ui.itembottomsheetdialog
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.kis.youranimelist.domain.Result
+import com.kis.youranimelist.domain.model.Result
 import com.kis.youranimelist.domain.personalanimelist.PersonalAnimeListUseCase
 import com.kis.youranimelist.domain.personalanimelist.model.AnimeStatus
 import com.kis.youranimelist.domain.personalanimelist.model.AnimeStatusValue
@@ -14,6 +14,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flowOn
@@ -32,7 +33,10 @@ class ItemBottomViewModel @Inject constructor(
     val screenState: StateFlow<ItemBottomScreenContract.ScreenState>
         get() = _screenState
 
-    val effectStream: MutableSharedFlow<ItemBottomScreenContract.Effect> = MutableSharedFlow()
+    private val _effectStream: MutableSharedFlow<ItemBottomScreenContract.Effect> =
+        MutableSharedFlow()
+    val effectStream: SharedFlow<ItemBottomScreenContract.Effect>
+        get() = _effectStream
 
     private val id = savedStateHandle.get<Int>(NavigationKeys.Argument.ANIME_ID)
         ?: throw InvalidNavArgumentException(NavigationKeys.Argument.ANIME_ID)
@@ -161,10 +165,33 @@ class ItemBottomViewModel @Inject constructor(
             }
             when (result) {
                 true -> {
-                    effectStream.emit(ItemBottomScreenContract.Effect.DataSaved)
+                    _effectStream.emit(ItemBottomScreenContract.Effect.DataSaved)
                 }
                 false -> {
-                    effectStream.emit(ItemBottomScreenContract.Effect.DataSaveError)
+                    _screenState.value = screenState.value.copy(
+                        applyLoading = false
+                    )
+                }
+            }
+        }
+    }
+
+    override fun onDeleteEntryClick() {
+        _screenState.value = screenState.value.copy(
+            deleteLoading = true,
+        )
+        viewModelScope.launch {
+            val result = withContext(dispatchers.IO) {
+                personalAnimeListUseCase.deletePersonalAnimeStatus(screenState.value.id)
+            }
+            when (result) {
+                true -> {
+                    _effectStream.emit(ItemBottomScreenContract.Effect.DataSaved)
+                }
+                false -> {
+                    _screenState.value = screenState.value.copy(
+                        deleteLoading = false
+                    )
                 }
             }
         }

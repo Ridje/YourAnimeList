@@ -15,6 +15,7 @@ object ItemBottomScreenContract {
         val scoreModified: Boolean = false,
         val statusModified: Boolean = false,
         val applyLoading: Boolean = false,
+        val deleteLoading: Boolean = false,
     )
 
     sealed class Effect {
@@ -29,5 +30,6 @@ object ItemBottomScreenContract {
         fun onSubtractionOneEpisodeWatched()
         fun onStatusChanged(status: String)
         fun onApplyChanges()
+        fun onDeleteEntryClick()
     }
 }

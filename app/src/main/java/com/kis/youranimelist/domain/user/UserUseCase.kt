@@ -1,7 +1,7 @@
 package com.kis.youranimelist.domain.user
 
 import com.kis.youranimelist.data.repository.user.UserRepository
-import com.kis.youranimelist.domain.Result
+import com.kis.youranimelist.domain.model.Result
 import com.kis.youranimelist.domain.personalanimelist.PersonalAnimeListUseCase
 import com.kis.youranimelist.domain.rankinglist.model.Anime
 import com.kis.youranimelist.domain.user.model.User

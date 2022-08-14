@@ -27,10 +27,6 @@ sealed class AnimeStatusValue(val presentIndex: String, val color: Color) {
             )
         }
 
-        fun List<String>.dropNonValuableStatus(): List<String> {
-            return this.drop(1)
-        }
-
         object Factory {
             fun getAnimeStatusByValue(value: String): AnimeStatusValue {
                 return when (value) {

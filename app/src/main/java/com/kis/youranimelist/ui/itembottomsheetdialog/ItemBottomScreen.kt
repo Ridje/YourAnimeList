@@ -1,6 +1,10 @@
 package com.kis.youranimelist.ui.itembottomsheetdialog
 
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.TweenSpec
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,41 +15,49 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.ContentAlpha
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ExposedDropdownMenuBox
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Slider
 import androidx.compose.material.Text
+import androidx.compose.material.TextButton
+import androidx.compose.material.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringArrayResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.kis.youranimelist.R
-import com.kis.youranimelist.domain.personalanimelist.model.AnimeStatusValue.Companion.dropNonValuableStatus
-import com.kis.youranimelist.ui.login.LoginScreenContract
 import com.kis.youranimelist.ui.widget.PostfixTransformation
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
 @Composable
@@ -64,6 +76,7 @@ fun ItemBottomScreenRoute(
         episodesWatched = screenState.value.episodesWatched,
         score = screenState.value.score,
         applyLoading = screenState.value.applyLoading,
+        deleteLoading = screenState.value.deleteLoading,
         effectFlow = effectFlow,
         onScoreSliderValueChanged = eventsListener::onScoreChanged,
         onEpisodesWatchedValueChanged = eventsListener::onEpisodesWatchedChanged,
@@ -72,7 +85,8 @@ fun ItemBottomScreenRoute(
         onMinusOneClicked = eventsListener::onSubtractionOneEpisodeWatched,
         onStatusChanged = eventsListener::onStatusChanged,
         onApplyChanges = eventsListener::onApplyChanges,
-        onDataSaved = { navController.popBackStack() }
+        onDataSaved = { navController.popBackStack() },
+        onDeleteEntryClick = eventsListener::onDeleteEntryClick,
     )
 }
 
@@ -86,6 +100,7 @@ fun ItemBottomScreen(
     episodesWatched: Int?,
     score: Float,
     applyLoading: Boolean,
+    deleteLoading: Boolean,
     effectFlow: Flow<ItemBottomScreenContract.Effect>,
     onScoreSliderValueChanged: (Float) -> Unit,
     onEpisodesWatchedValueChanged: (Int?) -> Unit,
@@ -95,6 +110,7 @@ fun ItemBottomScreen(
     onStatusChanged: (String) -> Unit,
     onApplyChanges: () -> Unit,
     onDataSaved: () -> Unit,
+    onDeleteEntryClick: () -> Unit,
 ) {
     LaunchedEffect(effectFlow) {
         effectFlow.collectLatest { effect ->
@@ -104,19 +120,74 @@ fun ItemBottomScreen(
             }
         }
     }
-    Column {
+    val scrollState = rememberScrollState()
+    val scope = rememberCoroutineScope()
+    val animation: TweenSpec<Float> = remember {
+        tween(4000, 200, easing = LinearEasing)
+    }
+    val showDialog = remember { mutableStateOf(false) }
+    LaunchedEffect(title) {
+        scope.launch {
+            while (true) {
+                scrollState.animateScrollTo(
+                    scrollState.maxValue,
+                    animationSpec = animation,
+                )
+                scrollState.animateScrollTo(
+                    0,
+                    animationSpec = animation,
+                )
+            }
+        }
+    }
+    if (showDialog.value) {
+        AlertDialog(
+            title = {
+                Text(stringResource(R.string.delete_anime_question))
+            },
+            text = {
+                Text(text = stringResource(R.string.delete_anime_question_description))
+            },
+            onDismissRequest = { showDialog.value = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    showDialog.value = false
+                    onDeleteEntryClick.invoke()
+                }) {
+                    Text(stringResource(R.string.ok))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    showDialog.value = false
+                }) {
+                    Text(stringResource(R.string.cancel))
+                }
+            }
+        )
+    }
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Spacer(modifier = Modifier
+            .height(8.dp))
+        Spacer(modifier = Modifier
+            .width(30.dp)
+            .height(4.dp)
+            .clip(RoundedCornerShape(4.dp))
+            .background(MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.disabled))
+        )
         Column(modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 20.dp),
+            .padding(top = 12.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
                 text = title,
                 style = MaterialTheme.typography.h6,
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.padding(horizontal = 20.dp),
+                modifier = Modifier
+                    .padding(horizontal = 20.dp)
+                    .horizontalScroll(scrollState, false),
             )
             Spacer(modifier = Modifier
                 .fillMaxWidth()
@@ -129,28 +200,14 @@ fun ItemBottomScreen(
             .padding(horizontal = 20.dp, vertical = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            Row(horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxWidth()) {
-                OutlinedButton(onClick = onCancelClick, Modifier.width(100.dp)) {
-                    Text(text = "Cancel")
-                }
-                Button(onClick = { onApplyChanges.invoke() }, modifier = Modifier.width(100.dp)) {
-                    if (applyLoading) {
-                        CircularProgressIndicator(color = Color.White,
-                            modifier = Modifier.size(20.dp), strokeWidth = 3.dp)
-                    } else {
-                        Text(text = "Apply")
-                    }
-                }
-            }
             Box {
                 var isStatusExpanded by remember { mutableStateOf(false) }
                 ExposedDropdownMenuBox(expanded = isStatusExpanded,
                     onExpandedChange = { isStatusExpanded = !isStatusExpanded }) {
                     OutlinedTextField(
                         readOnly = true,
-                        label = { Text(text = "Status") },
-                        value = stringArrayResource(id = R.array.personal_list_statuses)[currentStatus],
+                        label = { Text(text = stringResource(R.string.status)) },
+                        value = stringArrayResource(id = R.array.personal_list_statuses).drop(1)[currentStatus],
                         onValueChange = {},
                         modifier = Modifier.fillMaxWidth(),
                     )
@@ -158,7 +215,7 @@ fun ItemBottomScreen(
                         expanded = isStatusExpanded,
                         onDismissRequest = { isStatusExpanded = false }
                     ) {
-                        statuses.dropNonValuableStatus().forEach { status ->
+                        statuses.forEach { status ->
                             DropdownMenuItem(
                                 onClick = {
                                     onStatusChanged(status)
@@ -166,15 +223,14 @@ fun ItemBottomScreen(
                                 },
                             ) {
                                 Text(
-                                    text = stringArrayResource(id = R.array.personal_list_statuses)[statuses.indexOf(
-                                        status)],
+                                    text = stringArrayResource(id = R.array.personal_list_statuses)
+                                        .drop(1)[statuses.indexOf(status)],
                                 )
                             }
                         }
                     }
                 }
             }
-
             Row(verticalAlignment = Alignment.Bottom,
                 horizontalArrangement = Arrangement.spacedBy(20.dp),
                 modifier = Modifier
@@ -184,7 +240,8 @@ fun ItemBottomScreen(
                 OutlinedButton(onClick = onMinusOneClicked,
                     modifier = Modifier.height(52.dp)
                 ) {
-                    Text(text = "-1", style = MaterialTheme.typography.h6)
+                    Text(text = stringResource(R.string.minus_one),
+                        style = MaterialTheme.typography.h6)
                 }
                 OutlinedTextField(
                     modifier = Modifier
@@ -198,23 +255,64 @@ fun ItemBottomScreen(
                     keyboardOptions = KeyboardOptions.Default.copy(
                         keyboardType = KeyboardType.Number,
                     ),
-                    label = { Text(text = "Episodes watched") },
+                    label = { Text(text = stringResource(id = R.string.episodes_watched)) },
                     visualTransformation = PostfixTransformation("/$episodes")
                 )
                 OutlinedButton(onClick = onPlusOneClicked,
                     modifier = Modifier.height(52.dp)
                 ) {
-                    Text(text = "+1", style = MaterialTheme.typography.h6)
+                    Text(text = stringResource(R.string.plus_one),
+                        style = MaterialTheme.typography.h6)
                 }
             }
             Column {
-                Text(text = "Score: ${score.roundToInt()}")
+                Text(text = "${stringResource(id = R.string.score)}: ${score.roundToInt()}")
                 Slider(
                     value = score,
                     onValueChange = { value -> onScoreSliderValueChanged.invoke(value) },
                     valueRange = 0f..10f,
                     steps = 9,
                 )
+            }
+            Row(horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()) {
+                OutlinedButton(
+                    onClick = { showDialog.value = true },
+                    modifier = Modifier.height(40.dp),
+                    enabled = !deleteLoading && !applyLoading
+                ) {
+                    if (deleteLoading) {
+                        CircularProgressIndicator(color = contentColorFor(MaterialTheme.colors.primary),
+                            modifier = Modifier.size(20.dp), strokeWidth = 3.dp)
+                    } else {
+                        Icon(painterResource(id = R.drawable.ic_trash),
+                            contentDescription = stringResource(
+                                id = R.string.default_content_description),
+                            tint = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.disabled))
+                    }
+                }
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    OutlinedButton(onClick = onCancelClick,
+                        modifier = Modifier
+                            .width(100.dp)
+                            .height(40.dp)) {
+                        Text(text = stringResource(R.string.cancel))
+                    }
+                    Button(
+                        onClick = { onApplyChanges.invoke() },
+                        modifier = Modifier
+                            .width(100.dp)
+                            .height(40.dp),
+                        enabled = !deleteLoading && !applyLoading,
+                    ) {
+                        if (applyLoading) {
+                            CircularProgressIndicator(color = contentColorFor(MaterialTheme.colors.primary),
+                                modifier = Modifier.size(20.dp), strokeWidth = 3.dp)
+                        } else {
+                            Text(text = stringResource(R.string.apply))
+                        }
+                    }
+                }
             }
         }
     }

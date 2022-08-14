@@ -6,6 +6,7 @@ import com.kis.youranimelist.data.network.model.personal_list.AnimeStatusRespons
 import com.kis.youranimelist.data.network.model.personal_list.PersonalAnimeListResponse
 import com.kis.youranimelist.data.network.model.ranking_response.Root
 import retrofit2.Call
+import retrofit2.http.DELETE
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
@@ -51,4 +52,14 @@ interface MyAnimeListAPI {
         @Field("score") score: Int?,
         @Field("num_watched_episodes") episodesWatched: Int?,
     ): Call<AnimeStatusResponse>
+
+    @PATCH("anime/{anime_id}/my_list_status")
+    fun getUserAnimeStatus(
+        @Path("anime_id") animeId: Int,
+    ): Call<AnimeStatusResponse>
+
+    @DELETE("anime/{anime_id}/my_list_status")
+    fun deleteUserAnimeStatus(
+        @Path("anime_id") animeId: Int,
+    ): Call<Unit>
 }

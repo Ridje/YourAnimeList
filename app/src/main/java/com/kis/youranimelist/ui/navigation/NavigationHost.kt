@@ -3,13 +3,19 @@
 package com.kis.youranimelist.ui.navigation
 
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.ScaffoldState
+import androidx.compose.material.SwipeableDefaults
+import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -46,7 +52,9 @@ fun YourAnimeListNavHost(
                 navController.navigate(NavigationKeys.Route.LOGIN)
             }
     }
-    ModalBottomSheetLayout(bottomSheetNavigator = bottomSheetNavigator) {
+    ModalBottomSheetLayout(
+        bottomSheetNavigator = bottomSheetNavigator,
+    ) {
         AnimatedNavHost(navController, startDestination = NavigationKeys.Route.LOGIN) {
             composable(
                 route = NavigationKeys.Route.LOGIN
@@ -99,7 +107,7 @@ fun YourAnimeListNavHost(
                 arguments = listOf(
                     navArgument(NavigationKeys.Argument.ANIME_ID) { type = NavType.IntType }
                 )) {
-                ItemBottomScreenRoute(navController = navController)
+                ItemBottomScreenRoute(navController = navController,)
             }
             composable(route = NavigationKeys.Route.PROFILE) {
                 ProfileScreenRoute(navController = navController, scaffoldState = scaffoldState)
@@ -115,3 +123,4 @@ fun YourAnimeListNavHost(
         }
     }
 }
+
