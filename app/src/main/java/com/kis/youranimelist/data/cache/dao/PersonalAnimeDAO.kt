@@ -27,4 +27,8 @@ interface PersonalAnimeDAO {
     @Query("SELECT * FROM anime_personal_status")
     @Transaction
     fun getAllAnimeWithPersonalStatuses(): List<AnimeWithPersonalStatusPersistence>
+
+    @Query("Select * FROM anime_personal_status WHERE anime_id = :id")
+    @Transaction
+    fun getAnimeWithPersonalStatus(id: Int): AnimeWithPersonalStatusPersistence
 }

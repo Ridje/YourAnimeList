@@ -17,4 +17,5 @@ interface RemoteDataSource {
     fun getAccessToken(clientID : String, code: String, codeVerifier: String, grantType : String) : TokenResponse
     fun getUserData(): UserResponse?
     suspend fun getPersonalAnimeList(status: String?, sort: String?, limit: Int, offset: Int): PersonalAnimeListResponse
+    suspend fun savePersonalAnimeStatus(animeId: Int, status: String?, score: Int?, episodesWatched: Int?,): Boolean
 }

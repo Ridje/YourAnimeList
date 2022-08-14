@@ -12,6 +12,7 @@ import com.kis.youranimelist.data.cache.model.UserPersistence
 import com.kis.youranimelist.domain.personalanimelist.model.AnimeStatus
 import com.kis.youranimelist.domain.user.mapper.UserMapper
 import com.kis.youranimelist.domain.user.model.User
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -23,32 +24,41 @@ class LocalDataSourceImpl(
 ) : LocalDataSource {
 
     @Transaction
-    override suspend fun savePersonalAnimeStatusToCache(status: AnimeStatus) {
+    override suspend fun saveAnimeWithPersonalStatusToCache(status: AnimeStatus) =
+        withContext(dispatcher.IO) {
+            try {
+                val animeCache = AnimePersistence(
+                    id = status.anime.id,
+                    name = status.anime.title,
+                    numEpisodes = status.anime.numEpisodes ?: 0,
+                    mean = status.anime.mean ?: 0.0f,
+                    mediaType = status.anime.mediaType ?: "unknown",
+                    pictureLink = status.anime.picture?.large ?: "",
+                )
+                val statusCache = AnimeStatusPersistence(status.status.presentIndex)
 
-        val animeCache = AnimePersistence(
-            id = status.anime.id,
-            name = status.anime.title,
-            numEpisodes = status.anime.numEpisodes ?: 0,
-            mean = status.anime.mean ?: 0.0f,
-            mediaType = status.anime.mediaType ?: "unknown",
-            pictureLink = status.anime.picture?.large ?: "",
-        )
-        val statusCache = AnimeStatusPersistence(status.status.presentIndex)
+                val personalAnimeStatus = AnimePersonalStatusEntity(
+                    score = status.score,
+                    episodesWatched = status.numWatchedEpisodes,
+                    statusId = status.status.presentIndex,
+                    animeId = status.anime.id,
+                )
 
-        val personalAnimeStatus = AnimePersonalStatusEntity(
-            score = status.score,
-            episodesWatched = status.numWatchedEpisodes,
-            statusId = status.status.presentIndex,
-            animeId = status.anime.id,
-        )
-
-        animeDAO.addAnime(animeCache)
-        personalAnimeDAO.addAnimeStatus(statusCache)
-        personalAnimeDAO.addPersonalAnimeStatus(personalAnimeStatus)
-    }
+                animeDAO.addAnime(animeCache)
+                personalAnimeDAO.addAnimeStatus(statusCache)
+                personalAnimeDAO.addPersonalAnimeStatus(personalAnimeStatus)
+            } catch (e: Exception) {
+                if (e is CancellationException) {
+                    throw e
+                } else {
+                    return@withContext false
+                }
+            }
+            return@withContext true
+        }
 
     @Transaction
-    override suspend fun savePersonalAnimeStatusToCache(statuses: List<AnimeStatus>) {
+    override suspend fun saveAnimeWithPersonalStatusToCache(statuses: List<AnimeStatus>) {
         for (status in statuses) {
             val animeCache = AnimePersistence(
                 id = status.anime.id,
@@ -73,12 +83,34 @@ class LocalDataSourceImpl(
         }
     }
 
+    override suspend fun savePersonalAnimeStatusToCache(status: AnimeStatus): Boolean {
+        personalAnimeDAO.addPersonalAnimeStatus(
+            AnimePersonalStatusEntity(
+                score = status.score,
+                episodesWatched = status.numWatchedEpisodes,
+                statusId = status.status.presentIndex,
+                animeId = status.anime.id,
+            )
+        )
+        return true
+    }
+
     override suspend fun getPersonalAnimeStatusFromCache(): List<AnimeWithPersonalStatusPersistence> {
         return withContext(dispatcher.IO) {
             try {
                 personalAnimeDAO.getAllAnimeWithPersonalStatuses()
             } catch (e: Exception) {
                 listOf()
+            }
+        }
+    }
+
+    override suspend fun getPersonalAnimeStatusFromCache(id: Int): AnimeWithPersonalStatusPersistence? {
+        return withContext(dispatcher.IO) {
+            try {
+                personalAnimeDAO.getAnimeWithPersonalStatus(id)
+            } catch (e: Exception) {
+                null
             }
         }
     }

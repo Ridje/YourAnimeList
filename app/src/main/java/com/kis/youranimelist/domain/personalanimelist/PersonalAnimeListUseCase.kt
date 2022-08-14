@@ -6,7 +6,6 @@ import com.kis.youranimelist.domain.personalanimelist.model.AnimeStatus
 import com.kis.youranimelist.domain.rankinglist.model.Anime
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.transform
@@ -23,6 +22,19 @@ class PersonalAnimeListUseCase @Inject constructor(
             .catch { e ->
                 emit(Result.Error(e))
             }
+    }
+
+    fun getPersonalAnimeStatusProducer(id: Int): Flow<Result<AnimeStatus>> {
+        return personalAnimeRepository.getPersonalAnimeStatusProducer(id)
+            .transform<AnimeStatus, Result<AnimeStatus>> {
+                emit(Result.Success(it))
+            }.catch { e ->
+                emit(Result.Error(e))
+            }
+    }
+
+    suspend fun savePersonalAnimeStatus(newStatus: AnimeStatus): Boolean {
+        return personalAnimeRepository.saveAnimeStatus(newStatus)
     }
 
     fun getRandomFavouriteAnimeProducer(): Flow<Anime?> {

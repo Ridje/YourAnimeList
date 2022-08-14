@@ -17,6 +17,8 @@ import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
+import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
+import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
 import com.kis.youranimelist.ui.Theme
 import com.kis.youranimelist.ui.bottomnavigation.BottomNavigationDestinaton
 import com.kis.youranimelist.ui.bottomnavigation.MainScreenBottomNavigation
@@ -51,14 +53,15 @@ fun YourAnimeListTheme(
         ),
         typography = typography,
         shapes = shapes,
-        content = content
+        content = content,
     )
 }
 
-@OptIn(ExperimentalAnimationApi::class)
+@OptIn(ExperimentalAnimationApi::class, ExperimentalMaterialNavigationApi::class)
 @Composable
 fun YourAnimeListMainScreen() {
-    val navController = rememberAnimatedNavController()
+    val bottomSheetNavigator = rememberBottomSheetNavigator()
+    val navController = rememberAnimatedNavController(bottomSheetNavigator)
     val scaffoldState = rememberScaffoldState()
     Scaffold(
         bottomBar = {
@@ -77,6 +80,7 @@ fun YourAnimeListMainScreen() {
             navController,
             paddingValues,
             scaffoldState,
+            bottomSheetNavigator,
         )
     }
 }

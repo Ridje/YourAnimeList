@@ -17,6 +17,20 @@ sealed class AnimeStatusValue(val presentIndex: String, val color: Color) {
             )
         }
 
+        fun listOfIndiciesOnlyValues(): List<String> {
+            return listOf(
+                Watching.presentIndex,
+                Completed.presentIndex,
+                OnHold.presentIndex,
+                Dropped.presentIndex,
+                PlanToWatch.presentIndex,
+            )
+        }
+
+        fun List<String>.dropNonValuableStatus(): List<String> {
+            return this.drop(1)
+        }
+
         object Factory {
             fun getAnimeStatusByValue(value: String): AnimeStatusValue {
                 return when (value) {

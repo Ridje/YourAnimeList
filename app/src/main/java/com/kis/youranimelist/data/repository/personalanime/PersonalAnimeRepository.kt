@@ -7,4 +7,6 @@ import kotlinx.coroutines.flow.Flow
 interface PersonalAnimeRepository {
     fun getAllDataProducer(): Flow<List<AnimeStatus>>
     suspend fun fetchData(limit: Int, offset: Int): PersonalAnimeListResponse
+    fun getPersonalAnimeStatusProducer(id: Int): Flow<AnimeStatus>
+    suspend fun saveAnimeStatus(animeStatus: AnimeStatus): Boolean
 }

@@ -1,7 +1,8 @@
 package com.kis.youranimelist.ui.mylist
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -78,11 +79,13 @@ fun MyListScreenRoute(
         paddingValues = paddingValues,
         onTabClicked = screenEventsListener::onTabClicked,
         onItemClicked = { itemId: Int -> navController.navigate(NavigationKeys.Route.EXPLORE + "/$itemId") },
+        onItemLongPress = { itemId: Int -> navController.navigate(NavigationKeys.Route.MY_LIST + "/$itemId") },
         onSnackbarPerformedAction = screenEventsListener::onReloadClicked,
-        onSnackbarDismissedAction = screenEventsListener::onResetStateClicked
+        onSnackbarDismissedAction = screenEventsListener::onResetStateClicked,
     )
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MyListScreen(
     scaffoldState: ScaffoldState,
@@ -94,6 +97,7 @@ fun MyListScreen(
     paddingValues: PaddingValues = PaddingValues(0.dp),
     onTabClicked: (Int) -> Unit,
     onItemClicked: (Int) -> Unit,
+    onItemLongPress: (Int) -> Unit,
     onSnackbarPerformedAction: () -> Unit,
     onSnackbarDismissedAction: () -> Unit,
 ) {
@@ -154,7 +158,8 @@ fun MyListScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(140.dp)
-                            .clickable { onItemClicked.invoke(item.id) },
+                            .combinedClickable(onClick = { onItemClicked.invoke(item.id) },
+                                onLongClick = { onItemLongPress.invoke(item.id) }),
                         backgroundColor = Color.White.copy(alpha = 0.1f),
                         elevation = 0.dp
                     ) {

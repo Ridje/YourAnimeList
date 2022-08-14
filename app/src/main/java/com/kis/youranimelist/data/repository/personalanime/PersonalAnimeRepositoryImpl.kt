@@ -34,11 +34,45 @@ class PersonalAnimeRepositoryImpl @Inject constructor(
             dataList.addAll(fetchedValue.data.map { animeStatusMapper.map(it) })
         }
         try {
-            localDataSource.savePersonalAnimeStatusToCache(dataList)
+            localDataSource.saveAnimeWithPersonalStatusToCache(dataList)
         } catch (e: Exception) {
             Log.d(TAG, "Error during cache invalidation, error message: ${e.message}")
         }
         emit(dataList)
+    }
+
+    override fun getPersonalAnimeStatusProducer(id: Int) = flow {
+        localDataSource.getPersonalAnimeStatusFromCache(id)?.let { cachedStatus ->
+            emit(animeStatusMapper.map(cachedStatus))
+        }
+        var hasNext = true;
+        val dataList = mutableListOf<AnimeStatus>()
+        while (hasNext) {
+            val fetchedValue = fetchData(1000, 0)
+            if (fetchedValue.paging.next.isNullOrBlank()) {
+                hasNext = false
+            }
+            dataList.addAll(fetchedValue.data.map { animeStatusMapper.map(it) })
+        }
+        try {
+            localDataSource.saveAnimeWithPersonalStatusToCache(dataList)
+        } catch (e: Exception) {
+            Log.d(TAG, "Error during cache invalidation, error message: ${e.message}")
+        }
+        dataList.firstOrNull { it.anime.id == id }?.let { updatedStatus ->
+            emit(updatedStatus)
+        }
+    }
+
+    override suspend fun saveAnimeStatus(animeStatus: AnimeStatus): Boolean {
+        val localResult = localDataSource.savePersonalAnimeStatusToCache(animeStatus)
+        val remoteResult = remoteDataSource.savePersonalAnimeStatus(
+            animeStatus.anime.id,
+            animeStatus.status.presentIndex,
+            animeStatus.score,
+            animeStatus.numWatchedEpisodes,
+        )
+        return localResult
     }
 
 
