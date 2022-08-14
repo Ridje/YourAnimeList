@@ -5,6 +5,12 @@ import com.kis.youranimelist.domain.personalanimelist.model.AnimeStatus
 import kotlinx.coroutines.flow.Flow
 
 interface PersonalAnimeRepository {
-    fun getAllDataProducer(): Flow<List<AnimeStatus>>
+    fun getPersonalAnimeStatusesProducer(): Flow<List<AnimeStatus>>
+    fun getPersonalAnimeStatusProducer(id: Int): Flow<AnimeStatus?>
+
+    suspend fun refreshPersonalAnimeStatuses()
+    suspend fun deletePersonalAnimeStatus(animeId: Int): Boolean
+    suspend fun refreshPersonalAnimeStatus(animeId: Int)
     suspend fun fetchData(limit: Int, offset: Int): PersonalAnimeListResponse
+    suspend fun saveAnimeStatus(animeStatus: AnimeStatus): Boolean
 }

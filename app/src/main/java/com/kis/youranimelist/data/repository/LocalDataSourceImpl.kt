@@ -12,75 +12,93 @@ import com.kis.youranimelist.data.cache.model.UserPersistence
 import com.kis.youranimelist.domain.personalanimelist.model.AnimeStatus
 import com.kis.youranimelist.domain.user.mapper.UserMapper
 import com.kis.youranimelist.domain.user.model.User
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 
 class LocalDataSourceImpl(
     private val personalAnimeDAO: PersonalAnimeDAO,
     private val animeDAO: AnimeDAO,
     private val userDAO: UserDAO,
-    private val dispatcher: Dispatchers,
+    private val dispatchers: Dispatchers,
 ) : LocalDataSource {
 
     @Transaction
-    override suspend fun savePersonalAnimeStatusToCache(status: AnimeStatus) {
+    override suspend fun saveAnimeWithPersonalStatusToCache(status: AnimeStatus) =
+        withContext(dispatchers.IO) {
+            try {
+                val animeCache = AnimePersistence(
+                    id = status.anime.id,
+                    name = status.anime.title,
+                    numEpisodes = status.anime.numEpisodes ?: 0,
+                    mean = status.anime.mean ?: 0.0f,
+                    mediaType = status.anime.mediaType ?: "unknown",
+                    pictureLink = status.anime.picture?.large ?: "",
+                )
+                val statusCache = AnimeStatusPersistence(status.status.presentIndex)
 
-        val animeCache = AnimePersistence(
-            id = status.anime.id,
-            name = status.anime.title,
-            numEpisodes = status.anime.numEpisodes ?: 0,
-            mean = status.anime.mean ?: 0.0f,
-            mediaType = status.anime.mediaType ?: "unknown",
-            pictureLink = status.anime.picture?.large ?: "",
-        )
-        val statusCache = AnimeStatusPersistence(status.status.presentIndex)
+                val personalAnimeStatus = AnimePersonalStatusEntity(
+                    score = status.score,
+                    episodesWatched = status.numWatchedEpisodes,
+                    statusId = status.status.presentIndex,
+                    animeId = status.anime.id,
+                )
 
-        val personalAnimeStatus = AnimePersonalStatusEntity(
-            score = status.score,
-            episodesWatched = status.numWatchedEpisodes,
-            statusId = status.status.presentIndex,
-            animeId = status.anime.id,
-        )
-
-        animeDAO.addAnime(animeCache)
-        personalAnimeDAO.addAnimeStatus(statusCache)
-        personalAnimeDAO.addPersonalAnimeStatus(personalAnimeStatus)
-    }
+                animeDAO.addAnime(animeCache)
+                personalAnimeDAO.addAnimeStatus(statusCache)
+                personalAnimeDAO.addPersonalAnimeStatus(personalAnimeStatus)
+            } catch (e: Exception) {
+                if (e is CancellationException) {
+                    throw e
+                } else {
+                    return@withContext false
+                }
+            }
+            return@withContext true
+        }
 
     @Transaction
-    override suspend fun savePersonalAnimeStatusToCache(statuses: List<AnimeStatus>) {
-        for (status in statuses) {
-            val animeCache = AnimePersistence(
-                id = status.anime.id,
-                name = status.anime.title,
-                numEpisodes = status.anime.numEpisodes ?: 0,
-                mean = status.anime.mean ?: 0.0f,
-                mediaType = status.anime.mediaType ?: "unknown",
-                pictureLink = status.anime.picture?.large ?: "",
-            )
-            val statusCache = AnimeStatusPersistence(status.status.presentIndex)
+    override suspend fun saveAnimeWithPersonalStatusToCache(statuses: List<AnimeStatus>) =
+        withContext(dispatchers.IO) {
+            for (status in statuses) {
+                val animeCache = AnimePersistence(
+                    id = status.anime.id,
+                    name = status.anime.title,
+                    numEpisodes = status.anime.numEpisodes ?: 0,
+                    mean = status.anime.mean ?: 0.0f,
+                    mediaType = status.anime.mediaType ?: "unknown",
+                    pictureLink = status.anime.picture?.large ?: "",
+                )
+                val statusCache = AnimeStatusPersistence(status.status.presentIndex)
 
-            val personalAnimeStatus = AnimePersonalStatusEntity(
-                score = status.score,
-                episodesWatched = status.numWatchedEpisodes,
-                statusId = status.status.presentIndex,
-                animeId = status.anime.id,
-            )
+                val personalAnimeStatus = AnimePersonalStatusEntity(
+                    score = status.score,
+                    episodesWatched = status.numWatchedEpisodes,
+                    statusId = status.status.presentIndex,
+                    animeId = status.anime.id,
+                )
 
-            animeDAO.addAnime(animeCache)
-            personalAnimeDAO.addAnimeStatus(statusCache)
-            personalAnimeDAO.addPersonalAnimeStatus(personalAnimeStatus)
+                animeDAO.addAnime(animeCache)
+                personalAnimeDAO.addAnimeStatus(statusCache)
+                personalAnimeDAO.addPersonalAnimeStatus(personalAnimeStatus)
+            }
+            return@withContext true
+        }
+
+    override suspend fun savePersonalAnimeStatusToCache(status: AnimePersonalStatusEntity): Boolean {
+        return withContext(dispatchers.IO) {
+            personalAnimeDAO.addPersonalAnimeStatus(status)
+            return@withContext true
         }
     }
 
-    override suspend fun getPersonalAnimeStatusFromCache(): List<AnimeWithPersonalStatusPersistence> {
-        return withContext(dispatcher.IO) {
-            try {
-                personalAnimeDAO.getAllAnimeWithPersonalStatuses()
-            } catch (e: Exception) {
-                listOf()
-            }
-        }
+    override fun getAnimeWithStatusProducerFromCache(): Flow<List<AnimeWithPersonalStatusPersistence>> {
+        return personalAnimeDAO.getAllAnimeWithPersonalStatuses()
+    }
+
+    override fun getAnimeWithStatusProducerFromCache(id: Int): Flow<AnimeWithPersonalStatusPersistence?> {
+        return personalAnimeDAO.getAnimeWithPersonalStatus(id)
     }
 
     @Transaction
@@ -113,7 +131,14 @@ class LocalDataSourceImpl(
         )
     }
 
-    override suspend fun getUserCache(): UserPersistence? = withContext(dispatcher.IO) {
+    override suspend fun deleteAnimePersonalStatusFromCache(animeId: Int): Boolean {
+        return withContext(dispatchers.IO) {
+            personalAnimeDAO.deletePersonalAnimeStatus(animeId)
+            return@withContext true
+        }
+    }
+
+    override suspend fun getUserCache(): UserPersistence? = withContext(dispatchers.IO) {
         try {
             userDAO.getUserData()
         } catch (e: Exception) {

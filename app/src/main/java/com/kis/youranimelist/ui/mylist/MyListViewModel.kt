@@ -2,7 +2,7 @@ package com.kis.youranimelist.ui.mylist
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.kis.youranimelist.domain.Result
+import com.kis.youranimelist.domain.model.Result
 import com.kis.youranimelist.domain.personalanimelist.PersonalAnimeListUseCase
 import com.kis.youranimelist.domain.personalanimelist.model.AnimeStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,11 +17,11 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MyListViewModel @Inject constructor(
-    personalAnimeListUseCase: PersonalAnimeListUseCase,
+    private val personalAnimeListUseCase: PersonalAnimeListUseCase,
 ) : ViewModel(), MyListScreenContract.ScreenEventsListener {
 
-    private val animeStatusesPageSource: Flow<Result<List<AnimeStatus>>> =
-        personalAnimeListUseCase.getPersonalAnimeListProducer()
+    private val animeStatusesSource: Flow<Result<List<AnimeStatus>>> =
+        personalAnimeListUseCase.getPersonalAnimeStatusesProducer()
 
     private val _screenState: MutableStateFlow<MyListScreenContract.ScreenState> = MutableStateFlow(
         MyListScreenContract.ScreenState(isLoading = true, items = listOf()))
@@ -30,6 +30,7 @@ class MyListViewModel @Inject constructor(
 
     init {
         startObserveMyListChanges()
+        getLatestData()
     }
 
     private fun startObserveMyListChanges() {
@@ -38,7 +39,7 @@ class MyListViewModel @Inject constructor(
                 isLoading = true,
                 isError = false,
             )
-            animeStatusesPageSource
+            animeStatusesSource
                 .flowOn(Dispatchers.IO)
                 .collectLatest { result ->
                     val newValue = when (result) {
@@ -76,6 +77,12 @@ class MyListViewModel @Inject constructor(
                     }
                     _screenState.value = newValue
                 }
+        }
+    }
+
+    private fun getLatestData() {
+        viewModelScope.launch {
+            personalAnimeListUseCase.refreshPersonalAnimeStatuses()
         }
     }
 

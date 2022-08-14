@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.kis.youranimelist.R
 import com.kis.youranimelist.core.ResourceProvider
 import com.kis.youranimelist.di.Medium
-import com.kis.youranimelist.domain.Result
+import com.kis.youranimelist.domain.model.Result
 import com.kis.youranimelist.domain.personalanimelist.model.AnimeStatusValue
 import com.kis.youranimelist.domain.user.UserUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel

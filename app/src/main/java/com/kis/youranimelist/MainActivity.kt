@@ -6,17 +6,22 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.AnimationSpec
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.MaterialTheme.shapes
 import androidx.compose.material.MaterialTheme.typography
+import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.Scaffold
-import androidx.compose.material.Snackbar
-import androidx.compose.material.SnackbarHost
+import androidx.compose.material.SwipeableDefaults
+import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
+import androidx.compose.runtime.remember
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
+import com.google.accompanist.navigation.material.BottomSheetNavigator
+import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.kis.youranimelist.ui.Theme
 import com.kis.youranimelist.ui.bottomnavigation.BottomNavigationDestinaton
 import com.kis.youranimelist.ui.bottomnavigation.MainScreenBottomNavigation
@@ -51,14 +56,15 @@ fun YourAnimeListTheme(
         ),
         typography = typography,
         shapes = shapes,
-        content = content
+        content = content,
     )
 }
 
-@OptIn(ExperimentalAnimationApi::class)
+@OptIn(ExperimentalAnimationApi::class, ExperimentalMaterialNavigationApi::class)
 @Composable
 fun YourAnimeListMainScreen() {
-    val navController = rememberAnimatedNavController()
+    val bottomSheetNavigator = rememberBottomSheetNavigator(skipHalfExpanded = true)
+    val navController = rememberAnimatedNavController(bottomSheetNavigator)
     val scaffoldState = rememberScaffoldState()
     Scaffold(
         bottomBar = {
@@ -77,7 +83,25 @@ fun YourAnimeListMainScreen() {
             navController,
             paddingValues,
             scaffoldState,
+            bottomSheetNavigator,
         )
+    }
+}
+
+@ExperimentalMaterialNavigationApi
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun rememberBottomSheetNavigator(
+    animationSpec: AnimationSpec<Float> = SwipeableDefaults.AnimationSpec,
+    skipHalfExpanded: Boolean = false,
+): BottomSheetNavigator {
+    val sheetState = rememberModalBottomSheetState(
+        ModalBottomSheetValue.Hidden,
+        animationSpec,
+        skipHalfExpanded,
+    )
+    return remember(sheetState) {
+        BottomSheetNavigator(sheetState = sheetState)
     }
 }
 

@@ -50,15 +50,19 @@
         <entry key="../../../../layout/compose-model-1659878072328.xml" value="0.3638888888888889" />
         <entry key="../../../../layout/compose-model-1659949787757.xml" value="0.1685185185185185" />
         <entry key="../../../../layout/compose-model-1659952929482.xml" value="0.41363636363636364" />
+        <entry key="../../../../layout/compose-model-1660308337358.xml" value="0.1" />
+        <entry key="../../../../layout/compose-model-1660427215365.xml" value="0.20833333333333334" />
         <entry key="app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.181" />
         <entry key="app/src/main/res/drawable/button_back.xml" value="0.181" />
         <entry key="app/src/main/res/drawable/fade_image.xml" value="0.181" />
         <entry key="app/src/main/res/drawable/ic_angle_down_solid.xml" value="0.181" />
         <entry key="app/src/main/res/drawable/ic_angle_up_solid.xml" value="0.181" />
         <entry key="app/src/main/res/drawable/ic_arrow_left_solid.xml" value="0.148" />
+        <entry key="app/src/main/res/drawable/ic_birthday.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/ic_button_back.xml" value="0.148" />
         <entry key="app/src/main/res/drawable/ic_chevron_down_solid.xml" value="0.181" />
         <entry key="app/src/main/res/drawable/ic_chevron_up_solid.xml" value="0.181" />
+        <entry key="app/src/main/res/drawable/ic_clock.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/ic_explore.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/ic_heart_regular.xml" value="0.181" />
         <entry key="app/src/main/res/drawable/ic_home_solid.xml" value="0.181" />

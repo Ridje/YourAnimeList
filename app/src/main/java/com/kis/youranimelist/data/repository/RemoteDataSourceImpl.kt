@@ -6,8 +6,10 @@ import com.kis.youranimelist.data.network.api.MyAnimeListOAuthAPI
 import com.kis.youranimelist.data.network.model.AnimeResponse
 import com.kis.youranimelist.data.network.model.TokenResponse
 import com.kis.youranimelist.data.network.model.UserResponse
+import com.kis.youranimelist.data.network.model.personal_list.AnimeStatusResponse
 import com.kis.youranimelist.data.network.model.personal_list.PersonalAnimeListResponse
 import com.kis.youranimelist.data.network.model.ranking_response.AnimeRankedResponse
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -93,6 +95,64 @@ class RemoteDataSourceImpl(
                 result.body() ?: throw NetworkErrorException("Request wasn't successful")
             } else {
                 throw NetworkErrorException()
+            }
+        }
+    }
+
+    override suspend fun deletePersonalAnimeStatus(animeId: Int): Boolean {
+        return withContext(Dispatchers.IO) {
+            try {
+                val result =
+                    malService.deleteUserAnimeStatus(animeId).execute()
+                return@withContext result.isSuccessful
+            } catch (e: Exception) {
+                if (e is CancellationException) {
+                    throw e
+                }
+                return@withContext false
+            }
+        }
+    }
+
+    override suspend fun savePersonalAnimeStatus(
+        animeId: Int,
+        status: String?,
+        score: Int?,
+        episodesWatched: Int?,
+    ): Boolean {
+        return withContext(Dispatchers.IO) {
+            try {
+                val result =
+                    malService.updateUserAnime(animeId, status, score, episodesWatched).execute()
+                if (result.isSuccessful) {
+                    return@withContext true
+                } else {
+                    throw NetworkErrorException()
+                }
+            } catch (e: Exception) {
+                if (e is CancellationException) {
+                    throw e
+                }
+                return@withContext false
+            }
+        }
+    }
+
+    override suspend fun getPersonalAnimeStatus(animeId: Int): AnimeStatusResponse? {
+        return withContext(Dispatchers.IO) {
+            try {
+                val result =
+                    malService.getUserAnimeStatus(animeId).execute()
+                if (result.isSuccessful) {
+                    return@withContext result.body()
+                } else {
+                    return@withContext null
+                }
+            } catch (e: Exception) {
+                if (e is CancellationException) {
+                    throw e
+                }
+                return@withContext null
             }
         }
     }
