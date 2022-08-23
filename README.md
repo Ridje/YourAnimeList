@@ -6,7 +6,7 @@ Client for myanimelist.net
 - Architecture: MVI
 - Network: OkHttp, Retrofit, Coil
 - Async: Coroutines, Flow
-- Local data: cryptoSharedPreferences, MemoryCache
+- Local data: cryptoSharedPreferences, MemoryCache, Room
 - Api: https://myanimelist.net/apiconfig/references/api/v2
 - DI: Hilt
 - Presentation Layer: Compose
