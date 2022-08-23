@@ -26,6 +26,7 @@ import com.google.accompanist.navigation.material.BottomSheetNavigator
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.ModalBottomSheetLayout
 import com.google.accompanist.navigation.material.bottomSheet
+import com.google.accompanist.systemuicontroller.SystemUiController
 import com.kis.youranimelist.ui.endlesslist.EndlessListScreenRoute
 import com.kis.youranimelist.ui.explore.ExploreScreenRoute
 import com.kis.youranimelist.ui.item.ItemScreenRoute

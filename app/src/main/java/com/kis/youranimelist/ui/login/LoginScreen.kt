@@ -8,6 +8,7 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -17,6 +18,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.google.accompanist.systemuicontroller.SystemUiController
 import com.google.accompanist.web.WebView
 import com.google.accompanist.web.rememberWebViewState
 import com.kis.youranimelist.BuildConfig
@@ -63,7 +65,6 @@ fun LoginScreen(
     onLoginSucceed: (String, String) -> Unit,
     onAuthDataSaved: () -> Unit,
 ) {
-
     LaunchedEffect(effectFlow) {
         effectFlow.collectLatest { effect ->
             when (effect) {

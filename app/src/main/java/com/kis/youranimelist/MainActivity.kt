@@ -7,6 +7,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.AnimationSpec
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.MaterialTheme.colors
@@ -18,15 +19,21 @@ import androidx.compose.material.SwipeableDefaults
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.core.view.WindowInsetsControllerCompat
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.navigation.material.BottomSheetNavigator
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.kis.youranimelist.ui.Theme
 import com.kis.youranimelist.ui.bottomnavigation.BottomNavigationDestinaton
 import com.kis.youranimelist.ui.bottomnavigation.MainScreenBottomNavigation
 import com.kis.youranimelist.ui.navigation.YourAnimeListNavHost
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -67,6 +74,19 @@ fun YourAnimeListMainScreen() {
     val bottomSheetNavigator = rememberBottomSheetNavigator(skipHalfExpanded = true)
     val navController = rememberAnimatedNavController(bottomSheetNavigator)
     val scaffoldState = rememberScaffoldState()
+    val systemUiController = rememberSystemUiController()
+    val useDarkIcons = !isSystemInDarkTheme()
+
+    val systemUiColor = colors.surface
+
+    DisposableEffect(systemUiController, useDarkIcons) {
+        systemUiController.setSystemBarsColor(
+            color = systemUiColor,
+            darkIcons = !useDarkIcons
+        )
+        onDispose {}
+    }
+
     Scaffold(
         bottomBar = {
             MainScreenBottomNavigation(
