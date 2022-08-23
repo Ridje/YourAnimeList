@@ -1,9 +1,10 @@
-package com.kis.youranimelist.data.cache.model
+package com.kis.youranimelist.data.cache.model.personalanime
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
+import com.kis.youranimelist.data.cache.model.anime.AnimePersistence
 
 @Entity(tableName = "anime_personal_status",
     foreignKeys = arrayOf(
@@ -18,7 +19,7 @@ import androidx.room.PrimaryKey
         )
     )
 )
-data class AnimePersonalStatusEntity(
+data class AnimePersonalStatusPersistence(
     val score: Int,
     @ColumnInfo(name = "episodes_watched")
     val episodesWatched: Int,

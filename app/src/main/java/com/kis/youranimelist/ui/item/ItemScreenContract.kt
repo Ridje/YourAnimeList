@@ -10,6 +10,7 @@ object ItemScreenContract {
 }
 
 data class AnimeItem(
+    val id: Int,
     val title: String,
     val images: List<String>,
     val synopsis: String,
@@ -24,6 +25,7 @@ object ItemScreenMapper {
 
         if (anime == null) {
             return AnimeItem(
+                0,
                 title = "Loading",
                 synopsis = "Not written yet",
                 year = 0,
@@ -33,6 +35,7 @@ object ItemScreenMapper {
             )
         } else {
             return AnimeItem(
+                id = anime.id,
                 title = anime.title,
                 images = mutableListOf<String>().plus(anime.picture?.large)
                     .plus(anime.pictures.map { it.large }).filterNotNull().distinct().toImmutableList(),

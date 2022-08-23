@@ -11,6 +11,6 @@ interface PersonalAnimeRepository {
     suspend fun refreshPersonalAnimeStatuses()
     suspend fun deletePersonalAnimeStatus(animeId: Int): Boolean
     suspend fun refreshPersonalAnimeStatus(animeId: Int)
-    suspend fun fetchData(limit: Int, offset: Int): PersonalAnimeListResponse
+    suspend fun fetchData(limit: Int, offset: Int): PersonalAnimeListResponse?
     suspend fun saveAnimeStatus(animeStatus: AnimeStatus): Boolean
 }

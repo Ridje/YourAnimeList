@@ -1,6 +1,6 @@
 package com.kis.youranimelist.domain.personalanimelist.mapper
 
-import com.kis.youranimelist.data.cache.model.AnimeWithPersonalStatusPersistence
+import com.kis.youranimelist.data.cache.model.personalanime.PersonalStatusOfAnimePersistence
 import com.kis.youranimelist.data.network.model.personal_list.PersonalAnimeItemResponse
 import com.kis.youranimelist.domain.personalanimelist.model.AnimeStatus
 import com.kis.youranimelist.domain.personalanimelist.model.AnimeStatusValue
@@ -22,8 +22,8 @@ class AnimeStatusMapper @Inject constructor(
         )
     }
 
-    fun map(from: AnimeWithPersonalStatusPersistence): AnimeStatus {
-        val anime = animeMapper.map(from.anime)
+    fun map(from: PersonalStatusOfAnimePersistence): AnimeStatus {
+        val anime = animeMapper.map(from.anime, from.mainPicture)
         val status =
             AnimeStatusValue.Companion.Factory.getAnimeStatusByValue(from.animeStatusPersistence.id)
         return AnimeStatus(

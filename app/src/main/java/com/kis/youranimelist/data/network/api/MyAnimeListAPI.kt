@@ -27,7 +27,7 @@ interface MyAnimeListAPI {
     @GET("anime/{anime_id}")
     fun animeDetails(
         @Path("anime_id") animeID: Int,
-        @Query("fields") fields: String?,
+        @Query("fields") fields: String,
     ): Call<AnimeResponse>
 
     @GET("users/@me")

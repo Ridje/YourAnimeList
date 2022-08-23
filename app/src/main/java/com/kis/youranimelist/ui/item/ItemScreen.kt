@@ -2,6 +2,7 @@ package com.kis.youranimelist.ui.item
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
@@ -69,6 +70,7 @@ fun ItemScreenRoute(
             navController.popBackStack(newRoute, false, false)
         },
         { animeId: Int -> navController.navigate(NavigationKeys.Route.EXPLORE + "/$animeId") },
+        { animeId: Int -> navController.navigate(NavigationKeys.Route.MY_LIST + "/$animeId") }
     )
 }
 
@@ -80,6 +82,7 @@ fun ItemScreen(
     onBackButtonPressed: () -> Unit,
     onHomeButtonPressed: () -> Unit,
     onRelatedAnimeClicked: (Int) -> Unit,
+    onEditButtonPressed: (Int) -> Unit,
 ) {
     ConstraintLayout(modifier = Modifier
         .fillMaxHeight()
@@ -121,19 +124,26 @@ fun ItemScreen(
                 contentScale = ContentScale.Crop,
             )
         }
-        Row(modifier = Modifier.padding(20.dp)) {
-            NavigateButton(
-                onButtonPressed = onBackButtonPressed,
-                iconRes = R.drawable.ic_arrow_left_solid,
-            )
-            Divider(
-                modifier = Modifier.width(10.dp),
-                color = Color.Transparent,
-            )
-            NavigateButton(
-                onButtonPressed = onHomeButtonPressed,
-                iconRes = R.drawable.ic_home_solid,
-            )
+        Row(modifier = Modifier
+            .padding(20.dp)
+            .fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween) {
+            Row() {
+                NavigateButton(
+                    onButtonPressed = onBackButtonPressed,
+                    iconRes = R.drawable.ic_arrow_left_solid,
+                )
+                Divider(
+                    modifier = Modifier.width(10.dp),
+                    color = Color.Transparent,
+                )
+                NavigateButton(
+                    onButtonPressed = onHomeButtonPressed,
+                    iconRes = R.drawable.ic_home_solid,
+                )
+            }
+            NavigateButton(onButtonPressed = { onEditButtonPressed.invoke(anime.id) },
+                iconRes = R.drawable.ic_pen)
         }
         Column(
             modifier = Modifier

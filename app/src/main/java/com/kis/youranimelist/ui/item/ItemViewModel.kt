@@ -3,12 +3,13 @@ package com.kis.youranimelist.ui.item
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.kis.youranimelist.data.repository.AnimeRepository
+import com.kis.youranimelist.data.repository.anime.AnimeRepository
 import com.kis.youranimelist.ui.navigation.InvalidNavArgumentException
 import com.kis.youranimelist.ui.navigation.NavigationKeys
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -18,6 +19,9 @@ class ItemViewModel @Inject constructor(
     private val animeRepository: AnimeRepository,
 ) : ViewModel() {
 
+    val animeId = savedStateHandle.get<Int>(NavigationKeys.Argument.ANIME_ID)
+        ?: throw InvalidNavArgumentException(NavigationKeys.Argument.ANIME_ID)
+
     val screenState: MutableStateFlow<ItemScreenContract.ScreenState> = MutableStateFlow(
         ItemScreenContract.ScreenState(
             item = ItemScreenMapper.map(null)
@@ -25,27 +29,25 @@ class ItemViewModel @Inject constructor(
     )
 
     init {
-        getAnimeInfo(
-            savedStateHandle.get<Int>(NavigationKeys.Argument.ANIME_ID)
-                ?: throw InvalidNavArgumentException(NavigationKeys.Argument.ANIME_ID)
-        )
+        getAnimeInfo()
+        getLatestData()
     }
 
-    private fun getAnimeInfo(animeID: Int) {
-        viewModelScope.launch(Dispatchers.IO) {
-            animeRepository.getAnimeDetailedData(
-                animeID,
-                fields
+    private fun getLatestData() {
+        viewModelScope.launch() {
+            animeRepository.refreshAnimeDetailedData(animeID = animeId)
+        }
+    }
+
+    private fun getAnimeInfo() {
+        viewModelScope.launch {
+            animeRepository.getAnimeDetailedDataSource(
+                animeId,
             ).collect { anime ->
                 screenState.value = ItemScreenContract.ScreenState(
                     item = ItemScreenMapper.map(anime)
                 )
             }
         }
-    }
-
-    companion object {
-        const val fields =
-            "id, title, mean, main_picture, start_season, synopsis, genres, pictures, related_anime"
     }
 }

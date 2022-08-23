@@ -13,12 +13,12 @@ interface RemoteDataSource {
         const val CODE_FIELD = "code"
     }
 
-    fun getAnimeInfo(animeID : Int, keys : String?) : AnimeResponse
     fun getAccessToken(clientID : String, code: String, codeVerifier: String, grantType : String) : TokenResponse
     fun getUserData(): UserResponse?
 
-    suspend fun getAnimeRankingList(rankingType : String, limit : Int?, offset : Int?, fields : String?) : List<AnimeRankedResponse>
-    suspend fun getPersonalAnimeList(status: String?, sort: String?, limit: Int, offset: Int): PersonalAnimeListResponse
+    suspend fun getAnimeInfo(animeID : Int) : AnimeResponse?
+    suspend fun getAnimeRankingList(rankingType : String, limit : Int?, offset : Int?,) : List<AnimeRankedResponse>
+    suspend fun getPersonalAnimeList(status: String?, sort: String?, limit: Int, offset: Int): PersonalAnimeListResponse?
     suspend fun deletePersonalAnimeStatus(animeId: Int): Boolean
     suspend fun savePersonalAnimeStatus(animeId: Int, status: String?, score: Int?, episodesWatched: Int?): Boolean
     suspend fun getPersonalAnimeStatus(animeId: Int): AnimeStatusResponse?

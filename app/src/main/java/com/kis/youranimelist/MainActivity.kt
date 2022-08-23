@@ -53,6 +53,7 @@ fun YourAnimeListTheme(
             onBackground = Theme.Colors.onPrimary,
             primary = Theme.Colors.primary,
             onSurface = Theme.Colors.onSurface,
+            secondary = Theme.Colors.secondary,
         ),
         typography = typography,
         shapes = shapes,
