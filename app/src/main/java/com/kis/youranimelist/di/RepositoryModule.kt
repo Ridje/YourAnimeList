@@ -2,11 +2,12 @@ package com.kis.youranimelist.di
 
 import com.kis.youranimelist.data.cache.dao.AnimeDAO
 import com.kis.youranimelist.data.cache.dao.PersonalAnimeDAO
+import com.kis.youranimelist.data.cache.dao.SideDAO
 import com.kis.youranimelist.data.cache.dao.UserDAO
 import com.kis.youranimelist.data.network.api.MyAnimeListAPI
 import com.kis.youranimelist.data.network.api.MyAnimeListOAuthAPI
-import com.kis.youranimelist.data.repository.AnimeRepository
-import com.kis.youranimelist.data.repository.AnimeRepositoryImpl
+import com.kis.youranimelist.data.repository.anime.AnimeRepository
+import com.kis.youranimelist.data.repository.anime.AnimeRepositoryImpl
 import com.kis.youranimelist.data.repository.LocalDataSource
 import com.kis.youranimelist.data.repository.LocalDataSourceImpl
 import com.kis.youranimelist.data.repository.RemoteDataSource
@@ -34,19 +35,24 @@ object RepositoryModule {
 
     @Provides
     fun provideAnimeRankingRepository(
+        localDataSource: LocalDataSource,
         remoteDataSource: RemoteDataSource,
         animeMapper: AnimeMapper,
     ): AnimeRankingRepository {
-        return AnimeRankingRepositoryImpl(remoteDataSource, animeMapper)
+        return AnimeRankingRepositoryImpl(localDataSource, remoteDataSource, animeMapper)
     }
 
     @Singleton
     @Provides
     fun provideAnimeRepository(
         remoteDataSource: RemoteDataSource,
+        localDataSource: LocalDataSource,
+        animeMapper: AnimeMapper,
     ): AnimeRepository {
         return AnimeRepositoryImpl(
-            remoteDataSource,
+            localDataSource = localDataSource,
+            remoteDataSource = remoteDataSource,
+            animeMapper = animeMapper,
         )
     }
 
@@ -65,8 +71,9 @@ object RepositoryModule {
     fun provideRemoteDataSource(
         malService: MyAnimeListAPI,
         malOauthService: MyAnimeListOAuthAPI,
+        dispatchers: Dispatchers,
     ): RemoteDataSource {
-        return RemoteDataSourceImpl(malService, malOauthService)
+        return RemoteDataSourceImpl(malService, malOauthService, dispatchers)
     }
 
 
@@ -76,9 +83,10 @@ object RepositoryModule {
         animeDAO: AnimeDAO,
         personalAnimeDAO: PersonalAnimeDAO,
         userDAO: UserDAO,
+        sideDAO: SideDAO,
         dispatchers: Dispatchers,
     ): LocalDataSource {
-        return LocalDataSourceImpl(personalAnimeDAO, animeDAO, userDAO, dispatchers)
+        return LocalDataSourceImpl(personalAnimeDAO, animeDAO, userDAO, sideDAO, dispatchers)
     }
 
     @Singleton
@@ -97,11 +105,3 @@ object RepositoryModule {
         return Dispatchers
     }
 }
-
-@Qualifier
-@Retention(AnnotationRetention.RUNTIME)
-annotation class Cache
-
-@Qualifier
-@Retention(AnnotationRetention.RUNTIME)
-annotation class Network

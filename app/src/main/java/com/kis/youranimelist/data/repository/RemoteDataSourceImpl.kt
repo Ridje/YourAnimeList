@@ -17,6 +17,7 @@ import kotlinx.coroutines.withContext
 class RemoteDataSourceImpl(
     private val malService: MyAnimeListAPI,
     private val malOauthService: MyAnimeListOAuthAPI,
+    private val dispatchers: Dispatchers,
 ) : RemoteDataSource {
 
     companion object {
@@ -24,32 +25,49 @@ class RemoteDataSourceImpl(
             "id, name, picture, gender, birthday, location, joined_at, anime_statistics"
         private const val USER_ANIME_FIELDS =
             "id, title, main_picture, list_status, media_type, num_episodes, mean"
+        private const val ANIME_FIELDS =
+            "id, title, mean, main_picture, start_season, synopsis, genres, pictures, related_anime, media_type, num_episodes"
+
     }
 
     override suspend fun getAnimeRankingList(
         rankingType: String,
         limit: Int?,
         offset: Int?,
-        fields: String?,
     ): List<AnimeRankedResponse> = withContext(Dispatchers.IO) {
-        val result = malService.animeRanking(rankingType, limit, offset, fields).execute()
-
-        if (result.isSuccessful) {
-            result.body()?.data ?: throw NetworkErrorException("Request wasn't successful")
-        } else {
-            throw NetworkErrorException()
+        try {
+            val result = malService.animeRanking(rankingType, limit, offset, ANIME_FIELDS).execute()
+            if (result.isSuccessful) {
+                result.body()?.data ?: throw NetworkErrorException()
+            } else {
+                return@withContext listOf()
+            }
+        } catch (e: Exception) {
+            if (e is CancellationException) {
+                throw e
+            }
+            return@withContext listOf()
         }
     }
 
 
-    override fun getAnimeInfo(animeID: Int, keys: String?): AnimeResponse {
+    override suspend fun getAnimeInfo(animeID: Int): AnimeResponse? {
+        return withContext(dispatchers.IO) {
+            try {
+                val result = malService.animeDetails(animeID, ANIME_FIELDS).execute()
 
-        val result = malService.animeDetails(animeID, keys).execute()
+                if (result.isSuccessful) {
+                    result.body()
+                } else {
+                    return@withContext null
+                }
+            } catch (e: Exception) {
+                if (e is CancellationException) {
+                    throw e
+                }
 
-        return if (result.isSuccessful) {
-            result.body() ?: throw NetworkErrorException("Request wasn't successful")
-        } else {
-            throw NetworkErrorException("Request wasn't successful")
+                return@withContext null
+            }
         }
     }
 
@@ -87,20 +105,27 @@ class RemoteDataSourceImpl(
         sort: String?,
         limit: Int,
         offset: Int,
-    ): PersonalAnimeListResponse {
-        return withContext(Dispatchers.IO) {
-            val result =
-                malService.userAnime(status, sort, limit, offset, USER_ANIME_FIELDS).execute()
-            if (result.isSuccessful) {
-                result.body() ?: throw NetworkErrorException("Request wasn't successful")
-            } else {
-                throw NetworkErrorException()
+    ): PersonalAnimeListResponse? {
+        return withContext(dispatchers.IO) {
+            try {
+                val result =
+                    malService.userAnime(status, sort, limit, offset, USER_ANIME_FIELDS).execute()
+                if (result.isSuccessful) {
+                    result.body() ?: return@withContext null
+                } else {
+                    throw NetworkErrorException()
+                }
+            } catch (e: Exception) {
+                if (e is CancellationException) {
+                    throw e
+                }
+                return@withContext null
             }
         }
     }
 
     override suspend fun deletePersonalAnimeStatus(animeId: Int): Boolean {
-        return withContext(Dispatchers.IO) {
+        return withContext(dispatchers.IO) {
             try {
                 val result =
                     malService.deleteUserAnimeStatus(animeId).execute()
@@ -120,7 +145,7 @@ class RemoteDataSourceImpl(
         score: Int?,
         episodesWatched: Int?,
     ): Boolean {
-        return withContext(Dispatchers.IO) {
+        return withContext(dispatchers.IO) {
             try {
                 val result =
                     malService.updateUserAnime(animeId, status, score, episodesWatched).execute()
@@ -139,7 +164,7 @@ class RemoteDataSourceImpl(
     }
 
     override suspend fun getPersonalAnimeStatus(animeId: Int): AnimeStatusResponse? {
-        return withContext(Dispatchers.IO) {
+        return withContext(dispatchers.IO) {
             try {
                 val result =
                     malService.getUserAnimeStatus(animeId).execute()

@@ -1,7 +1,7 @@
 package com.kis.youranimelist.data.repository.personalanime
 
 import android.util.Log
-import com.kis.youranimelist.data.cache.model.AnimePersonalStatusEntity
+import com.kis.youranimelist.data.cache.model.personalanime.AnimePersonalStatusPersistence
 import com.kis.youranimelist.data.network.model.personal_list.PersonalAnimeListResponse
 import com.kis.youranimelist.data.repository.LocalDataSource
 import com.kis.youranimelist.data.repository.RemoteDataSource
@@ -29,10 +29,12 @@ class PersonalAnimeRepositoryImpl @Inject constructor(
         val dataList = mutableListOf<AnimeStatus>()
         while (hasNext) {
             val fetchedValue = fetchData(1000, 0)
-            if (fetchedValue.paging.next.isNullOrBlank()) {
+            if (fetchedValue?.paging?.next.isNullOrBlank()) {
                 hasNext = false
             }
-            dataList.addAll(fetchedValue.data.map { animeStatusMapper.map(it) })
+            fetchedValue?.data?.let { responseList ->
+                dataList.addAll(responseList.map { animeStatusMapper.map(it) })
+            }
         }
         try {
             localDataSource.saveAnimeWithPersonalStatusToCache(dataList)
@@ -51,7 +53,7 @@ class PersonalAnimeRepositoryImpl @Inject constructor(
     override suspend fun refreshPersonalAnimeStatus(animeId: Int) {
         remoteDataSource.getPersonalAnimeStatus(animeId)?.let {
             localDataSource.savePersonalAnimeStatusToCache(
-                AnimePersonalStatusEntity(
+                AnimePersonalStatusPersistence(
                     score = it.score,
                     episodesWatched = it.numEpisodesWatched,
                     statusId = it.status,
@@ -69,7 +71,7 @@ class PersonalAnimeRepositoryImpl @Inject constructor(
 
     override suspend fun saveAnimeStatus(animeStatus: AnimeStatus): Boolean {
         val localResult = localDataSource.savePersonalAnimeStatusToCache(
-            AnimePersonalStatusEntity(
+            AnimePersonalStatusPersistence(
                 score = animeStatus.score,
                 episodesWatched = animeStatus.numWatchedEpisodes,
                 statusId = animeStatus.status.presentIndex,
@@ -86,7 +88,7 @@ class PersonalAnimeRepositoryImpl @Inject constructor(
     }
 
 
-    override suspend fun fetchData(limit: Int, offset: Int): PersonalAnimeListResponse {
+    override suspend fun fetchData(limit: Int, offset: Int): PersonalAnimeListResponse? {
         return remoteDataSource.getPersonalAnimeList(null, null, limit, offset)
     }
 }

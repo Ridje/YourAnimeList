@@ -14,7 +14,7 @@ data class Anime(
     val startSeason: Season? = null,
     val mean: Float? = null,
     val synopsis: String? = "Description",
-    val genres: List<Genre>? = listOf(),
+    val genres: List<Genre> = listOf(),
     val pictures: List<Picture> = listOf(),
     val relatedAnime: List<RelatedAnime> = listOf(),
     val rank: Int? = null,

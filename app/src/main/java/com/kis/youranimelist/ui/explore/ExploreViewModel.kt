@@ -3,7 +3,7 @@ package com.kis.youranimelist.ui.explore
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kis.youranimelist.domain.rankinglist.model.AnimeCategory
-import com.kis.youranimelist.data.repository.AnimeRepository
+import com.kis.youranimelist.data.repository.anime.AnimeRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
@@ -76,7 +76,7 @@ class ExploreViewModel @Inject constructor(
                     return@withContext animeRepository.getRankingAnimeList(requests[i].tag,
                         limit,
                         null,
-                        fields)
+                    )
                 }
                 val currentList = screenState.value.categories.toMutableList()
                 currentList[i] = AnimeCategory(requests[i].name, requests[i].tag, result)
@@ -94,9 +94,5 @@ class ExploreViewModel @Inject constructor(
     ): Boolean {
         return itemValue == null || userValue.isEmpty() || nsfwValues.indexOf(itemValue) <= nsfwValues.indexOf(
             userValue)
-    }
-
-    companion object {
-        const val fields = "id, title, main_picture, start_season"
     }
 }
