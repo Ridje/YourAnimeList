@@ -29,7 +29,7 @@ interface PersonalAnimeDAO {
     @Transaction
     fun getAllAnimeWithPersonalStatuses(): Flow<List<PersonalStatusOfAnimePersistence>>
 
-    @Query("Select * FROM anime_personal_status INNER JOIN anime ON anime_personal_status.anime_id = anime.id WHERE anime_id = :id")
+    @Query("Select * FROM anime LEFT JOIN anime_personal_status ON anime_personal_status.anime_id = anime.id WHERE anime.id = :id")
     @Transaction
     fun getAnimeWithPersonalStatus(id: Int): Flow<PersonalStatusOfAnimePersistence>
 }

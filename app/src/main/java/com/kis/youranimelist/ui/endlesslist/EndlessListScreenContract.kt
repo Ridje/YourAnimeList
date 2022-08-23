@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.Flow
 object EndlessListScreenContract {
     data class ScreenState(
         val items: Flow<PagingData<Item>>,
+        val title: String,
     )
 }
 

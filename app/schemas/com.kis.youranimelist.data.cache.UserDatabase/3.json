@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 3,
-    "identityHash": "808a068a2596b577cd9aeee3b60c3c27",
+    "identityHash": "ff4058a713120f8460086b3b1f778283",
     "entities": [
       {
         "tableName": "anime",
@@ -91,31 +91,31 @@
       },
       {
         "tableName": "anime_personal_status",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`score` INTEGER NOT NULL, `episodes_watched` INTEGER NOT NULL, `status_id` TEXT NOT NULL, `anime_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, FOREIGN KEY(`status_id`) REFERENCES `anime_status`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`anime_id`) REFERENCES `anime`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`score` INTEGER, `episodes_watched` INTEGER, `status_id` TEXT, `anime_id` INTEGER PRIMARY KEY AUTOINCREMENT, FOREIGN KEY(`status_id`) REFERENCES `anime_status`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`anime_id`) REFERENCES `anime`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
         "fields": [
           {
             "fieldPath": "score",
             "columnName": "score",
             "affinity": "INTEGER",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "episodesWatched",
             "columnName": "episodes_watched",
             "affinity": "INTEGER",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "statusId",
             "columnName": "status_id",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "animeId",
             "columnName": "anime_id",
             "affinity": "INTEGER",
-            "notNull": true
+            "notNull": false
           }
         ],
         "primaryKey": {
@@ -507,7 +507,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '808a068a2596b577cd9aeee3b60c3c27')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'ff4058a713120f8460086b3b1f778283')"
     ]
   }
 }

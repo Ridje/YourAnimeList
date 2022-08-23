@@ -44,7 +44,6 @@ fun YourAnimeListNavHost(
     bottomSheetNavigator: BottomSheetNavigator,
     viewModel: NavigationViewModel = hiltViewModel(),
 ) {
-    viewModel.navigateEffects
     LaunchedEffect(viewModel.navigateEffects) {
         viewModel
             .navigateEffects

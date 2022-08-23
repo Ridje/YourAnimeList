@@ -9,7 +9,7 @@ import com.kis.youranimelist.data.cache.model.personalanime.AnimeStatusPersisten
 
 data class PersonalStatusOfAnimePersistence(
     @Embedded
-    val status: AnimePersonalStatusPersistence,
+    val status: AnimePersonalStatusPersistence?,
 
     @Embedded
     val anime: AnimePersistence,
@@ -18,7 +18,7 @@ data class PersonalStatusOfAnimePersistence(
         parentColumn = "status_id",
         entityColumn = "id"
     )
-    val animeStatusPersistence: AnimeStatusPersistence,
+    val animeStatusPersistence: AnimeStatusPersistence?,
 
     @Relation(
         parentColumn = "picture_id",

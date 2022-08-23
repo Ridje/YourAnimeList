@@ -1,6 +1,8 @@
 package com.kis.youranimelist.ui.itembottomsheetdialog
 
+import com.kis.youranimelist.domain.personalanimelist.model.AnimeStatus
 import com.kis.youranimelist.domain.personalanimelist.model.AnimeStatusValue
+import com.kis.youranimelist.domain.rankinglist.model.Anime
 
 object ItemBottomScreenContract {
     data class ScreenState(
@@ -19,8 +21,8 @@ object ItemBottomScreenContract {
     )
 
     sealed class Effect {
-        object DataSaved: Effect()
-        object DataSaveError: Effect()
+        object DataSaved : Effect()
+        object DataSaveError : Effect()
     }
 
     interface ScreenEventsListener {
@@ -33,3 +35,41 @@ object ItemBottomScreenContract {
         fun onDeleteEntryClick()
     }
 }
+
+fun ItemBottomScreenContract.ScreenState.copyWithMapping(animeStatus: AnimeStatus): ItemBottomScreenContract.ScreenState {
+    return this.copy(
+        id = animeStatus.anime.id,
+        title = animeStatus.anime.title,
+        currentStatus = if (this.statusModified) {
+            this.currentStatus
+        } else {
+            AnimeStatusValue.listOfIndiciesOnlyValues()
+                .indexOf(animeStatus.status.presentIndex)
+        },
+        episodesWatched = if (this.episodesWatchedModified) {
+           this.episodesWatched
+        } else {
+            animeStatus.numWatchedEpisodes
+        },
+        episodes = animeStatus.anime.numEpisodes ?: 0,
+        score = if (this.scoreModified) {
+            this.score
+        } else {
+            animeStatus.score.toFloat()
+        }
+    )
+}
+
+fun ItemBottomScreenContract.ScreenState.asAnimeStatus(): AnimeStatus {
+    return AnimeStatus(
+        anime = Anime(
+            id = this.id,
+            title = this.title,
+        ),
+        status = AnimeStatusValue.Companion.Factory.getAnimeStatusByValue(
+            this.statuses[this.currentStatus]),
+        score = this.score.toInt(),
+        numWatchedEpisodes = this.episodesWatched ?: 0,
+    )
+}
+

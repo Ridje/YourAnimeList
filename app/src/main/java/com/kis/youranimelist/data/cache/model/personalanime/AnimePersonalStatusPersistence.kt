@@ -20,12 +20,12 @@ import com.kis.youranimelist.data.cache.model.anime.AnimePersistence
     )
 )
 data class AnimePersonalStatusPersistence(
-    val score: Int,
+    val score: Int?,
     @ColumnInfo(name = "episodes_watched")
-    val episodesWatched: Int,
+    val episodesWatched: Int?,
     @ColumnInfo(name = "status_id", index = true)
-    val statusId: String,
+    val statusId: String?,
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "anime_id", index = true)
-    val animeId: Int,
+    val animeId: Int?,
 )

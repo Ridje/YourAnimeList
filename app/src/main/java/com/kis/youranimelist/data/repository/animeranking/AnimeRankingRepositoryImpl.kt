@@ -14,6 +14,8 @@ class AnimeRankingRepositoryImpl @Inject constructor(
     private val animeMapper: AnimeMapper,
 ) : AnimeRankingRepository {
 
+    private val listCache = HashMap<Int, List<Anime>>()
+
     override fun getDataSource(rankingType: String): PagingSource<Int, Anime> {
         return object : PagingSource<Int, Anime>() {
             override fun getRefreshKey(state: PagingState<Int, Anime>): Int? {
@@ -22,15 +24,15 @@ class AnimeRankingRepositoryImpl @Inject constructor(
 
             override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Anime> {
                 val nextPageKey = params.key ?: 0
-                val animeList =
+                val animeList = listCache[nextPageKey] ?:
                     fetchData(rankingType, params.loadSize, nextPageKey)
+                listCache[nextPageKey] = animeList
                 return LoadResult.Page(
                     data = animeList,
                     prevKey = if (nextPageKey == 0) null else nextPageKey - animeList.size,
                     nextKey = nextPageKey + animeList.size
                 )
             }
-
         }
 
     }

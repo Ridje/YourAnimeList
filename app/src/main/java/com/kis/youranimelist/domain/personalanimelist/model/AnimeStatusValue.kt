@@ -28,7 +28,7 @@ sealed class AnimeStatusValue(val presentIndex: String, val color: Color) {
         }
 
         object Factory {
-            fun getAnimeStatusByValue(value: String): AnimeStatusValue {
+            fun getAnimeStatusByValue(value: String?): AnimeStatusValue {
                 return when (value) {
                     "watching" -> Watching
                     "completed" -> Completed
@@ -36,6 +36,7 @@ sealed class AnimeStatusValue(val presentIndex: String, val color: Color) {
                     "dropped" -> Dropped
                     "plan_to_watch" -> PlanToWatch
                     "all" -> All
+                    null -> Watching
                     else -> Unknown
                 }
             }
