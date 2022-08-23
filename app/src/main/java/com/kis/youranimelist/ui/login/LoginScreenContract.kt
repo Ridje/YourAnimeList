@@ -4,6 +4,7 @@ object LoginScreenContract {
     data class ScreenState(
         val webViewVisible: Boolean = false,
         val isLoading: Boolean = false,
+        val isLoadingUserDatabase: Boolean = false,
     )
 
     sealed class Effect {

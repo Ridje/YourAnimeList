@@ -20,6 +20,7 @@ import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.core.view.WindowInsetsControllerCompat
@@ -75,16 +76,14 @@ fun YourAnimeListMainScreen() {
     val navController = rememberAnimatedNavController(bottomSheetNavigator)
     val scaffoldState = rememberScaffoldState()
     val systemUiController = rememberSystemUiController()
-    val useDarkIcons = !isSystemInDarkTheme()
 
     val systemUiColor = colors.surface
 
-    DisposableEffect(systemUiController, useDarkIcons) {
+    LaunchedEffect(systemUiController) {
         systemUiController.setSystemBarsColor(
             color = systemUiColor,
-            darkIcons = !useDarkIcons
+            darkIcons = false
         )
-        onDispose {}
     }
 
     Scaffold(

@@ -4,11 +4,12 @@ import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -18,7 +19,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.google.accompanist.systemuicontroller.SystemUiController
 import com.google.accompanist.web.WebView
 import com.google.accompanist.web.rememberWebViewState
 import com.kis.youranimelist.BuildConfig
@@ -26,6 +26,7 @@ import com.kis.youranimelist.R
 import com.kis.youranimelist.core.utils.Pkce
 import com.kis.youranimelist.core.utils.Urls
 import com.kis.youranimelist.ui.navigation.NavigationKeys
+import com.kis.youranimelist.ui.widget.TextProgressIndicator
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -41,6 +42,7 @@ fun LoginScreenRoute(
     LoginScreen(
         loginState.webViewVisible,
         loginState.isLoading,
+        loginState.isLoadingUserDatabase,
         effectFlow,
         if (loginState.isLoading) {
             {}
@@ -60,6 +62,7 @@ fun LoginScreenRoute(
 fun LoginScreen(
     isWebViewVisible: Boolean,
     isLoading: Boolean,
+    isLoadingUserDatabase: Boolean,
     effectFlow: Flow<LoginScreenContract.Effect>,
     onLoginClick: () -> Unit,
     onLoginSucceed: (String, String) -> Unit,
@@ -92,13 +95,21 @@ fun LoginScreen(
                 .fillMaxSize(),
         ) {
             Text(
-                stringResource(R.string.app_name),
+                text = stringResource(R.string.app_name),
+                style = MaterialTheme.typography.h4
             )
             TextButton(onClick = {
                 onLoginClick()
             }) {
                 if (isLoading) {
-                    CircularProgressIndicator()
+                    Column(modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally) {
+                        CircularProgressIndicator()
+                        if (isLoadingUserDatabase) {
+                            TextProgressIndicator(stringResource(R.string.loading_user_database))
+                        }
+                    }
+
                 } else {
                     Text(text = stringResource(id = R.string.login))
                 }
@@ -112,6 +123,6 @@ fun LoginScreen(
 )
 @Composable
 fun LoginScreenPreview() {
-    LoginScreen(false, false, MutableSharedFlow(), {}, { _, _ -> }, {})
+    LoginScreen(false, false, false, MutableSharedFlow(), {}, { _, _ -> }, {})
 }
 

@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.kis.youranimelist.BuildConfig
 import com.kis.youranimelist.domain.auth.AuthUseCase
 import com.kis.youranimelist.data.repository.RemoteDataSource
+import com.kis.youranimelist.domain.personalanimelist.PersonalAnimeListUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -17,6 +18,7 @@ import javax.inject.Inject
 class LoginViewModel @Inject constructor(
     private val remoteDataSource: RemoteDataSource,
     private val authUsecase: AuthUseCase,
+    private val useCase: PersonalAnimeListUseCase,
 ) : ViewModel(),
     LoginScreenContract.LoginScreenEventsConsumer {
 
@@ -56,6 +58,15 @@ class LoginViewModel @Inject constructor(
                 postResult.refreshToken,
                 postResult.expiresIn,
                 postResult.tokenType)
+            if (authUsecase.isAuthDataValid()) {
+                screenState.value = screenState.value.copy(
+                    isLoadingUserDatabase = true
+                )
+                useCase.refreshPersonalAnimeStatuses()
+                screenState.value = screenState.value.copy(
+                    isLoadingUserDatabase = false
+                )
+            }
             effectStream.emit(LoginScreenContract.Effect.AuthDataSaved)
         }
     }
