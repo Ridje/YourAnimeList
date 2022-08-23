@@ -56,28 +56,10 @@ class ItemBottomViewModel @Inject constructor(
                 .flowOn(Dispatchers.IO)
                 .collectLatest { result ->
                     when (result) {
-                        is Result.Success -> _screenState.value = screenState.value.copy(
-                            id = result.data.anime.id,
-                            title = result.data.anime.title,
-                            currentStatus = if (screenState.value.statusModified) {
-                                screenState.value.currentStatus
-                            } else {
-                                AnimeStatusValue.listOfIndiciesOnlyValues()
-                                    .indexOf(result.data.status.presentIndex)
-                            },
-                            episodesWatched = if (screenState.value.episodesWatchedModified) {
-                                screenState.value.episodesWatched
-                            } else {
-                                result.data.numWatchedEpisodes
-                            },
-                            episodes = result.data.anime.numEpisodes ?: 0,
-                            score = if (screenState.value.scoreModified) {
-                                screenState.value.score
-                            } else {
-                                result.data.score.toFloat()
-                            },
-                        )
-                        is Result.Error -> {}
+                        is Result.Success -> _screenState.value = screenState.value.copyWithMapping(result.data)
+                        is Result.Error,
+                        -> {
+                        }
                         else -> {
                         }
                     }
@@ -151,16 +133,7 @@ class ItemBottomViewModel @Inject constructor(
         viewModelScope.launch {
             val result = withContext(dispatchers.IO) {
                 personalAnimeListUseCase.savePersonalAnimeStatus(
-                    AnimeStatus(
-                        anime = Anime(
-                            id = screenState.value.id,
-                            title = screenState.value.title,
-                        ),
-                        status = AnimeStatusValue.Companion.Factory.getAnimeStatusByValue(
-                            screenState.value.statuses[screenState.value.currentStatus]),
-                        score = screenState.value.score.toInt(),
-                        numWatchedEpisodes = screenState.value.episodesWatched ?: 0,
-                    )
+                    screenState.value.asAnimeStatus()
                 )
             }
             when (result) {
