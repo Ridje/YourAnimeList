@@ -1,6 +1,5 @@
 package com.kis.youranimelist.ui.widget
 
-import android.util.Log
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -15,10 +14,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun TextProgressIndicator(text: String) {
     val coroutineScope = rememberCoroutineScope()
-    val sourceText = remember {
-        text
-    }
-    var loadingText by remember { mutableStateOf(sourceText) }
+    var loadingText by remember { mutableStateOf(text) }
     LaunchedEffect(true) {
         coroutineScope.launch {
             val dotsList = listOf(
@@ -28,12 +24,11 @@ fun TextProgressIndicator(text: String) {
             )
             var index = 0;
             while (true) {
-                delay(300L)
-                loadingText = sourceText + dotsList[index % dotsList.size]
+                delay(500L)
+                loadingText = text + dotsList[index % dotsList.size]
                 index++
             }
         }
     }
-
     Text(text = loadingText)
 }
