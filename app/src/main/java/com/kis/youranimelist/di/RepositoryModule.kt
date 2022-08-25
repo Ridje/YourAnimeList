@@ -39,7 +39,7 @@ object RepositoryModule {
         remoteDataSource: RemoteDataSource,
         animeMapper: AnimeMapper,
     ): AnimeRankingRepository {
-        return AnimeRankingRepositoryImpl(localDataSource, remoteDataSource, animeMapper)
+        return AnimeRankingRepositoryImpl(localDataSource, remoteDataSource, animeMapper, )
     }
 
     @Singleton

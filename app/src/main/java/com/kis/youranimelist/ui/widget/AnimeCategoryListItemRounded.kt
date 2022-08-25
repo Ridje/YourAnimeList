@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -19,6 +20,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -26,6 +29,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.kis.youranimelist.R
 
 @Composable
 fun AnimeCategoryListItemRounded(
@@ -35,6 +39,7 @@ fun AnimeCategoryListItemRounded(
     size: Dp = 160.dp,
     maxLines: Int = 1,
     showPlaceholder: Boolean = false,
+    showError: Boolean = false,
     onClick: () -> Unit,
 ) {
     Column(horizontalAlignment = Alignment.CenterHorizontally,
@@ -57,6 +62,18 @@ fun AnimeCategoryListItemRounded(
                 )
             }
 
+        } else if (showError) {
+            Box(modifier = Modifier
+                .width(size)
+                .aspectRatio(0.7f)
+                .clip(RoundedCornerShape(20.dp))
+                .background(color = Color.White.copy(alpha = 0.1f))
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_exclamation_triangle_solid),
+                    contentDescription = stringResource(id = R.string.default_content_description),
+                    modifier = Modifier.align(Alignment.Center))
+            }
         } else {
             AsyncImage(
                 model = cover,
@@ -70,14 +87,14 @@ fun AnimeCategoryListItemRounded(
         }
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = firstLine,
+            text = if (showError) "Error" else firstLine,
             style = MaterialTheme.typography.body2,
             fontWeight = FontWeight.Bold,
             maxLines = maxLines,
             overflow = TextOverflow.Ellipsis
         )
         Text(
-            text = secondLine.ifBlank { "" },
+            text = if (showError) "" else secondLine.ifBlank { "" },
             style = MaterialTheme.typography.caption,
             textAlign = TextAlign.Center,
             maxLines = maxLines,

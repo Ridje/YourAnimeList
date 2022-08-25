@@ -2,7 +2,7 @@ package com.kis.youranimelist.ui.mylist
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.kis.youranimelist.domain.model.Result
+import com.kis.youranimelist.domain.model.ResultWrapper
 import com.kis.youranimelist.domain.personalanimelist.PersonalAnimeListUseCase
 import com.kis.youranimelist.domain.personalanimelist.model.AnimeStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,7 +20,7 @@ class MyListViewModel @Inject constructor(
     private val personalAnimeListUseCase: PersonalAnimeListUseCase,
 ) : ViewModel(), MyListScreenContract.ScreenEventsListener {
 
-    private val animeStatusesSource: Flow<Result<List<AnimeStatus>>> =
+    private val animeStatusesSource: Flow<ResultWrapper<List<AnimeStatus>>> =
         personalAnimeListUseCase.getPersonalAnimeStatusesProducer()
 
     private val _screenState: MutableStateFlow<MyListScreenContract.ScreenState> = MutableStateFlow(
@@ -43,7 +43,7 @@ class MyListViewModel @Inject constructor(
                 .flowOn(Dispatchers.IO)
                 .collectLatest { result ->
                     val newValue = when (result) {
-                        is Result.Success -> {
+                        is ResultWrapper.Success -> {
                             _screenState.value.copy(
                                 isLoading = false,
                                 isError = false,
@@ -62,13 +62,13 @@ class MyListViewModel @Inject constructor(
                                     )
                                 }.sortedWith(compareBy({ it.status }, { it.title })))
                         }
-                        is Result.Error -> {
+                        is ResultWrapper.Error -> {
                             _screenState.value.copy(
                                 isLoading = false,
                                 isError = true,
                             )
                         }
-                        Result.Loading -> {
+                        ResultWrapper.Loading -> {
                             _screenState.value.copy(
                                 isLoading = true,
                                 isError = false,

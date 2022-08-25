@@ -8,7 +8,6 @@ import com.kis.youranimelist.data.network.model.TokenResponse
 import com.kis.youranimelist.data.network.model.UserResponse
 import com.kis.youranimelist.data.network.model.personal_list.AnimeStatusResponse
 import com.kis.youranimelist.data.network.model.personal_list.PersonalAnimeListResponse
-import com.kis.youranimelist.data.network.model.ranking_response.AnimeRankedResponse
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -34,22 +33,9 @@ class RemoteDataSourceImpl(
         rankingType: String,
         limit: Int?,
         offset: Int?,
-    ): List<AnimeRankedResponse> = withContext(Dispatchers.IO) {
-        try {
-            val result = malService.animeRanking(rankingType, limit, offset, ANIME_FIELDS).execute()
-            if (result.isSuccessful) {
-                result.body()?.data ?: throw NetworkErrorException()
-            } else {
-                return@withContext listOf()
-            }
-        } catch (e: Exception) {
-            if (e is CancellationException) {
-                throw e
-            }
-            return@withContext listOf()
-        }
+    ) = withContext(Dispatchers.IO) {
+        return@withContext malService.animeRanking(rankingType, limit, offset, ANIME_FIELDS)
     }
-
 
     override suspend fun getAnimeInfo(animeID: Int): AnimeResponse? {
         return withContext(dispatchers.IO) {

@@ -2,8 +2,11 @@ package com.kis.youranimelist.data.repository.anime
 
 import com.kis.youranimelist.data.cache.model.PicturePersistence
 import com.kis.youranimelist.data.network.model.TokenResponse
+import com.kis.youranimelist.data.network.model.ranking_response.RankingRootResponse
 import com.kis.youranimelist.data.repository.LocalDataSource
 import com.kis.youranimelist.data.repository.RemoteDataSource
+import com.kis.youranimelist.domain.model.ResultWrapper
+import com.kis.youranimelist.domain.model.asResult
 import com.kis.youranimelist.domain.rankinglist.mapper.AnimeMapper
 import com.kis.youranimelist.domain.rankinglist.model.Anime
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -20,16 +23,11 @@ class AnimeRepositoryImpl(
         rankingType: String,
         limit: Int?,
         offset: Int?,
-    ): List<Anime> {
+    ): ResultWrapper<List<Anime>> {
 
-        val result = remoteDataSource.getAnimeRankingList(rankingType, limit, offset)
-
-        val convertedResult = result.map { Anime(it.anime) }
-        for (anime in convertedResult) {
-            localDataSource.saveAnimeToCache(anime)
-        }
-
-        return convertedResult
+        return remoteDataSource
+            .getAnimeRankingList(rankingType, limit, offset)
+            .asResult { from: RankingRootResponse -> from.data.map { Anime(it.anime) } }
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)

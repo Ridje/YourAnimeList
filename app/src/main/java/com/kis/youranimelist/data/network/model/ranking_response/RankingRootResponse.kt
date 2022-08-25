@@ -5,7 +5,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class Root(
-    @SerialName("data") var data: List<AnimeRankedResponse>,
-    @SerialName("paging") var paging: PagingResponse,
+data class RankingRootResponse(
+    @SerialName("data") val data: List<AnimeRankedResponse>,
+    @SerialName("paging") val paging: PagingResponse,
 )

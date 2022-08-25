@@ -1,6 +1,7 @@
 package com.kis.youranimelist.ui.endlesslist
 
 import androidx.paging.PagingData
+import androidx.paging.compose.LazyPagingItems
 import com.kis.youranimelist.domain.rankinglist.model.Anime
 import kotlinx.coroutines.flow.Flow
 
@@ -9,6 +10,11 @@ object EndlessListScreenContract {
         val items: Flow<PagingData<Item>>,
         val title: String,
     )
+
+    interface ScreenEventsListener {
+        fun onReloadClicked(items: LazyPagingItems<Item>)
+    }
+
 }
 
 data class Item(
@@ -24,6 +30,7 @@ data class Item(
     val numEpisodes: Int?,
     val mediaType: String?,
 )
+
 
 object EndlessListScreenMapper {
     fun map(anime: Anime?): Item {
