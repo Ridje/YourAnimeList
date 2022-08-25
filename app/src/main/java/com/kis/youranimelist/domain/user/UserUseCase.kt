@@ -9,7 +9,6 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class UserUseCase @Inject constructor(
@@ -18,15 +17,7 @@ class UserUseCase @Inject constructor(
 ) {
     fun getUserData(): Flow<ResultWrapper<User>> {
         return combine(
-            userRepository.getUser()
-                .map<User, ResultWrapper<User>> { userNoBackground -> ResultWrapper.Success(userNoBackground) }
-                .catch { e: Throwable ->
-                    if (e is CancellationException) {
-                        throw e
-                    } else {
-                        emit(ResultWrapper.Error(e))
-                    }
-                },
+            userRepository.getUser(),
             personalAnimeListUseCase.getRandomFavouriteAnimeProducer()
                 .catch { e: Throwable ->
                     if (e is CancellationException) {

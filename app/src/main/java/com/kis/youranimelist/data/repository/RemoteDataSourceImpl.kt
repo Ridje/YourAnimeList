@@ -1,9 +1,11 @@
 package com.kis.youranimelist.data.repository
 
 import android.accounts.NetworkErrorException
+import com.haroldadmin.cnradapter.NetworkResponse
 import com.kis.youranimelist.data.network.api.MyAnimeListAPI
 import com.kis.youranimelist.data.network.api.MyAnimeListOAuthAPI
 import com.kis.youranimelist.data.network.model.AnimeResponse
+import com.kis.youranimelist.data.network.model.ErrorResponse
 import com.kis.youranimelist.data.network.model.TokenResponse
 import com.kis.youranimelist.data.network.model.UserResponse
 import com.kis.youranimelist.data.network.model.personal_list.AnimeStatusResponse
@@ -73,18 +75,7 @@ class RemoteDataSourceImpl(
         }
     }
 
-    override fun getUserData(): UserResponse? {
-        try {
-            val result = malService.userProfile(USER_FIELDS).execute()
-            return when {
-                result.isSuccessful -> result.body()
-                    ?: throw NetworkErrorException()
-                else -> throw NetworkErrorException()
-            }
-        } catch (e: Exception) {
-            return null
-        }
-    }
+    override suspend fun getUserData(): NetworkResponse<UserResponse, ErrorResponse> = malService.userProfile(USER_FIELDS)
 
     override suspend fun getPersonalAnimeList(
         status: String?,

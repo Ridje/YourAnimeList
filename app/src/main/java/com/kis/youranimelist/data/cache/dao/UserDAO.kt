@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.kis.youranimelist.data.cache.model.UserPersistence
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface UserDAO {
@@ -16,5 +17,5 @@ interface UserDAO {
     fun clearUserData()
 
     @Query("SELECT * FROM user LIMIT 1")
-    fun getUserData(): UserPersistence
+    fun getUserData(): UserPersistence?
 }

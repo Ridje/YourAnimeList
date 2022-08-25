@@ -33,9 +33,9 @@ interface MyAnimeListAPI {
     ): Call<AnimeResponse>
 
     @GET("users/@me")
-    fun userProfile(
+    suspend fun userProfile(
         @Query("fields") fields: String?,
-    ): Call<UserResponse>
+    ): NetworkResponse<UserResponse, ErrorResponse>
 
     @GET("users/@me/animelist")
     fun userAnime(

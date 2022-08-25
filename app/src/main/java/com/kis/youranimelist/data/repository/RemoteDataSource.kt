@@ -22,7 +22,7 @@ interface RemoteDataSource {
         grantType: String,
     ): TokenResponse
 
-    fun getUserData(): UserResponse?
+    suspend fun getUserData(): NetworkResponse<UserResponse, ErrorResponse>
 
     suspend fun getAnimeInfo(animeID: Int): AnimeResponse?
     suspend fun getAnimeRankingList(
