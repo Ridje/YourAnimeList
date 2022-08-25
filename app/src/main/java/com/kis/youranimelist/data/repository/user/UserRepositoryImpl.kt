@@ -27,7 +27,9 @@ class UserRepositoryImpl @Inject constructor(
             if (remoteConvertedResult is ResultWrapper.Success) {
                 localDataSource.updateUserCache(remoteConvertedResult.data)
             }
-
+            if (remoteConvertedResult is ResultWrapper.Error && cacheData != null) {
+                return@flow
+            }
             emit(remoteConvertedResult)
         }
     }

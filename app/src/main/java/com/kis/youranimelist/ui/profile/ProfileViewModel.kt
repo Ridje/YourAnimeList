@@ -12,6 +12,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import me.bytebeats.views.charts.pie.PieChartData
@@ -38,7 +39,7 @@ class ProfileViewModel @Inject constructor(
 
     private fun startObserveProfileChanges() {
         viewModelScope.launch(Dispatchers.IO) {
-            userUseCase.getUserData().collectLatest { resultUser ->
+            userUseCase.getUserData().collect { resultUser ->
                 val newValue = when (resultUser) {
                     is ResultWrapper.Success -> {
                         ProfileScreenContract.ScreeState(
