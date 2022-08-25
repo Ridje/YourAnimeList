@@ -1,6 +1,7 @@
 package com.kis.youranimelist.data.repository.anime
 
 import com.kis.youranimelist.data.network.model.TokenResponse
+import com.kis.youranimelist.domain.model.ResultWrapper
 import com.kis.youranimelist.domain.rankinglist.model.Anime
 import kotlinx.coroutines.flow.Flow
 
@@ -16,6 +17,6 @@ interface AnimeRepository {
         grantType: String,
     ): TokenResponse
 
-    suspend fun getRankingAnimeList(rankingType: String, limit: Int?, offset: Int?): List<Anime>
+    suspend fun getRankingAnimeList(rankingType: String, limit: Int?, offset: Int?): ResultWrapper<List<Anime>>
     fun getAnimeDetailedDataSource(animeID: Int): Flow<Anime>
 }

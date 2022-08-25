@@ -7,6 +7,7 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingSource
 import androidx.paging.cachedIn
+import androidx.paging.compose.LazyPagingItems
 import androidx.paging.map
 import com.kis.youranimelist.domain.rankinglist.RankingListUseCase
 import com.kis.youranimelist.domain.rankinglist.model.Anime
@@ -23,7 +24,7 @@ import javax.inject.Inject
 class EndlessListScreenViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     rankingListUseCase: RankingListUseCase,
-) : ViewModel() {
+) : ViewModel(), EndlessListScreenContract.ScreenEventsListener {
 
     private val rankingPageSource: PagingSource<Int, Anime>
     private val tag = savedStateHandle.get<String>(NavigationKeys.Argument.RANK)
@@ -52,5 +53,9 @@ class EndlessListScreenViewModel @Inject constructor(
         get() {
             return _screenState
         }
+
+    override fun onReloadClicked(items: LazyPagingItems<Item>) {
+        items.retry()
+    }
 
 }

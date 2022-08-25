@@ -1,7 +1,7 @@
 package com.kis.youranimelist.domain.personalanimelist
 
 import com.kis.youranimelist.data.repository.personalanime.PersonalAnimeRepository
-import com.kis.youranimelist.domain.model.Result
+import com.kis.youranimelist.domain.model.ResultWrapper
 import com.kis.youranimelist.domain.personalanimelist.model.AnimeStatus
 import com.kis.youranimelist.domain.rankinglist.model.Anime
 import kotlinx.coroutines.flow.Flow
@@ -14,13 +14,13 @@ import javax.inject.Inject
 class PersonalAnimeListUseCase @Inject constructor(
     private val personalAnimeRepository: PersonalAnimeRepository,
 ) {
-    fun getPersonalAnimeStatusesProducer(): Flow<Result<List<AnimeStatus>>> {
+    fun getPersonalAnimeStatusesProducer(): Flow<ResultWrapper<List<AnimeStatus>>> {
         return personalAnimeRepository.getPersonalAnimeStatusesProducer()
-            .transform<List<AnimeStatus>, Result<List<AnimeStatus>>> {
-                emit(Result.Success(it))
+            .transform<List<AnimeStatus>, ResultWrapper<List<AnimeStatus>>> {
+                emit(ResultWrapper.Success(it))
             }
             .catch { e ->
-                emit(Result.Error(e))
+                emit(ResultWrapper.Error(e))
             }
     }
 
@@ -36,15 +36,15 @@ class PersonalAnimeListUseCase @Inject constructor(
         return personalAnimeRepository.deletePersonalAnimeStatus(animeId)
     }
 
-    fun getPersonalAnimeStatusProducer(id: Int): Flow<Result<AnimeStatus>> {
+    fun getPersonalAnimeStatusProducer(id: Int): Flow<ResultWrapper<AnimeStatus>> {
         return personalAnimeRepository.getPersonalAnimeStatusProducer(id)
             .transform {
-                val result = it?.let {
-                    Result.Success(it)
-                } ?: Result.Loading
-                emit(result)
+                val resultWrapper = it?.let {
+                    ResultWrapper.Success(it)
+                } ?: ResultWrapper.Loading
+                emit(resultWrapper)
             }.catch { e ->
-                emit(Result.Error(e))
+                emit(ResultWrapper.Error(e))
             }
     }
 

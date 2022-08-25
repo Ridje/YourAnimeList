@@ -1,5 +1,6 @@
 package com.kis.youranimelist.di
 
+import com.kis.youranimelist.data.cache.AnimeRankingMemoryCache
 import com.kis.youranimelist.data.cache.dao.AnimeDAO
 import com.kis.youranimelist.data.cache.dao.PersonalAnimeDAO
 import com.kis.youranimelist.data.cache.dao.SideDAO
@@ -38,8 +39,15 @@ object RepositoryModule {
         localDataSource: LocalDataSource,
         remoteDataSource: RemoteDataSource,
         animeMapper: AnimeMapper,
+        cacheFactory: AnimeRankingMemoryCache.Factory,
     ): AnimeRankingRepository {
-        return AnimeRankingRepositoryImpl(localDataSource, remoteDataSource, animeMapper)
+        return AnimeRankingRepositoryImpl(localDataSource, remoteDataSource, animeMapper, cacheFactory)
+    }
+
+    @Provides
+    @Singleton
+    fun provideAnimeRankingCache(): AnimeRankingMemoryCache.Factory {
+        return AnimeRankingMemoryCache.Factory()
     }
 
     @Singleton
@@ -48,11 +56,13 @@ object RepositoryModule {
         remoteDataSource: RemoteDataSource,
         localDataSource: LocalDataSource,
         animeMapper: AnimeMapper,
+        cacheFactory: AnimeRankingMemoryCache.Factory,
     ): AnimeRepository {
         return AnimeRepositoryImpl(
             localDataSource = localDataSource,
             remoteDataSource = remoteDataSource,
             animeMapper = animeMapper,
+            cache = cacheFactory,
         )
     }
 

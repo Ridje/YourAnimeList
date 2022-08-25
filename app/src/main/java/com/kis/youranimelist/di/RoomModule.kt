@@ -18,7 +18,7 @@ const val DB_NAME = "localbase.dt"
 
 @Module
 @InstallIn(SingletonComponent::class)
-class RoomModule() {
+class RoomModule {
 
     @Singleton
     @Provides

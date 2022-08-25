@@ -114,7 +114,7 @@ fun YourAnimeListNavHost(
                     type = NavType.StringType
                 })
             ) {
-                EndlessListScreenRoute(navController = navController)
+                EndlessListScreenRoute(navController = navController, scaffoldState = scaffoldState)
             }
         }
     }

@@ -1,13 +1,14 @@
 package com.kis.youranimelist.di
 
+import com.haroldadmin.cnradapter.NetworkResponseAdapterFactory
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
-import com.kis.youranimelist.domain.auth.AuthUseCase
+import com.kis.youranimelist.core.utils.AppPreferences
+import com.kis.youranimelist.core.utils.Urls
 import com.kis.youranimelist.data.network.AuthInterceptor
 import com.kis.youranimelist.data.network.MALTokenAuthenticator
 import com.kis.youranimelist.data.network.api.MyAnimeListAPI
 import com.kis.youranimelist.data.network.api.MyAnimeListOAuthAPI
-import com.kis.youranimelist.core.utils.AppPreferences
-import com.kis.youranimelist.core.utils.Urls
+import com.kis.youranimelist.domain.auth.AuthUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.migration.DisableInstallInCheck
@@ -16,6 +17,7 @@ import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.CallAdapter
 import retrofit2.Converter
 import retrofit2.Retrofit
 import javax.inject.Singleton
@@ -68,6 +70,11 @@ object NetworkModule {
         }
     }
 
+    @Singleton
+    @Provides
+    fun provideCallAdapterFactory(): CallAdapter.Factory {
+        return NetworkResponseAdapterFactory()
+    }
 
     @Singleton
     @Provides
@@ -88,11 +95,13 @@ object NetworkModule {
     @Provides
     fun provideMALService(
         converterFactory: Converter.Factory,
+        callAdapterFactory: CallAdapter.Factory,
         okHttpClient: OkHttpClient,
     ): MyAnimeListAPI {
         return Retrofit
             .Builder()
             .addConverterFactory(converterFactory)
+            .addCallAdapterFactory(callAdapterFactory)
             .client(okHttpClient)
             .baseUrl(Urls.apiBaseUrl)
             .build()

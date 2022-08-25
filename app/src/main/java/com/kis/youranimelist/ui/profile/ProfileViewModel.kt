@@ -5,13 +5,14 @@ import androidx.lifecycle.viewModelScope
 import com.kis.youranimelist.R
 import com.kis.youranimelist.core.ResourceProvider
 import com.kis.youranimelist.di.Medium
-import com.kis.youranimelist.domain.model.Result
+import com.kis.youranimelist.domain.model.ResultWrapper
 import com.kis.youranimelist.domain.personalanimelist.model.AnimeStatusValue
 import com.kis.youranimelist.domain.user.UserUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import me.bytebeats.views.charts.pie.PieChartData
@@ -38,9 +39,9 @@ class ProfileViewModel @Inject constructor(
 
     private fun startObserveProfileChanges() {
         viewModelScope.launch(Dispatchers.IO) {
-            userUseCase.getUserData().collectLatest { resultUser ->
+            userUseCase.getUserData().collect { resultUser ->
                 val newValue = when (resultUser) {
-                    is Result.Success -> {
+                    is ResultWrapper.Success -> {
                         ProfileScreenContract.ScreeState(
                             isLoading = false,
                             user = User(
@@ -118,10 +119,10 @@ class ProfileViewModel @Inject constructor(
                             )
                         )
                     }
-                    is Result.Loading -> {
+                    is ResultWrapper.Loading -> {
                         ProfileScreenContract.ScreeState(isLoading = true)
                     }
-                    is Result.Error -> {
+                    is ResultWrapper.Error -> {
                         _screenState.value.copy(
                             isLoading = false,
                             isError = true,

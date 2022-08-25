@@ -3,11 +3,8 @@ package com.kis.youranimelist.ui.itembottomsheetdialog
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.kis.youranimelist.domain.model.Result
+import com.kis.youranimelist.domain.model.ResultWrapper
 import com.kis.youranimelist.domain.personalanimelist.PersonalAnimeListUseCase
-import com.kis.youranimelist.domain.personalanimelist.model.AnimeStatus
-import com.kis.youranimelist.domain.personalanimelist.model.AnimeStatusValue
-import com.kis.youranimelist.domain.rankinglist.model.Anime
 import com.kis.youranimelist.ui.navigation.InvalidNavArgumentException
 import com.kis.youranimelist.ui.navigation.NavigationKeys
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -56,8 +53,8 @@ class ItemBottomViewModel @Inject constructor(
                 .flowOn(Dispatchers.IO)
                 .collectLatest { result ->
                     when (result) {
-                        is Result.Success -> _screenState.value = screenState.value.copyWithMapping(result.data)
-                        is Result.Error,
+                        is ResultWrapper.Success -> _screenState.value = screenState.value.copyWithMapping(result.data)
+                        is ResultWrapper.Error,
                         -> {
                         }
                         else -> {

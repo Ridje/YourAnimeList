@@ -6,10 +6,6 @@ object ExploreScreenContract {
 
     data class ScreenState(
         val categories: List<AnimeCategory>,
+        val listErrors: List<Boolean>,
     )
-
-    sealed class Effect {}
-
-    interface EventsConsumer {
-    }
 }

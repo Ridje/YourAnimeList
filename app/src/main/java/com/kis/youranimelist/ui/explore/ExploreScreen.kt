@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
@@ -41,6 +42,7 @@ fun ExploreScreenRoute(
     val screenState = viewModel.screenState.collectAsState()
     ExploreScreen(
         animeCategories = screenState.value.categories,
+        animeLoadingErrors = screenState.value.listErrors,
         paddingValues = paddingValues,
         onItemClick = { animeId: Int -> navController.navigate(NavigationKeys.Route.EXPLORE + "/$animeId") },
         onRankingListClick = { rankType: String -> navController.navigate(NavigationKeys.Route.RANKING_LIST + "/$rankType") },
@@ -50,12 +52,13 @@ fun ExploreScreenRoute(
 @Composable
 fun ExploreScreen(
     animeCategories: List<AnimeCategory>,
+    animeLoadingErrors: List<Boolean>,
     paddingValues: PaddingValues,
     onItemClick: (Int) -> Unit,
     onRankingListClick: (String) -> Unit,
 ) {
     LazyColumn {
-        items(animeCategories) { category ->
+        itemsIndexed(animeCategories) { index, category ->
             Row(horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier.fillMaxWidth()) {
                 Text(text = category.name,
@@ -83,7 +86,8 @@ fun ExploreScreen(
                         firstLine = anime?.title ?: "Loading",
                         secondLine = anime?.let { "${anime.startSeason?.year ?: ""} ${anime.startSeason?.season ?: ""}" }
                             ?: "",
-                        showPlaceholder = anime == null
+                        showPlaceholder = anime == null && !animeLoadingErrors[index],
+                        showError = animeLoadingErrors[index]
                     ) {
                         anime?.let { clickedAnime ->
                             onItemClick.invoke(clickedAnime.id)
@@ -165,6 +169,10 @@ fun ExploreScreePreview() {
                 )
             )
             )
+        ),
+        listOf(
+            false,
+            false
         ),
         PaddingValues(0.dp),
         {},
