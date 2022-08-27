@@ -10,6 +10,7 @@ import com.kis.youranimelist.domain.model.ResultWrapper
 import com.kis.youranimelist.domain.model.asResult
 import com.kis.youranimelist.domain.rankinglist.mapper.AnimeMapper
 import com.kis.youranimelist.domain.rankinglist.model.Anime
+import com.kis.youranimelist.ui.model.AnimeRankType
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
@@ -22,7 +23,7 @@ class AnimeRepositoryImpl(
 ) : AnimeRepository {
 
     override suspend fun getRankingAnimeList(
-        rankingType: String,
+        rankingType: AnimeRankType,
         limit: Int?,
         offset: Int?,
     ): ResultWrapper<List<Anime>> {
@@ -32,7 +33,7 @@ class AnimeRepositoryImpl(
         }
 
         return remoteDataSource
-            .getAnimeRankingList(rankingType, limit, offset)
+            .getAnimeRankingList(rankingType.tag, limit, offset)
             .asResult { from: RankingRootResponse -> from.data.map { animeMapper.map(it) } }
             .also { remoteResult ->
                 if (remoteResult is ResultWrapper.Success) {

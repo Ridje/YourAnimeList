@@ -12,7 +12,6 @@ import androidx.paging.map
 import com.kis.youranimelist.domain.rankinglist.RankingListUseCase
 import com.kis.youranimelist.domain.rankinglist.model.Anime
 import com.kis.youranimelist.ui.model.AnimeCategories
-import com.kis.youranimelist.ui.navigation.InvalidNavArgumentException
 import com.kis.youranimelist.ui.navigation.NavigationKeys
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,13 +26,15 @@ class EndlessListScreenViewModel @Inject constructor(
 ) : ViewModel(), EndlessListScreenContract.ScreenEventsListener {
 
     private val rankingPageSource: PagingSource<Int, Anime>
-    private val tag = savedStateHandle.get<String>(NavigationKeys.Argument.RANK)
-        ?: throw InvalidNavArgumentException(NavigationKeys.Argument.RANK)
-    private val title = AnimeCategories.animeCategories.first { it.tag == tag }.name
+    private val rankingType =
+        AnimeCategories.animeCategories
+            .first { savedStateHandle.get<String>(NavigationKeys.Argument.RANK) == it.rankType.tag }.rankType
+    private val title =
+        rankingType.presentName
 
     init {
         rankingPageSource =
-            rankingListUseCase.getRankingListProducer(tag)
+            rankingListUseCase.getRankingListProducer(rankingType)
     }
 
     private val _screenState: MutableStateFlow<EndlessListScreenContract.ScreenState> =

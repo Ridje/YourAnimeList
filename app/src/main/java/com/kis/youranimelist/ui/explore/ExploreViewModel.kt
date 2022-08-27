@@ -46,7 +46,7 @@ class ExploreViewModel @Inject constructor(
             for (i in AnimeCategories.animeCategories.indices) {
                 jobsList.add(async(Dispatchers.IO) {
                     return@async animeRepository.getRankingAnimeList(
-                        AnimeCategories.animeCategories[i].tag,
+                        AnimeCategories.animeCategories[i].rankType,
                         limit,
                         null,
                     )
@@ -59,9 +59,10 @@ class ExploreViewModel @Inject constructor(
                 _screenState.value = when (result) {
                     is ResultWrapper.Success -> {
                         val currentList = _screenState.value.categories.toMutableList()
-                        currentList[i] = AnimeCategory(AnimeCategories.animeCategories[i].name,
-                            AnimeCategories.animeCategories[i].tag,
-                            result.data)
+                        currentList[i] = AnimeCategory(
+                            AnimeCategories.animeCategories[i].rankType,
+                            result.data
+                        )
                         ExploreScreenContract.ScreenState(
                             currentList,
                             _screenState.value.listErrors.mapIndexed { index, b -> if (index == i) false else b }

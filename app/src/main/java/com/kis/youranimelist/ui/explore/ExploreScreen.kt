@@ -30,8 +30,13 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.kis.youranimelist.domain.rankinglist.model.Anime
 import com.kis.youranimelist.domain.rankinglist.model.AnimeCategory
+import com.kis.youranimelist.ui.apptopbar.SearchAnimeToolbar
+import com.kis.youranimelist.ui.model.AnimeRankType
 import com.kis.youranimelist.ui.navigation.NavigationKeys
 import com.kis.youranimelist.ui.widget.AnimeCategoryListItemRounded
+import me.onebone.toolbar.CollapsingToolbarScaffold
+import me.onebone.toolbar.ScrollStrategy
+import me.onebone.toolbar.rememberCollapsingToolbarScaffoldState
 
 @Composable
 fun ExploreScreenRoute(
@@ -46,6 +51,7 @@ fun ExploreScreenRoute(
         paddingValues = paddingValues,
         onItemClick = { animeId: Int -> navController.navigate(NavigationKeys.Route.EXPLORE + "/$animeId") },
         onRankingListClick = { rankType: String -> navController.navigate(NavigationKeys.Route.RANKING_LIST + "/$rankType") },
+        onSearchClick = { navController.navigate(NavigationKeys.Route.SEARCH) }
     )
 }
 
@@ -56,53 +62,60 @@ fun ExploreScreen(
     paddingValues: PaddingValues,
     onItemClick: (Int) -> Unit,
     onRankingListClick: (String) -> Unit,
+    onSearchClick: () -> Unit,
 ) {
-    LazyColumn {
-        itemsIndexed(animeCategories) { index, category ->
-            Row(horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxWidth()) {
-                Text(text = category.name,
-                    modifier = Modifier.padding(6.dp),
-                    style = MaterialTheme.typography.h6)
-                Text(
-                    text = "See all",
-                    modifier = Modifier
-                        .padding(6.dp)
-                        .clip(RoundedCornerShape(8.dp))
-                        .clickable { onRankingListClick.invoke(category.tag) }
-                        .padding(6.dp),
-                    style = MaterialTheme.typography.body1,
-                    textDecoration = TextDecoration.Underline,
-                )
-            }
-            LazyRow(modifier = Modifier
-                .wrapContentHeight()
-                .height(280.dp),
-                contentPadding = PaddingValues(horizontal = 6.dp, vertical = 0.dp)
-            ) {
-                items(category.animeList) { anime ->
-                    AnimeCategoryListItemRounded(
-                        cover = anime?.picture?.large,
-                        firstLine = anime?.title ?: "Loading",
-                        secondLine = anime?.let { "${anime.startSeason?.year ?: ""} ${anime.startSeason?.season ?: ""}" }
-                            ?: "",
-                        showPlaceholder = anime == null && !animeLoadingErrors[index],
-                        showError = animeLoadingErrors[index]
-                    ) {
-                        anime?.let { clickedAnime ->
-                            onItemClick.invoke(clickedAnime.id)
-                        }
-                    }
-                    Divider(
-                        color = Color.Transparent,
+    CollapsingToolbarScaffold(
+        state = rememberCollapsingToolbarScaffoldState(),
+        toolbar = { SearchAnimeToolbar(onSearchClick = onSearchClick) },
+        modifier = Modifier,
+        scrollStrategy = ScrollStrategy.EnterAlwaysCollapsed) {
+        LazyColumn {
+            itemsIndexed(animeCategories) { index, category ->
+                Row(horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.fillMaxWidth()) {
+                    Text(text = category.rankType.presentName,
+                        modifier = Modifier.padding(6.dp),
+                        style = MaterialTheme.typography.h6)
+                    Text(
+                        text = "See all",
                         modifier = Modifier
-                            .width(16.dp)
+                            .padding(6.dp)
+                            .clip(RoundedCornerShape(8.dp))
+                            .clickable { onRankingListClick.invoke(category.rankType.tag) }
+                            .padding(6.dp),
+                        style = MaterialTheme.typography.body1,
+                        textDecoration = TextDecoration.Underline,
                     )
                 }
+                LazyRow(modifier = Modifier
+                    .wrapContentHeight()
+                    .height(280.dp),
+                    contentPadding = PaddingValues(horizontal = 6.dp, vertical = 0.dp)
+                ) {
+                    items(category.animeList) { anime ->
+                        AnimeCategoryListItemRounded(
+                            cover = anime?.picture?.large,
+                            firstLine = anime?.title ?: "Loading",
+                            secondLine = anime?.let { "${anime.startSeason?.year ?: ""} ${anime.startSeason?.season ?: ""}" }
+                                ?: "",
+                            showPlaceholder = anime == null && !animeLoadingErrors[index],
+                            showError = animeLoadingErrors[index]
+                        ) {
+                            anime?.let { clickedAnime ->
+                                onItemClick.invoke(clickedAnime.id)
+                            }
+                        }
+                        Divider(
+                            color = Color.Transparent,
+                            modifier = Modifier
+                                .width(16.dp)
+                        )
+                    }
+                }
             }
-        }
-        item {
-            Spacer(modifier = Modifier.height(paddingValues.calculateBottomPadding()))
+            item {
+                Spacer(modifier = Modifier.height(paddingValues.calculateBottomPadding()))
+            }
         }
     }
 }
@@ -112,7 +125,7 @@ fun ExploreScreen(
 fun ExploreScreePreview() {
     ExploreScreen(
         animeCategories = listOf(
-            AnimeCategory("all", "test", listOf(
+            AnimeCategory(AnimeRankType.Airing, listOf(
                 Anime(
                     123,
                     "Boku no Hero Academia 2nd Season",
@@ -150,7 +163,7 @@ fun ExploreScreePreview() {
                 )
             )
             ),
-            AnimeCategory("second", "test2", listOf(
+            AnimeCategory(AnimeRankType.TopRanked, listOf(
                 Anime(
                     126,
                     "Fullmetal Alchemist: Brotherhood",
@@ -177,6 +190,7 @@ fun ExploreScreePreview() {
         PaddingValues(0.dp),
         {},
         {},
+        {}
     )
 }
 

@@ -4,7 +4,11 @@ package com.kis.youranimelist.ui.navigation
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material.ScaffoldState
@@ -27,6 +31,7 @@ import com.kis.youranimelist.ui.itembottomsheetdialog.ItemBottomScreenRoute
 import com.kis.youranimelist.ui.login.LoginScreenRoute
 import com.kis.youranimelist.ui.mylist.MyListScreenRoute
 import com.kis.youranimelist.ui.profile.ProfileScreenRoute
+import com.kis.youranimelist.ui.search.SearchScreenRoute
 import kotlinx.coroutines.flow.collectLatest
 
 @OptIn(ExperimentalMaterialNavigationApi::class)
@@ -56,6 +61,27 @@ fun YourAnimeListNavHost(
                 route = NavigationKeys.Route.LOGIN
             ) {
                 LoginScreenRoute(navController)
+            }
+            composable(
+                route = NavigationKeys.Route.SEARCH,
+                enterTransition = {
+                    slideInHorizontally(
+                        animationSpec = tween(500),
+                        initialOffsetX = { it }
+                    )
+                },
+                exitTransition = { fadeOut(animationSpec = tween(700)) },
+                popEnterTransition = {
+                    fadeIn(animationSpec = tween(700))
+                },
+                popExitTransition = {
+                    slideOutHorizontally(
+                        animationSpec = tween(500),
+                        targetOffsetX = { it }
+                    )
+                }
+            ) {
+                SearchScreenRoute(navController, scaffoldState)
             }
             composable(
                 route = NavigationKeys.Route.EXPLORE,

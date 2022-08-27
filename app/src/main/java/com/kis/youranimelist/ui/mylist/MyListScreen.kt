@@ -131,7 +131,7 @@ fun MyListScreen(
                 val snackResult = scaffoldState.snackbarHostState.showSnackbar(
                     message = context.resources.getString(R.string.data_not_loaded_error),
                     actionLabel = context.resources.getString(R.string.reload_data),
-                    duration = SnackbarDuration.Indefinite
+                    duration = SnackbarDuration.Long
                 )
                 when (snackResult) {
                     SnackbarResult.Dismissed -> onSnackbarDismissedAction.invoke()

@@ -10,6 +10,7 @@ import com.kis.youranimelist.data.network.model.TokenResponse
 import com.kis.youranimelist.data.network.model.UserResponse
 import com.kis.youranimelist.data.network.model.personal_list.AnimeStatusResponse
 import com.kis.youranimelist.data.network.model.personal_list.PersonalAnimeListResponse
+import com.kis.youranimelist.data.network.model.searchresponse.SearchingRootResponse
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -37,6 +38,14 @@ class RemoteDataSourceImpl(
         offset: Int?,
     ) = withContext(Dispatchers.IO) {
         return@withContext malService.animeRanking(rankingType, limit, offset, ANIME_FIELDS)
+    }
+
+    override suspend fun getAnimeSearchList(
+        search: String,
+        limit: Int?,
+        offset: Int?,
+    ) = withContext(Dispatchers.IO) {
+        return@withContext malService.animeSearching(search, limit, offset, ANIME_FIELDS)
     }
 
     override suspend fun getAnimeInfo(animeID: Int): AnimeResponse? {
