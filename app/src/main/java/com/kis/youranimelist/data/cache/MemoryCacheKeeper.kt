@@ -1,6 +1,7 @@
 package com.kis.youranimelist.data.cache
 
 import com.kis.youranimelist.domain.rankinglist.model.Anime
+import com.kis.youranimelist.ui.model.CachingKey
 
 interface MemoryCacheKeeper<T, S> {
     val updatedAt: Long
@@ -42,11 +43,11 @@ class AnimeRankingMemoryCache(
     }
 
     class Factory {
-        private val cachedRanks = mutableMapOf<String, AnimeRankingMemoryCache>()
+        private val cachedRanks = mutableMapOf<CachingKey, AnimeRankingMemoryCache>()
         fun getOrCreate(
-            rankingType: String,
+            key: CachingKey,
         ): AnimeRankingMemoryCache {
-            return cachedRanks.getOrPut(rankingType) { AnimeRankingMemoryCache(86400) }
+            return cachedRanks.getOrPut(key) { AnimeRankingMemoryCache(86400) }
         }
     }
 }

@@ -4,6 +4,8 @@ package com.kis.youranimelist.ui.navigation
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
@@ -68,14 +70,18 @@ fun YourAnimeListNavHost(
                         initialOffsetX = { it }
                     )
                 },
-                exitTransition = {
+                exitTransition = { fadeOut(animationSpec = tween(700)) },
+                popEnterTransition = {
+                    fadeIn(animationSpec = tween(700))
+                },
+                popExitTransition = {
                     slideOutHorizontally(
                         animationSpec = tween(500),
                         targetOffsetX = { it }
                     )
                 }
             ) {
-                SearchScreenRoute(navController, scaffoldState,)
+                SearchScreenRoute(navController, scaffoldState)
             }
             composable(
                 route = NavigationKeys.Route.EXPLORE,

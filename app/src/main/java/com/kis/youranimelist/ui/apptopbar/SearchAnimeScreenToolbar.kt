@@ -34,15 +34,17 @@ import com.kis.youranimelist.R
 @Composable
 fun SearchAnimeScreenToolbar(
     searchValue: String,
+    requestSearchFocus: Boolean,
     onNavigationIconClick: () -> Unit = {},
-    onSearchClick: (String) -> Unit,
+    onSearchClick: (String) -> Boolean,
     onSearchValueChanged: (String) -> Unit,
 ) {
-
     val focusManager = LocalFocusManager.current
     val focusRequester = remember { FocusRequester() }
     LaunchedEffect(Unit) {
-        focusRequester.requestFocus()
+        if (requestSearchFocus) {
+            focusRequester.requestFocus()
+        }
     }
     Surface(modifier = Modifier
         .padding(vertical = 8.dp)
@@ -79,7 +81,9 @@ fun SearchAnimeScreenToolbar(
             ),
             keyboardActions = KeyboardActions(
                 onSearch = {
-                    onSearchClick.invoke(searchValue)
+                    if (onSearchClick.invoke(searchValue)) {
+                        focusManager.clearFocus()
+                    }
                 }
             ),
             leadingIcon = {
@@ -103,7 +107,9 @@ fun SearchAnimeScreenToolbar(
             } else {
                 {
                     IconButton(
-                        onClick = { onSearchValueChanged.invoke("") }
+                        onClick = {
+                            onSearchValueChanged.invoke("")
+                        }
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_cancel),

@@ -12,8 +12,12 @@ object SearchScreenContract {
         val items: Flow<PagingData<Item>>?,
     )
 
+    sealed class Effect {
+        object SearchError: Effect()
+    }
+
     interface ScreenEventsListener {
-        fun onSearchClick(searchValue: String)
+        fun onSearchClick(searchValue: String): Boolean
         fun onSearchValueChanged(searchValue: String)
         fun onReloadClicked(items: LazyPagingItems<Item>)
     }

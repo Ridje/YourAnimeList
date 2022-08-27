@@ -69,7 +69,7 @@ fun EndlessListScreenRoute(
         onSnackbarPerformedAction = { items: LazyPagingItems<Item> ->
             screenEventsListener.onReloadClicked(items)
         },
-        onSnackbarDismissedAction = { navController.popBackStack() },
+        onSnackbarDismissedAction = { },
     )
 }
 
@@ -125,7 +125,7 @@ fun EndlessListScreenBody(
                         val snackResult = scaffoldState.snackbarHostState.showSnackbar(
                             message = context.resources.getString(R.string.data_not_loaded_error),
                             actionLabel = context.resources.getString(R.string.reload_data),
-                            duration = SnackbarDuration.Indefinite
+                            duration = SnackbarDuration.Short,
                         )
                         when (snackResult) {
                             SnackbarResult.Dismissed -> onSnackbarDismissedAction.invoke()
@@ -235,18 +235,16 @@ fun EndlessListScreenBody(
                 if (listItems.loadState.append is LoadState.Error) {
                     item {
                         val context = LocalContext.current
-                        LaunchedEffect(listItems.loadState) {
-                            localScope.launch {
-                                val snackResult = scaffoldState.snackbarHostState.showSnackbar(
-                                    message = context.resources.getString(R.string.data_not_loaded_error),
-                                    actionLabel = context.resources.getString(R.string.reload_data),
-                                    duration = SnackbarDuration.Indefinite
-                                )
-                                when (snackResult) {
-                                    SnackbarResult.Dismissed -> onSnackbarDismissedAction.invoke()
-                                    SnackbarResult.ActionPerformed -> onSnackbarPerformedAction.invoke(
-                                        listItems)
-                                }
+                        localScope.launch {
+                            val snackResult = scaffoldState.snackbarHostState.showSnackbar(
+                                message = context.resources.getString(R.string.data_not_loaded_error),
+                                actionLabel = context.resources.getString(R.string.reload_data),
+                                duration = SnackbarDuration.Long
+                            )
+                            when (snackResult) {
+                                SnackbarResult.Dismissed -> onSnackbarDismissedAction.invoke()
+                                SnackbarResult.ActionPerformed -> onSnackbarPerformedAction.invoke(
+                                    listItems)
                             }
                         }
                     }

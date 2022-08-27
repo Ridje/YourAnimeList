@@ -31,6 +31,7 @@ import androidx.navigation.NavController
 import com.kis.youranimelist.domain.rankinglist.model.Anime
 import com.kis.youranimelist.domain.rankinglist.model.AnimeCategory
 import com.kis.youranimelist.ui.apptopbar.SearchAnimeToolbar
+import com.kis.youranimelist.ui.model.AnimeRankType
 import com.kis.youranimelist.ui.navigation.NavigationKeys
 import com.kis.youranimelist.ui.widget.AnimeCategoryListItemRounded
 import me.onebone.toolbar.CollapsingToolbarScaffold
@@ -72,7 +73,7 @@ fun ExploreScreen(
             itemsIndexed(animeCategories) { index, category ->
                 Row(horizontalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier.fillMaxWidth()) {
-                    Text(text = category.name,
+                    Text(text = category.rankType.presentName,
                         modifier = Modifier.padding(6.dp),
                         style = MaterialTheme.typography.h6)
                     Text(
@@ -80,7 +81,7 @@ fun ExploreScreen(
                         modifier = Modifier
                             .padding(6.dp)
                             .clip(RoundedCornerShape(8.dp))
-                            .clickable { onRankingListClick.invoke(category.tag) }
+                            .clickable { onRankingListClick.invoke(category.rankType.tag) }
                             .padding(6.dp),
                         style = MaterialTheme.typography.body1,
                         textDecoration = TextDecoration.Underline,
@@ -124,7 +125,7 @@ fun ExploreScreen(
 fun ExploreScreePreview() {
     ExploreScreen(
         animeCategories = listOf(
-            AnimeCategory("all", "test", listOf(
+            AnimeCategory(AnimeRankType.Airing, listOf(
                 Anime(
                     123,
                     "Boku no Hero Academia 2nd Season",
@@ -162,7 +163,7 @@ fun ExploreScreePreview() {
                 )
             )
             ),
-            AnimeCategory("second", "test2", listOf(
+            AnimeCategory(AnimeRankType.TopRanked, listOf(
                 Anime(
                     126,
                     "Fullmetal Alchemist: Brotherhood",
