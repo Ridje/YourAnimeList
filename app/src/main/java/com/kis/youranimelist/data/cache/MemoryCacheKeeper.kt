@@ -3,6 +3,8 @@ package com.kis.youranimelist.data.cache
 import com.kis.youranimelist.domain.rankinglist.model.Anime
 import com.kis.youranimelist.ui.model.CachingKey
 
+private const val CACHE_INVALIDATION_TIME: Long = 86400 / 2
+
 interface MemoryCacheKeeper<T, S> {
     val updatedAt: Long
     val lifeTime: Long
@@ -47,7 +49,7 @@ class AnimeRankingMemoryCache(
         fun getOrCreate(
             key: CachingKey,
         ): AnimeRankingMemoryCache {
-            return cachedRanks.getOrPut(key) { AnimeRankingMemoryCache(86400) }
+            return cachedRanks.getOrPut(key) { AnimeRankingMemoryCache(CACHE_INVALIDATION_TIME) }
         }
     }
 }

@@ -1,4 +1,4 @@
-package com.kis.youranimelist.data.network.model.personal_list
+package com.kis.youranimelist.data.network.model.personallist
 
 import com.kis.youranimelist.data.network.model.AnimeResponse
 import kotlinx.serialization.SerialName

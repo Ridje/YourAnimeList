@@ -3,6 +3,7 @@ package com.kis.youranimelist.ui.itembottomsheetdialog
 import com.kis.youranimelist.domain.personalanimelist.model.AnimeStatus
 import com.kis.youranimelist.domain.personalanimelist.model.AnimeStatusValue
 import com.kis.youranimelist.domain.rankinglist.model.Anime
+import java.time.LocalDate
 
 object ItemBottomScreenContract {
     data class ScreenState(
@@ -70,6 +71,7 @@ fun ItemBottomScreenContract.ScreenState.asAnimeStatus(): AnimeStatus {
             this.statuses[this.currentStatus]),
         score = this.score.toInt(),
         numWatchedEpisodes = this.episodesWatched ?: 0,
+        updatedAt = System.currentTimeMillis(),
     )
 }
 

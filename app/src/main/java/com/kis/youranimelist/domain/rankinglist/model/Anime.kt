@@ -2,8 +2,8 @@ package com.kis.youranimelist.domain.rankinglist.model
 
 import android.os.Parcelable
 import com.kis.youranimelist.data.network.model.AnimeResponse
-import com.kis.youranimelist.data.network.model.ranking_response.AnimeRankingItem
-import com.kis.youranimelist.data.network.model.ranking_response.RankingResponse
+import com.kis.youranimelist.data.network.model.rankingresponse.AnimeRankingItem
+import com.kis.youranimelist.data.network.model.rankingresponse.RankingResponse
 import kotlinx.parcelize.Parcelize
 
 @Parcelize

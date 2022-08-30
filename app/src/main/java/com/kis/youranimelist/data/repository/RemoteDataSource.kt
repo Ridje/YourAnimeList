@@ -5,10 +5,11 @@ import com.kis.youranimelist.data.network.model.AnimeResponse
 import com.kis.youranimelist.data.network.model.ErrorResponse
 import com.kis.youranimelist.data.network.model.TokenResponse
 import com.kis.youranimelist.data.network.model.UserResponse
-import com.kis.youranimelist.data.network.model.personal_list.AnimeStatusResponse
-import com.kis.youranimelist.data.network.model.personal_list.PersonalAnimeListResponse
-import com.kis.youranimelist.data.network.model.ranking_response.RankingRootResponse
+import com.kis.youranimelist.data.network.model.personallist.AnimeStatusResponse
+import com.kis.youranimelist.data.network.model.personallist.PersonalAnimeListResponse
+import com.kis.youranimelist.data.network.model.rankingresponse.RankingRootResponse
 import com.kis.youranimelist.data.network.model.searchresponse.SearchingRootResponse
+import com.kis.youranimelist.domain.rankinglist.model.Anime
 
 interface RemoteDataSource {
 
@@ -43,15 +44,15 @@ interface RemoteDataSource {
         sort: String?,
         limit: Int,
         offset: Int,
-    ): PersonalAnimeListResponse?
+    ): NetworkResponse<PersonalAnimeListResponse, ErrorResponse>
 
-    suspend fun deletePersonalAnimeStatus(animeId: Int): Boolean
+    suspend fun deletePersonalAnimeStatus(animeId: Int): NetworkResponse<Unit, ErrorResponse>
     suspend fun savePersonalAnimeStatus(
         animeId: Int,
         status: String?,
         score: Int?,
         episodesWatched: Int?,
-    ): Boolean
+    ): NetworkResponse<AnimeStatusResponse, ErrorResponse>
 
     suspend fun getPersonalAnimeStatus(animeId: Int): AnimeStatusResponse?
 }

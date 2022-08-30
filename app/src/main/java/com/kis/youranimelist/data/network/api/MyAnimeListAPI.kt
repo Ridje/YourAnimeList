@@ -4,9 +4,9 @@ import com.haroldadmin.cnradapter.NetworkResponse
 import com.kis.youranimelist.data.network.model.AnimeResponse
 import com.kis.youranimelist.data.network.model.ErrorResponse
 import com.kis.youranimelist.data.network.model.UserResponse
-import com.kis.youranimelist.data.network.model.personal_list.AnimeStatusResponse
-import com.kis.youranimelist.data.network.model.personal_list.PersonalAnimeListResponse
-import com.kis.youranimelist.data.network.model.ranking_response.RankingRootResponse
+import com.kis.youranimelist.data.network.model.personallist.AnimeStatusResponse
+import com.kis.youranimelist.data.network.model.personallist.PersonalAnimeListResponse
+import com.kis.youranimelist.data.network.model.rankingresponse.RankingRootResponse
 import com.kis.youranimelist.data.network.model.searchresponse.SearchingRootResponse
 import retrofit2.Call
 import retrofit2.http.DELETE
@@ -47,22 +47,22 @@ interface MyAnimeListAPI {
     ): NetworkResponse<UserResponse, ErrorResponse>
 
     @GET("users/@me/animelist")
-    fun userAnime(
+    suspend fun userAnime(
         @Query("status") status: String?,
         @Query("sort") sort: String?,
         @Query("limit") limit: Int = 100,
         @Query("offset") offset: Int = 0,
         @Query("fields") fields: String?,
-    ): Call<PersonalAnimeListResponse>
+    ): NetworkResponse<PersonalAnimeListResponse, ErrorResponse>
 
     @PATCH("anime/{anime_id}/my_list_status")
     @FormUrlEncoded
-    fun updateUserAnime(
+    suspend fun updateUserAnime(
         @Path("anime_id") animeID: Int,
         @Field("status") status: String?,
         @Field("score") score: Int?,
         @Field("num_watched_episodes") episodesWatched: Int?,
-    ): Call<AnimeStatusResponse>
+    ): NetworkResponse<AnimeStatusResponse, ErrorResponse>
 
     @PATCH("anime/{anime_id}/my_list_status")
     fun getUserAnimeStatus(
@@ -70,7 +70,7 @@ interface MyAnimeListAPI {
     ): Call<AnimeStatusResponse>
 
     @DELETE("anime/{anime_id}/my_list_status")
-    fun deleteUserAnimeStatus(
+    suspend fun deleteUserAnimeStatus(
         @Path("anime_id") animeId: Int,
-    ): Call<Unit>
+    ): NetworkResponse<Unit, ErrorResponse>
 }
