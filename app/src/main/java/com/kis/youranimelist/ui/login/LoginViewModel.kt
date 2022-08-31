@@ -7,30 +7,33 @@ import androidx.work.WorkManager
 import com.kis.youranimelist.BuildConfig
 import com.kis.youranimelist.data.SyncWorker
 import com.kis.youranimelist.domain.auth.AuthUseCase
-import com.kis.youranimelist.data.repository.RemoteDataSource
+import com.kis.youranimelist.domain.model.ResultWrapper
 import com.kis.youranimelist.domain.personalanimelist.PersonalAnimeListUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val remoteDataSource: RemoteDataSource,
     private val authUsecase: AuthUseCase,
-    private val useCase: PersonalAnimeListUseCase,
+    private val personalAnimeList: PersonalAnimeListUseCase,
     private val workManager: WorkManager,
 ) : ViewModel(),
     LoginScreenContract.LoginScreenEventsConsumer {
 
-    val screenState: MutableStateFlow<LoginScreenContract.ScreenState> = MutableStateFlow(
+    private val _screenState: MutableStateFlow<LoginScreenContract.ScreenState> = MutableStateFlow(
         LoginScreenContract.ScreenState(webViewVisible = false, isLoading = true)
     )
+    val screenState = _screenState as StateFlow<LoginScreenContract.ScreenState>
 
-    val effectStream: MutableSharedFlow<LoginScreenContract.Effect> = MutableSharedFlow()
+    private val _effectStream: MutableSharedFlow<LoginScreenContract.Effect> = MutableSharedFlow()
+    val effectStream = _effectStream as SharedFlow<LoginScreenContract.Effect>
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
@@ -41,42 +44,41 @@ class LoginViewModel @Inject constructor(
                     ExistingWorkPolicy.REPLACE,
                     SyncWorker.startSyncJob()
                 )
-                effectStream.emit(LoginScreenContract.Effect.AuthDataSaved)
+                _effectStream.emit(LoginScreenContract.Effect.AuthDataSaved)
             } else {
-                screenState.value = screenState.value.copy(isLoading = false)
+                _screenState.value = screenState.value.copy(isLoading = false)
             }
         }
     }
 
     override fun onLoginClick() {
-        screenState.value = LoginScreenContract.ScreenState(webViewVisible = true, isLoading = true)
+        _screenState.value =
+            LoginScreenContract.ScreenState(webViewVisible = true, isLoading = true)
     }
 
     override fun onLoginSucceed(
         token: String,
         codeVerifier: String,
     ) {
-        screenState.value =
+        _screenState.value =
             LoginScreenContract.ScreenState(webViewVisible = false, isLoading = true)
         viewModelScope.launch(Dispatchers.IO) {
-            val postResult = remoteDataSource.getAccessToken(BuildConfig.CLIENT_ID,
+            val result = authUsecase.getAccessToken(
+                BuildConfig.CLIENT_ID,
                 token,
-                codeVerifier,
-                "authorization_code")
-            authUsecase.setAuthData(postResult.accessToken,
-                postResult.refreshToken,
-                postResult.expiresIn,
-                postResult.tokenType)
-            if (authUsecase.isAuthDataValid()) {
-                screenState.value = screenState.value.copy(
-                    isLoadingUserDatabase = true
-                )
-                useCase.refreshPersonalAnimeStatuses()
-                screenState.value = screenState.value.copy(
-                    isLoadingUserDatabase = false
-                )
+                codeVerifier)
+            if (result is ResultWrapper.Success) {
+                val (accessToken, refreshToken, expiresIn, tokenType) = result.data
+
+                authUsecase.setAuthData(accessToken, refreshToken, expiresIn, tokenType)
+                _screenState.value = screenState.value.copy(isLoadingUserDatabase = true)
+                personalAnimeList.refreshPersonalAnimeStatuses()
+                _screenState.value = screenState.value.copy(isLoadingUserDatabase = false)
+
+                _effectStream.emit(LoginScreenContract.Effect.AuthDataSaved)
+            } else {
+                _effectStream.emit(LoginScreenContract.Effect.NetworkError)
             }
-            effectStream.emit(LoginScreenContract.Effect.AuthDataSaved)
         }
     }
 }

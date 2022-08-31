@@ -2,7 +2,9 @@ package com.kis.youranimelist.domain.auth
 
 import com.kis.youranimelist.core.utils.AppPreferences
 import com.kis.youranimelist.data.network.AuthInterceptor
-import com.kis.youranimelist.data.network.api.MyAnimeListOAuthAPI
+import com.kis.youranimelist.data.network.model.TokenResponse
+import com.kis.youranimelist.data.repository.RemoteDataSource
+import com.kis.youranimelist.domain.model.ResultWrapper
 import com.kis.youranimelist.ui.navigation.NavigationKeys
 import dagger.Lazy
 import kotlinx.coroutines.CoroutineScope
@@ -10,12 +12,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 class AuthUseCase @Inject constructor(
+    private val remoteDataSource: Lazy<RemoteDataSource>,
     private val appPreferences: AppPreferences,
     private val authInterceptor: AuthInterceptor,
-    private val oAuthAPI: Lazy<MyAnimeListOAuthAPI>,
 ) {
     private val errorHappenedFlow = MutableSharedFlow<String>()
 
@@ -36,18 +39,16 @@ class AuthUseCase @Inject constructor(
 
     fun onAuthError(errorCode: Int): Boolean {
         if (errorCode == 401 && authInterceptor.refreshToken != null) {
-            val requestTokenResult = oAuthAPI.get().refreshToken("refresh_token",
-                authInterceptor.refreshToken ?: throw RuntimeException(
-                    "refresh token was nulled by another Thread"
+            val requestTokenResult = runBlocking {
+                remoteDataSource.get().refreshAccessToken(authInterceptor.refreshToken
+                        ?: throw RuntimeException("refresh token was nulled by another Thread")
                 )
-            ).execute()
-            if (requestTokenResult.isSuccessful) {
-                val tokenInfo = requestTokenResult.body()
-                    ?: throw RuntimeException("Uknown error during refreshing token operation")
-                setAuthData(tokenInfo.accessToken,
-                    tokenInfo.refreshToken,
-                    tokenInfo.expiresIn,
-                    tokenInfo.tokenType)
+            }
+            if (requestTokenResult is ResultWrapper.Success) {
+                setAuthData(requestTokenResult.data.accessToken,
+                    requestTokenResult.data.refreshToken,
+                    requestTokenResult.data.expiresIn,
+                    requestTokenResult.data.tokenType)
                 return true
             }
         }
@@ -85,5 +86,13 @@ class AuthUseCase @Inject constructor(
             appPreferences.writeString(AppPreferences.TYPE_TOKEN_SETTING_KEY, tokenType)
             authInterceptor.setAuthorization(tokenType = tokenType)
         }
+    }
+
+    suspend fun getAccessToken(
+        clientID: String,
+        code: String,
+        codeVerifier: String,
+    ): ResultWrapper<TokenResponse> {
+        return remoteDataSource.get().getAccessToken(clientID, code, codeVerifier)
     }
 }

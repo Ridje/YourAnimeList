@@ -9,6 +9,7 @@ import com.kis.youranimelist.data.network.model.personallist.AnimeStatusResponse
 import com.kis.youranimelist.data.network.model.personallist.PersonalAnimeListResponse
 import com.kis.youranimelist.data.network.model.rankingresponse.RankingRootResponse
 import com.kis.youranimelist.data.network.model.searchresponse.SearchingRootResponse
+import com.kis.youranimelist.domain.model.ResultWrapper
 import com.kis.youranimelist.domain.rankinglist.model.Anime
 
 interface RemoteDataSource {
@@ -17,12 +18,15 @@ interface RemoteDataSource {
         const val CODE_FIELD = "code"
     }
 
-    fun getAccessToken(
+    suspend fun getAccessToken(
         clientID: String,
         code: String,
         codeVerifier: String,
-        grantType: String,
-    ): TokenResponse
+    ): ResultWrapper<TokenResponse>
+
+    suspend fun refreshAccessToken(
+        refreshToken: String,
+    ): ResultWrapper<TokenResponse>
 
     suspend fun getUserData(): NetworkResponse<UserResponse, ErrorResponse>
 

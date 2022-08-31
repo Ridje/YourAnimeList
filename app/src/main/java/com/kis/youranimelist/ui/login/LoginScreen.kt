@@ -72,6 +72,7 @@ fun LoginScreen(
         effectFlow.collectLatest { effect ->
             when (effect) {
                 is LoginScreenContract.Effect.AuthDataSaved -> onAuthDataSaved.invoke()
+                LoginScreenContract.Effect.NetworkError -> TODO()
             }
         }
     }

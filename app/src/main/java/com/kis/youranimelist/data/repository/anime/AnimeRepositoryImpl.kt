@@ -74,13 +74,4 @@ class AnimeRepositoryImpl(
             return true
         } ?: return false
     }
-
-    override suspend fun getAccessToken(
-        clientID: String,
-        code: String,
-        codeVerifier: String,
-        grantType: String,
-    ): TokenResponse {
-        return remoteDataSource.getAccessToken(clientID, code, codeVerifier, grantType)
-    }
 }
