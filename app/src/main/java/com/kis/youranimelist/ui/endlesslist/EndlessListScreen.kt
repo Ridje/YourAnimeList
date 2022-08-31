@@ -66,7 +66,7 @@ fun EndlessListScreenRoute(
         scaffoldState,
         onItemClick = { itemId: Int -> navController.navigate(NavigationKeys.Route.EXPLORE + "/$itemId") },
         onClickBack = { navController.popBackStack() },
-        onSnackbarPerformedAction = { items: LazyPagingItems<Item> ->
+        onSnackbarPerformedAction = { items: LazyPagingItems<EndlessListItem> ->
             screenEventsListener.onReloadClicked(items)
         },
         onSnackbarDismissedAction = { },
@@ -76,12 +76,12 @@ fun EndlessListScreenRoute(
 
 @Composable
 fun EndlessListScreen(
-    listItems: LazyPagingItems<Item>,
+    listItems: LazyPagingItems<EndlessListItem>,
     title: String,
     scaffoldState: ScaffoldState,
     onItemClick: (Int) -> Unit,
     onClickBack: () -> Unit,
-    onSnackbarPerformedAction: (LazyPagingItems<Item>) -> Unit,
+    onSnackbarPerformedAction: (LazyPagingItems<EndlessListItem>) -> Unit,
     onSnackbarDismissedAction: () -> Unit,
 ) {
     CollapsingToolbarScaffold(state = rememberCollapsingToolbarScaffoldState(),
@@ -100,10 +100,10 @@ fun EndlessListScreen(
 
 @Composable
 fun EndlessListScreenBody(
-    listItems: LazyPagingItems<Item>,
+    listItems: LazyPagingItems<EndlessListItem>,
     scaffoldState: ScaffoldState,
     onItemClick: (Int) -> Unit,
-    onSnackbarPerformedAction: (LazyPagingItems<Item>) -> Unit,
+    onSnackbarPerformedAction: (LazyPagingItems<EndlessListItem>) -> Unit,
     onSnackbarDismissedAction: () -> Unit,
 ) {
     val localScope = rememberCoroutineScope()

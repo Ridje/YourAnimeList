@@ -7,17 +7,16 @@ import kotlinx.coroutines.flow.Flow
 
 object EndlessListScreenContract {
     data class ScreenState(
-        val items: Flow<PagingData<Item>>,
+        val items: Flow<PagingData<EndlessListItem>>,
         val title: String,
     )
 
     interface ScreenEventsListener {
-        fun onReloadClicked(items: LazyPagingItems<Item>)
+        fun onReloadClicked(items: LazyPagingItems<EndlessListItem>)
     }
-
 }
 
-data class Item(
+data class EndlessListItem(
     val id: Int,
     val title: String,
     val imageUrl: String?,
@@ -31,21 +30,18 @@ data class Item(
     val mediaType: String?,
 )
 
-
-object EndlessListScreenMapper {
-    fun map(anime: Anime?): Item {
-        return Item(
-            id = anime?.id ?: -1,
-            title = anime?.title ?: "",
-            imageUrl = anime?.picture?.large,
-            name = anime?.title,
-            description = anime?.synopsis,
-            mean = anime?.mean,
-            rank = anime?.rank,
-            genres = anime?.genres?.map { it.name }?.take(3)?.joinToString(separator = ", ") ?: "",
-            year = anime?.startSeason?.year,
-            mediaType = anime?.mediaType,
-            numEpisodes = anime?.numEpisodes,
-        )
-    }
+fun Anime?.asEndlessListItem(): EndlessListItem {
+    return EndlessListItem(
+        id = this?.id ?: -1,
+        title = this?.title ?: "",
+        imageUrl = this?.picture?.large,
+        name = this?.title,
+        description = this?.synopsis,
+        mean = this?.mean,
+        rank = this?.rank,
+        genres = this?.genres?.map { it.name }?.take(3)?.joinToString(separator = ", "),
+        year = this?.startSeason?.year,
+        mediaType = this?.mediaType,
+        numEpisodes = this?.numEpisodes,
+    )
 }
