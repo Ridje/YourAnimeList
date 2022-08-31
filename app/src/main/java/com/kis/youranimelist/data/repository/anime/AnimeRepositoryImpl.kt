@@ -1,11 +1,13 @@
 package com.kis.youranimelist.data.repository.anime
 
+import com.haroldadmin.cnradapter.NetworkResponse
 import com.kis.youranimelist.data.cache.AnimeRankingMemoryCache
 import com.kis.youranimelist.data.cache.model.PicturePersistence
 import com.kis.youranimelist.data.network.model.TokenResponse
 import com.kis.youranimelist.data.network.model.rankingresponse.RankingRootResponse
 import com.kis.youranimelist.data.repository.LocalDataSource
 import com.kis.youranimelist.data.repository.RemoteDataSource
+import com.kis.youranimelist.data.repository.animelist.saveToLocalDataSource
 import com.kis.youranimelist.domain.model.ResultWrapper
 import com.kis.youranimelist.domain.model.asResult
 import com.kis.youranimelist.domain.rankinglist.mapper.AnimeMapper
@@ -47,9 +49,6 @@ class AnimeRepositoryImpl(
     override fun getAnimeDetailedDataSource(animeID: Int) =
         localDataSource.getAnimeDetailedDataProducerFromCache(animeID)
             .flatMapLatest { animeDetailedData ->
-                if (animeDetailedData == null) {
-                    remoteDataSource.getAnimeInfo(animeID)
-                }
                 flow {
                     animeDetailedData?.let {
                         val relatedAnimeResults = mutableListOf<PicturePersistence?>()
@@ -57,11 +56,9 @@ class AnimeRepositoryImpl(
                             val pictureResult = relatedAnime.pictureId?.let { pictureId ->
                                 localDataSource.getRelatedAnimeMainPicture(pictureId)
                             }
-
                             relatedAnimeResults.add(pictureResult)
                         }
-                        val result =
-                            animeMapper.map(animeDetailedData, relatedAnimeResults.toList())
+                        val result = animeMapper.map(animeDetailedData, relatedAnimeResults.toList())
                         emit(result)
                     }
                 }
@@ -69,9 +66,10 @@ class AnimeRepositoryImpl(
 
     override suspend fun refreshAnimeDetailedData(animeID: Int): Boolean {
         val remoteResult = remoteDataSource.getAnimeInfo(animeID)
-        remoteResult?.let {
-            localDataSource.saveAnimeToCache(Anime(remoteResult))
+        if (remoteResult is NetworkResponse.Success) {
+            localDataSource.saveAnimeToCache(Anime(remoteResult.body))
             return true
-        } ?: return false
+        }
+        return false
     }
 }

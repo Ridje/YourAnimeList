@@ -10,7 +10,6 @@ import com.kis.youranimelist.data.network.model.personallist.PersonalAnimeListRe
 import com.kis.youranimelist.data.network.model.rankingresponse.RankingRootResponse
 import com.kis.youranimelist.data.network.model.searchresponse.SearchingRootResponse
 import com.kis.youranimelist.domain.model.ResultWrapper
-import com.kis.youranimelist.domain.rankinglist.model.Anime
 
 interface RemoteDataSource {
 
@@ -30,7 +29,7 @@ interface RemoteDataSource {
 
     suspend fun getUserData(): NetworkResponse<UserResponse, ErrorResponse>
 
-    suspend fun getAnimeInfo(animeID: Int): AnimeResponse?
+    suspend fun getAnimeInfo(animeID: Int): NetworkResponse<AnimeResponse, ErrorResponse>
     suspend fun getAnimeRankingList(
         rankingType: String,
         limit: Int?,
@@ -58,5 +57,5 @@ interface RemoteDataSource {
         episodesWatched: Int?,
     ): NetworkResponse<AnimeStatusResponse, ErrorResponse>
 
-    suspend fun getPersonalAnimeStatus(animeId: Int): AnimeStatusResponse?
+    suspend fun getPersonalAnimeStatus(animeId: Int): NetworkResponse<AnimeStatusResponse, ErrorResponse>
 }

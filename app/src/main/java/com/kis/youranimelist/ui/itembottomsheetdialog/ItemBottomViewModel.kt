@@ -8,22 +8,18 @@ import com.kis.youranimelist.domain.personalanimelist.PersonalAnimeListUseCase
 import com.kis.youranimelist.ui.navigation.InvalidNavArgumentException
 import com.kis.youranimelist.ui.navigation.NavigationKeys
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
 class ItemBottomViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val personalAnimeListUseCase: PersonalAnimeListUseCase,
-    private val dispatchers: Dispatchers,
 ) : ViewModel(), ItemBottomScreenContract.ScreenEventsListener {
 
     private val _screenState: MutableStateFlow<ItemBottomScreenContract.ScreenState>
@@ -50,15 +46,11 @@ class ItemBottomViewModel @Inject constructor(
     private fun startObserveMyItemChanges() {
         viewModelScope.launch {
             personalAnimeListUseCase.getPersonalAnimeStatusProducer(id)
-                .flowOn(Dispatchers.IO)
                 .collectLatest { result ->
                     when (result) {
-                        is ResultWrapper.Success -> _screenState.value = screenState.value.copyWithMapping(result.data)
-                        is ResultWrapper.Error,
-                        -> {
-                        }
-                        else -> {
-                        }
+                        is ResultWrapper.Success -> _screenState.value =
+                            screenState.value.copyWithMapping(result.data)
+                        else -> {}
                     }
                 }
         }
@@ -128,12 +120,7 @@ class ItemBottomViewModel @Inject constructor(
             applyLoading = true,
         )
         viewModelScope.launch {
-            val result = withContext(dispatchers.IO) {
-                personalAnimeListUseCase.savePersonalAnimeStatus(
-                    screenState.value.asAnimeStatus()
-                )
-            }
-            when (result) {
+            when (personalAnimeListUseCase.savePersonalAnimeStatus(screenState.value.asAnimeStatus())) {
                 true -> {
                     _effectStream.emit(ItemBottomScreenContract.Effect.DataSaved)
                 }
@@ -151,10 +138,7 @@ class ItemBottomViewModel @Inject constructor(
             deleteLoading = true,
         )
         viewModelScope.launch {
-            val result = withContext(dispatchers.IO) {
-                personalAnimeListUseCase.deletePersonalAnimeStatus(screenState.value.id)
-            }
-            when (result) {
+            when (personalAnimeListUseCase.deletePersonalAnimeStatus(screenState.value.id)) {
                 true -> {
                     _effectStream.emit(ItemBottomScreenContract.Effect.DataSaved)
                 }

@@ -17,6 +17,8 @@ sealed class AnimeStatusValue(val presentIndex: String, val color: Color) {
             )
         }
 
+        fun defaultStatusIndex() = listOfIndiciesOnlyValues().indexOf(PlanToWatch.presentIndex)
+
         fun listOfIndiciesOnlyValues(): List<String> {
             return listOf(
                 Watching.presentIndex,
@@ -36,7 +38,7 @@ sealed class AnimeStatusValue(val presentIndex: String, val color: Color) {
                     "dropped" -> Dropped
                     "plan_to_watch" -> PlanToWatch
                     "all" -> All
-                    null -> Watching
+                    null -> PlanToWatch
                     else -> Unknown
                 }
             }

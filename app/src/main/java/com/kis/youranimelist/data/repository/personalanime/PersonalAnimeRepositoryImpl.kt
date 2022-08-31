@@ -11,6 +11,7 @@ import com.kis.youranimelist.data.cache.model.personalanime.AnimePersonalStatusP
 import com.kis.youranimelist.data.network.model.ErrorResponse
 import com.kis.youranimelist.data.network.model.personallist.PersonalAnimeItemResponse
 import com.kis.youranimelist.data.network.model.personallist.PersonalAnimeListResponse
+import com.kis.youranimelist.data.network.model.personallist.asAnimePersonalStatusPersistence
 import com.kis.youranimelist.data.repository.LocalDataSource
 import com.kis.youranimelist.data.repository.RemoteDataSource
 import com.kis.youranimelist.domain.personalanimelist.mapper.AnimeStatusMapper
@@ -65,15 +66,12 @@ class PersonalAnimeRepositoryImpl @Inject constructor(
     }
 
     override suspend fun refreshPersonalAnimeStatus(animeId: Int) {
-        remoteDataSource.getPersonalAnimeStatus(animeId)?.let {
+        val remoteResult = remoteDataSource.getPersonalAnimeStatus(animeId)
+        if (remoteResult is NetworkResponse.Success) {
             localDataSource.mergePersonalAnimeStatusToCache(
-                AnimePersonalStatusPersistence(
-                    score = it.score,
-                    episodesWatched = it.numEpisodesWatched,
-                    statusId = it.status,
-                    animeId = animeId,
-                    updatedAt = AnimeStatusMapper.formatter.parse(it.updatedAt).time,
-                )
+                remoteResult.body.asAnimePersonalStatusPersistence(animeId) { updatedAt ->
+                    AnimeStatusMapper.formatter.parse(updatedAt)?.time ?: Long.MIN_VALUE
+                }
             )
         }
     }

@@ -28,6 +28,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
@@ -41,6 +42,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.google.accompanist.pager.ExperimentalPagerApi
@@ -54,14 +57,15 @@ import com.kis.youranimelist.ui.navigation.NavigationKeys
 import com.kis.youranimelist.ui.widget.AnimeCategoryListItemRounded
 import com.kis.youranimelist.ui.widget.ExpandableText
 
+@OptIn(ExperimentalLifecycleComposeApi::class)
 @Composable
 fun ItemScreenRoute(
     navController: NavController,
     viewModel: ItemViewModel = hiltViewModel(),
 ) {
-    val screeState = viewModel.screenState.collectAsState()
+    val screeState by viewModel.screenState.collectAsStateWithLifecycle()
     ItemScreen(
-        screeState.value.item,
+        screeState.item,
         { navController.popBackStack() },
         {
             val currentRoute = navController.currentDestination?.route ?: ""

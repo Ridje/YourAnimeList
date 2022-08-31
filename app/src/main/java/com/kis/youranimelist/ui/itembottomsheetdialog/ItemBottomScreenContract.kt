@@ -10,7 +10,7 @@ object ItemBottomScreenContract {
         val id: Int,
         val title: String,
         val statuses: List<String> = AnimeStatusValue.listOfIndiciesOnlyValues(),
-        val currentStatus: Int = 0,
+        val currentStatus: Int = AnimeStatusValue.defaultStatusIndex(),
         val episodesWatched: Int? = null,
         val episodes: Int = 0,
         val score: Float = 0f,
