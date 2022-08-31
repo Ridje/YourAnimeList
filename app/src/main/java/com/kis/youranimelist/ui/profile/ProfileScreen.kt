@@ -96,7 +96,7 @@ fun ProfileScreen(
     birthday: String?,
     statisticsPieData: PieChartData?,
     statisticsLegend: List<Pair<String, Color?>>?,
-    bottomStatisticsData: BottomStatisticsData?,
+    bottomStatisticsData: ProfileScreenContract.BottomStatisticsData?,
     scaffoldState: ScaffoldState,
     onImageClick: () -> Unit,
     onSnackbarPerformedAction: () -> Unit,

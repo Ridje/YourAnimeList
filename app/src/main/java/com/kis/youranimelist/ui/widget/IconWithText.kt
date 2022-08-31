@@ -43,7 +43,7 @@ fun IconWithText(
             text = if (text?.isNotBlank() == true) {
                 text
             } else {
-                stringResource(id = R.string.unknown)
+                stringResource(id = R.string.not_rated)
             },
             style = textStyle,
         )

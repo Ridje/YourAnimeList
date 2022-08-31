@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kis.youranimelist.data.repository.anime.AnimeRepository
+import com.kis.youranimelist.domain.rankinglist.model.RelatedAnime
 import com.kis.youranimelist.ui.navigation.InvalidNavArgumentException
 import com.kis.youranimelist.ui.navigation.NavigationKeys
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -45,7 +46,7 @@ class ItemViewModel @Inject constructor(
                 animeId,
             ).collect { anime ->
                 _screenState.value = ItemScreenContract.ScreenState(
-                    item = anime.asAnimeItemScreen()
+                    item = anime.asAnimeItemScreen(RelatedAnime::asRelatedAnimeItemScreen)
                 )
             }
         }

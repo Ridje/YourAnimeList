@@ -15,7 +15,7 @@ While the workflow remains the same, Mob isn't just blindly following Reigen aro
     <string name="dropped_items">Dropped (%1$s)</string>
     <string name="plan_to_watch_items">Plan to watch (%1$s)</string>
     <string name="total_items">Total (%1$s)</string>
-    <string name="unknown">Unknown</string>
+    <string name="not_rated">NA</string>
     <string name="default_content_description">content not described yet</string>
     <string name="anime">Anime</string>
     <string name="days_spent">Days spent</string>
@@ -36,6 +36,7 @@ While the workflow remains the same, Mob isn't just blindly following Reigen aro
     <string name="delete_anime_question">Delete anime?</string>
     <string name="delete_anime_question_description">Are you sure you want to delete this anime from your list?</string>
     <string name="loading_user_database">Loading user database</string>
+    <string name="list_empty">No items in the list</string>
 
     <string-array name="personal_list_statuses">
         <item>all</item>
