@@ -2,7 +2,7 @@ package com.kis.youranimelist.data.repository.animelist
 
 import com.haroldadmin.cnradapter.NetworkResponse
 import com.kis.youranimelist.data.network.model.ErrorResponse
-import com.kis.youranimelist.data.network.model.ranking_response.RankingRootResponse
+import com.kis.youranimelist.data.network.model.rankingresponse.RankingRootResponse
 import com.kis.youranimelist.data.repository.LocalDataSource
 import com.kis.youranimelist.data.repository.RemoteDataSource
 import com.kis.youranimelist.domain.rankinglist.mapper.AnimeMapper

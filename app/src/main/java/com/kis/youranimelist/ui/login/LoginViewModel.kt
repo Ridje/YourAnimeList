@@ -2,7 +2,10 @@ package com.kis.youranimelist.ui.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.work.ExistingWorkPolicy
+import androidx.work.WorkManager
 import com.kis.youranimelist.BuildConfig
+import com.kis.youranimelist.data.SyncWorker
 import com.kis.youranimelist.domain.auth.AuthUseCase
 import com.kis.youranimelist.data.repository.RemoteDataSource
 import com.kis.youranimelist.domain.personalanimelist.PersonalAnimeListUseCase
@@ -19,6 +22,7 @@ class LoginViewModel @Inject constructor(
     private val remoteDataSource: RemoteDataSource,
     private val authUsecase: AuthUseCase,
     private val useCase: PersonalAnimeListUseCase,
+    private val workManager: WorkManager,
 ) : ViewModel(),
     LoginScreenContract.LoginScreenEventsConsumer {
 
@@ -32,6 +36,11 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             delay(500L)
             if (authUsecase.isAuthDataValid()) {
+                workManager.enqueueUniqueWork(
+                    SyncWorker.SyncWorkName,
+                    ExistingWorkPolicy.REPLACE,
+                    SyncWorker.startSyncJob()
+                )
                 effectStream.emit(LoginScreenContract.Effect.AuthDataSaved)
             } else {
                 screenState.value = screenState.value.copy(isLoading = false)

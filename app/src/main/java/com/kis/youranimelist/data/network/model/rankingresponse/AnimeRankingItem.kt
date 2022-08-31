@@ -1,4 +1,4 @@
-package com.kis.youranimelist.data.network.model.ranking_response
+package com.kis.youranimelist.data.network.model.rankingresponse
 
 import com.kis.youranimelist.data.network.model.PictureResponse
 import com.kis.youranimelist.data.network.model.StartSeasonResponse

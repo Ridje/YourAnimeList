@@ -19,6 +19,16 @@ interface PersonalAnimeDAO {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun addPersonalAnimeStatus(statuses: List<AnimePersonalStatusPersistence>)
 
+    @Transaction
+    fun mergeAnimePersonalStatus(newStatus: AnimePersonalStatusPersistence) {
+        if ((getAnimePersonalStatus(newStatus.animeId)?.updatedAt ?: 0) < newStatus.updatedAt) {
+            addPersonalAnimeStatus(newStatus)
+        }
+    }
+
+    @Query("SELECT * FROM anime_personal_status WHERE anime_id = :animeId")
+    fun getAnimePersonalStatus(animeId: Int): AnimePersonalStatusPersistence?
+
     @Query("DELETE FROM anime_personal_status WHERE anime_id = :animeId")
     fun deletePersonalAnimeStatus(animeId: Int)
 

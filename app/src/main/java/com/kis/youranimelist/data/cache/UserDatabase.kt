@@ -5,6 +5,7 @@ import androidx.room.RoomDatabase
 import com.kis.youranimelist.data.cache.dao.AnimeDAO
 import com.kis.youranimelist.data.cache.dao.PersonalAnimeDAO
 import com.kis.youranimelist.data.cache.dao.SideDAO
+import com.kis.youranimelist.data.cache.dao.SyncJobDao
 import com.kis.youranimelist.data.cache.dao.UserDAO
 import com.kis.youranimelist.data.cache.model.GenrePersistence
 import com.kis.youranimelist.data.cache.model.PicturePersistence
@@ -15,6 +16,7 @@ import com.kis.youranimelist.data.cache.model.anime.RelatedAnimePersistence
 import com.kis.youranimelist.data.cache.model.anime.SeasonPersistence
 import com.kis.youranimelist.data.cache.model.personalanime.AnimePersonalStatusPersistence
 import com.kis.youranimelist.data.cache.model.personalanime.AnimeStatusPersistence
+import com.kis.youranimelist.data.cache.model.syncjob.DeferredPersonalAnimeListChange
 
 @Database(
     entities = [
@@ -27,6 +29,7 @@ import com.kis.youranimelist.data.cache.model.personalanime.AnimeStatusPersisten
         GenrePersistence::class,
         RelatedAnimePersistence::class,
         AnimeGenrePersistence::class,
+        DeferredPersonalAnimeListChange::class,
     ],
     version = 3,
     exportSchema = true)
@@ -35,4 +38,5 @@ abstract class UserDatabase : RoomDatabase() {
     abstract fun personalAnimeStatusesDAO(): PersonalAnimeDAO
     abstract fun userDAO(): UserDAO
     abstract fun sideDAO(): SideDAO
+    abstract fun syncJobDAO(): SyncJobDao
 }

@@ -3,7 +3,7 @@ package com.kis.youranimelist.domain.rankinglist.mapper
 import com.kis.youranimelist.data.cache.model.PicturePersistence
 import com.kis.youranimelist.data.cache.model.anime.AnimeDetailedDataPersistence
 import com.kis.youranimelist.data.cache.model.anime.AnimePersistence
-import com.kis.youranimelist.data.network.model.ranking_response.AnimeRankedResponse
+import com.kis.youranimelist.data.network.model.rankingresponse.AnimeRankedResponse
 import com.kis.youranimelist.data.network.model.searchresponse.AnimeSearchResponse
 import com.kis.youranimelist.domain.rankinglist.model.Anime
 import com.kis.youranimelist.domain.rankinglist.model.Genre

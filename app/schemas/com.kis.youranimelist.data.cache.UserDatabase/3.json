@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 3,
-    "identityHash": "ff4058a713120f8460086b3b1f778283",
+    "identityHash": "579b0163b29ccd4e031f31b85480186f",
     "entities": [
       {
         "tableName": "anime",
@@ -91,7 +91,7 @@
       },
       {
         "tableName": "anime_personal_status",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`score` INTEGER, `episodes_watched` INTEGER, `status_id` TEXT, `anime_id` INTEGER PRIMARY KEY AUTOINCREMENT, FOREIGN KEY(`status_id`) REFERENCES `anime_status`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`anime_id`) REFERENCES `anime`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`score` INTEGER, `episodes_watched` INTEGER, `status_id` TEXT, `anime_id` INTEGER NOT NULL, `updated_at` INTEGER NOT NULL, PRIMARY KEY(`anime_id`), FOREIGN KEY(`status_id`) REFERENCES `anime_status`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`anime_id`) REFERENCES `anime`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
         "fields": [
           {
             "fieldPath": "score",
@@ -115,11 +115,17 @@
             "fieldPath": "animeId",
             "columnName": "anime_id",
             "affinity": "INTEGER",
-            "notNull": false
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updated_at",
+            "affinity": "INTEGER",
+            "notNull": true
           }
         ],
         "primaryKey": {
-          "autoGenerate": true,
+          "autoGenerate": false,
           "columnNames": [
             "anime_id"
           ]
@@ -502,12 +508,56 @@
         },
         "indices": [],
         "foreignKeys": []
+      },
+      {
+        "tableName": "deferred_personal_anime_list_change",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`anime_id` INTEGER NOT NULL, `deleted` INTEGER NOT NULL, `change_timestamp` INTEGER NOT NULL, PRIMARY KEY(`anime_id`), FOREIGN KEY(`anime_id`) REFERENCES `anime`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "fields": [
+          {
+            "fieldPath": "animeId",
+            "columnName": "anime_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "deleted",
+            "columnName": "deleted",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "changeTimestamp",
+            "columnName": "change_timestamp",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "anime_id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": [
+          {
+            "table": "anime",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "anime_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
       }
     ],
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'ff4058a713120f8460086b3b1f778283')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '579b0163b29ccd4e031f31b85480186f')"
     ]
   }
 }

@@ -6,6 +6,7 @@ import com.kis.youranimelist.data.cache.UserDatabase
 import com.kis.youranimelist.data.cache.dao.AnimeDAO
 import com.kis.youranimelist.data.cache.dao.PersonalAnimeDAO
 import com.kis.youranimelist.data.cache.dao.SideDAO
+import com.kis.youranimelist.data.cache.dao.SyncJobDao
 import com.kis.youranimelist.data.cache.dao.UserDAO
 import dagger.Module
 import dagger.Provides
@@ -64,5 +65,13 @@ class RoomModule {
         database: UserDatabase
     ): SideDAO {
         return database.sideDAO()
+    }
+
+    @Singleton
+    @Provides
+    fun provideSyncJobDao(
+        database: UserDatabase
+    ): SyncJobDao {
+        return database.syncJobDAO()
     }
 }

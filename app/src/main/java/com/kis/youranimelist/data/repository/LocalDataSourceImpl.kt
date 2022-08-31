@@ -1,9 +1,11 @@
 package com.kis.youranimelist.data.repository
 
 import androidx.room.Transaction
+import com.kis.youranimelist.data.cache.UserDatabase
 import com.kis.youranimelist.data.cache.dao.AnimeDAO
 import com.kis.youranimelist.data.cache.dao.PersonalAnimeDAO
 import com.kis.youranimelist.data.cache.dao.SideDAO
+import com.kis.youranimelist.data.cache.dao.SyncJobDao
 import com.kis.youranimelist.data.cache.dao.UserDAO
 import com.kis.youranimelist.data.cache.model.GenrePersistence
 import com.kis.youranimelist.data.cache.model.PicturePersistence
@@ -16,6 +18,7 @@ import com.kis.youranimelist.data.cache.model.anime.SeasonPersistence
 import com.kis.youranimelist.data.cache.model.personalanime.AnimePersonalStatusPersistence
 import com.kis.youranimelist.data.cache.model.personalanime.AnimeStatusPersistence
 import com.kis.youranimelist.data.cache.model.personalanime.PersonalStatusOfAnimePersistence
+import com.kis.youranimelist.data.cache.model.syncjob.DeferredPersonalAnimeListChange
 import com.kis.youranimelist.domain.personalanimelist.model.AnimeStatus
 import com.kis.youranimelist.domain.rankinglist.model.Anime
 import com.kis.youranimelist.domain.rankinglist.model.Genre
@@ -29,10 +32,12 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 
 class LocalDataSourceImpl(
+    private val database: UserDatabase,
     private val personalAnimeDAO: PersonalAnimeDAO,
     private val animeDAO: AnimeDAO,
     private val userDAO: UserDAO,
     private val sideDAO: SideDAO,
+    private val syncJobDao: SyncJobDao,
     private val dispatchers: Dispatchers,
 ) : LocalDataSource {
 
@@ -46,6 +51,7 @@ class LocalDataSourceImpl(
                     episodesWatched = status.numWatchedEpisodes,
                     statusId = status.status.presentIndex,
                     animeId = status.anime.id,
+                    updatedAt = status.updatedAt,
                 )
                 personalAnimeDAO.addAnimeStatus(statusCache)
                 personalAnimeDAO.addPersonalAnimeStatus(personalAnimeStatus)
@@ -72,11 +78,12 @@ class LocalDataSourceImpl(
                     episodesWatched = status.numWatchedEpisodes,
                     statusId = status.status.presentIndex,
                     animeId = status.anime.id,
+                    updatedAt = status.updatedAt,
                 )
 
 
                 personalAnimeDAO.addAnimeStatus(statusCache)
-                personalAnimeDAO.addPersonalAnimeStatus(personalAnimeStatus)
+                personalAnimeDAO.mergeAnimePersonalStatus(personalAnimeStatus)
             }
             return@withContext true
         }
@@ -93,9 +100,26 @@ class LocalDataSourceImpl(
 
     override suspend fun savePersonalAnimeStatusToCache(status: AnimePersonalStatusPersistence): Boolean {
         return withContext(dispatchers.IO) {
-            personalAnimeDAO.addPersonalAnimeStatus(status)
+            database.runInTransaction {
+                personalAnimeDAO.addPersonalAnimeStatus(status)
+                syncJobDao.addPersonalAnimeListSyncJob(
+                    DeferredPersonalAnimeListChange(
+                        status.animeId,
+                        false,
+                        status.updatedAt,
+                    )
+                )
+            }
+
             return@withContext true
         }
+    }
+
+    override suspend fun mergePersonalAnimeStatusToCache(status: AnimePersonalStatusPersistence): Boolean {
+        withContext(dispatchers.IO) {
+            personalAnimeDAO.mergeAnimePersonalStatus(status)
+        }
+        return true
     }
 
     override suspend fun getRelatedAnimeMainPicture(pictureId: Long): PicturePersistence? {
@@ -112,6 +136,32 @@ class LocalDataSourceImpl(
         }
     }
 
+    override suspend fun getPersonalAnimeListSyncJobs(): List<DeferredPersonalAnimeListChange> {
+        return withContext(dispatchers.IO) {
+            syncJobDao.getPersonalAnimeListSyncJobs()
+        }
+    }
+
+    override suspend fun removePersonalAnimeListSyncJob(deferredJob: List<DeferredPersonalAnimeListChange>): Boolean {
+        return withContext(dispatchers.IO) {
+            syncJobDao.deletePersonalAnimeListSyncJob(deferredJob)
+            true
+        }
+    }
+
+    override suspend fun removePersonalAnimeListSyncJob(animeId: Int): Boolean {
+        return withContext(dispatchers.IO) {
+            syncJobDao.deletePersonalAnimeListSyncJob(animeId)
+            true
+        }
+    }
+
+    override suspend fun getAnimePersonalStatus(animeId: Int): AnimePersonalStatusPersistence? {
+        return withContext(dispatchers.IO) {
+            personalAnimeDAO.getAnimePersonalStatus(animeId)
+        }
+    }
+
     override fun getAnimeWithStatusProducerFromCache(): Flow<List<PersonalStatusOfAnimePersistence>> {
         return personalAnimeDAO.getAllAnimeWithPersonalStatuses()
     }
@@ -124,8 +174,7 @@ class LocalDataSourceImpl(
         return animeDAO.getAnimeByIdObservable(animeId)
     }
 
-    @Transaction
-    override suspend fun updateUserCache(user: User) {
+    override suspend fun updateUserCache(user: User) = withContext(dispatchers.IO) {
         userDAO.clearUserData()
         userDAO.addUserData(
             UserPersistence(
@@ -156,7 +205,17 @@ class LocalDataSourceImpl(
 
     override suspend fun deleteAnimePersonalStatusFromCache(animeId: Int): Boolean {
         return withContext(dispatchers.IO) {
-            personalAnimeDAO.deletePersonalAnimeStatus(animeId)
+            database.runInTransaction {
+                personalAnimeDAO.deletePersonalAnimeStatus(animeId)
+                syncJobDao.addPersonalAnimeListSyncJob(
+                    DeferredPersonalAnimeListChange(
+                        animeId,
+                        true,
+                        System.currentTimeMillis()
+                    )
+                )
+            }
+
             return@withContext true
         }
     }
@@ -222,7 +281,6 @@ class LocalDataSourceImpl(
         }
     }
 
-    @Transaction
     suspend fun saveAnimeGenres(anime: Anime, genres: List<Genre>) =
         withContext(dispatchers.IO) {
             for (genre in genres) {
@@ -238,7 +296,6 @@ class LocalDataSourceImpl(
             }
         }
 
-    @Transaction
     suspend fun saveAnimePictures(anime: Anime, pictures: List<Picture>) =
         withContext(dispatchers.IO) {
             sideDAO.replaceAnimePictures(
@@ -253,7 +310,6 @@ class LocalDataSourceImpl(
             )
         }
 
-    @Transaction
     suspend fun saveRelatedAnime(anime: Anime, relatedAnimeList: List<RelatedAnime>) =
         withContext(dispatchers.IO) {
             for (relatedAnime in relatedAnimeList) {

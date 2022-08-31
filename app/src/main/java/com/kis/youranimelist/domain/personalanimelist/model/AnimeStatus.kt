@@ -7,4 +7,5 @@ data class AnimeStatus(
     val status: AnimeStatusValue,
     val score: Int,
     val numWatchedEpisodes: Int,
+    val updatedAt: Long,
 )

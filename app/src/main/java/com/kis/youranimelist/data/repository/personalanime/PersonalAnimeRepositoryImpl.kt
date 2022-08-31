@@ -1,12 +1,21 @@
 package com.kis.youranimelist.data.repository.personalanime
 
 import android.util.Log
+import androidx.work.ExistingWorkPolicy
+import androidx.work.WorkManager
+import com.haroldadmin.cnradapter.NetworkResponse
+import com.kis.youranimelist.core.utils.runCatchingWithCancellation
+import com.kis.youranimelist.data.SyncWorker
+import com.kis.youranimelist.data.SyncWorker.Companion.SyncWorkName
 import com.kis.youranimelist.data.cache.model.personalanime.AnimePersonalStatusPersistence
-import com.kis.youranimelist.data.network.model.personal_list.PersonalAnimeListResponse
+import com.kis.youranimelist.data.network.model.ErrorResponse
+import com.kis.youranimelist.data.network.model.personallist.PersonalAnimeItemResponse
+import com.kis.youranimelist.data.network.model.personallist.PersonalAnimeListResponse
 import com.kis.youranimelist.data.repository.LocalDataSource
 import com.kis.youranimelist.data.repository.RemoteDataSource
 import com.kis.youranimelist.domain.personalanimelist.mapper.AnimeStatusMapper
 import com.kis.youranimelist.domain.personalanimelist.model.AnimeStatus
+import dagger.Lazy
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -17,7 +26,10 @@ class PersonalAnimeRepositoryImpl @Inject constructor(
     private val remoteDataSource: RemoteDataSource,
     private val localDataSource: LocalDataSource,
     private val animeStatusMapper: AnimeStatusMapper,
+    workManager: Lazy<WorkManager>,
 ) : PersonalAnimeRepository {
+
+    private val workManager by lazy { workManager.get() }
 
     override fun getPersonalAnimeStatusesProducer(): Flow<List<AnimeStatus>> {
         return localDataSource.getAnimeWithStatusProducerFromCache()
@@ -25,17 +37,7 @@ class PersonalAnimeRepositoryImpl @Inject constructor(
     }
 
     override suspend fun refreshPersonalAnimeStatuses() {
-        var hasNext = true;
-        val dataList = mutableListOf<AnimeStatus>()
-        while (hasNext) {
-            val fetchedValue = fetchData(1000, 0)
-            if (fetchedValue?.paging?.next.isNullOrBlank()) {
-                hasNext = false
-            }
-            fetchedValue?.data?.let { responseList ->
-                dataList.addAll(responseList.map { animeStatusMapper.map(it) })
-            }
-        }
+        val dataList = fetchAllData().map { animeStatusMapper.map(it) }
         try {
             localDataSource.saveAnimeWithPersonalStatusToCache(dataList)
         } catch (e: Exception) {
@@ -47,17 +49,30 @@ class PersonalAnimeRepositoryImpl @Inject constructor(
         val localResult = localDataSource.deleteAnimePersonalStatusFromCache(animeId)
         val remoteResult = remoteDataSource.deletePersonalAnimeStatus(animeId)
 
+        if (remoteResult is NetworkResponse.Error) {
+            workManager.enqueueUniqueWork(
+                SyncWorkName,
+                ExistingWorkPolicy.REPLACE,
+                SyncWorker.startSyncJob()
+            )
+        } else {
+            localDataSource.removePersonalAnimeListSyncJob(
+                animeId,
+            )
+        }
+
         return localResult
     }
 
     override suspend fun refreshPersonalAnimeStatus(animeId: Int) {
         remoteDataSource.getPersonalAnimeStatus(animeId)?.let {
-            localDataSource.savePersonalAnimeStatusToCache(
+            localDataSource.mergePersonalAnimeStatusToCache(
                 AnimePersonalStatusPersistence(
                     score = it.score,
                     episodesWatched = it.numEpisodesWatched,
                     statusId = it.status,
                     animeId = animeId,
+                    updatedAt = AnimeStatusMapper.formatter.parse(it.updatedAt).time,
                 )
             )
         }
@@ -76,6 +91,7 @@ class PersonalAnimeRepositoryImpl @Inject constructor(
                 episodesWatched = animeStatus.numWatchedEpisodes,
                 statusId = animeStatus.status.presentIndex,
                 animeId = animeStatus.anime.id,
+                updatedAt = animeStatus.updatedAt,
             )
         )
         val remoteResult = remoteDataSource.savePersonalAnimeStatus(
@@ -84,11 +100,110 @@ class PersonalAnimeRepositoryImpl @Inject constructor(
             animeStatus.score,
             animeStatus.numWatchedEpisodes,
         )
+
+        if (remoteResult is NetworkResponse.Error) {
+            workManager.enqueueUniqueWork(
+                SyncWorkName,
+                ExistingWorkPolicy.REPLACE,
+                SyncWorker.startSyncJob()
+            )
+        } else {
+            localDataSource.removePersonalAnimeListSyncJob(
+                animeStatus.anime.id,
+            )
+        }
+
         return localResult
     }
 
+    override suspend fun synchronize(): Boolean {
 
-    override suspend fun fetchData(limit: Int, offset: Int): PersonalAnimeListResponse? {
+        val syncJobs =
+            localDataSource.getPersonalAnimeListSyncJobs().associateWith { false }.toMutableMap()
+
+        val remoteList = fetchAllData().map { animeStatusMapper.map(it) }
+
+        for (job in syncJobs.filter { it.key.deleted }) {
+            val foundRemoteStatus = remoteList.find { it.anime.id == job.key.animeId }
+            if (foundRemoteStatus != null) {
+                if (job.key.changeTimestamp > foundRemoteStatus.updatedAt) {
+                    val result = remoteDataSource.deletePersonalAnimeStatus(job.key.animeId)
+                    if (result is NetworkResponse.Success) {
+                        syncJobs[job.key] = true
+                    }
+                } else {
+                    localDataSource.savePersonalAnimeStatusToCache(
+                        AnimePersonalStatusPersistence(
+                            score = foundRemoteStatus.score,
+                            episodesWatched = foundRemoteStatus.numWatchedEpisodes,
+                            statusId = foundRemoteStatus.status.presentIndex,
+                            animeId = foundRemoteStatus.anime.id,
+                            updatedAt = foundRemoteStatus.updatedAt,
+                        )
+                    )
+                    syncJobs[job.key] = true
+                }
+            } else {
+                syncJobs[job.key] = true
+            }
+        }
+
+
+        for (job in syncJobs.filter { !it.key.deleted }) {
+            val foundRemoteStatus = remoteList.find { it.anime.id == job.key.animeId }
+            if (foundRemoteStatus == null || job.key.changeTimestamp > foundRemoteStatus.updatedAt) {
+                val localValue = localDataSource.getAnimePersonalStatus(job.key.animeId)
+                val result = remoteDataSource.savePersonalAnimeStatus(job.key.animeId,
+                    localValue?.statusId,
+                    localValue?.score,
+                    localValue?.episodesWatched
+                )
+                if (result is NetworkResponse.Success) {
+                    syncJobs[job.key] = true
+                }
+            } else if (job.key.changeTimestamp < foundRemoteStatus.updatedAt) {
+                localDataSource.saveAnimeWithPersonalStatusToCache(foundRemoteStatus)
+                syncJobs[job.key] = true
+            }
+        }
+
+        runCatchingWithCancellation {
+            localDataSource.saveAnimeWithPersonalStatusToCache(remoteList.filter { remoteAnime ->
+                syncJobs.keys.find { job -> job.animeId == remoteAnime.anime.id } == null
+            })
+        }
+
+
+        val finishedJobs = syncJobs.filter { it.value }
+        if (finishedJobs.isNotEmpty()) {
+            localDataSource.removePersonalAnimeListSyncJob(finishedJobs.keys.toList())
+        }
+        val notFinishedJobs = syncJobs.filter { it.value == false }
+        return notFinishedJobs.isEmpty()
+    }
+
+    override suspend fun fetchData(
+        limit: Int,
+        offset: Int,
+    ): NetworkResponse<PersonalAnimeListResponse, ErrorResponse> {
         return remoteDataSource.getPersonalAnimeList(null, null, limit, offset)
     }
+
+    override suspend fun fetchAllData(): List<PersonalAnimeItemResponse> {
+        val fetchedData = mutableListOf<PersonalAnimeItemResponse>()
+        var hasNext = true
+        while (hasNext) {
+            when (val fetchedValue = fetchData(1000, 0)) {
+                is NetworkResponse.Error -> hasNext = false
+                is NetworkResponse.Success -> {
+                    if (fetchedValue.body.paging.next.isNullOrBlank()) {
+                        hasNext = false
+                    }
+                    fetchedData.addAll(fetchedValue.body.data)
+                }
+            }
+        }
+        return fetchedData
+    }
 }
+

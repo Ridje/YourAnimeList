@@ -1,4 +1,4 @@
-package com.kis.youranimelist.data.network.model.ranking_response
+package com.kis.youranimelist.data.network.model.rankingresponse
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

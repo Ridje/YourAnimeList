@@ -31,5 +31,6 @@ object MyListScreenContract {
         fun onTabClicked(tab: Int)
         fun onReloadClicked()
         fun onResetStateClicked()
+        fun onSwipeRefresh()
     }
 }
