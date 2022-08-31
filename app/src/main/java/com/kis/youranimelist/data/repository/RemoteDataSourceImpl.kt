@@ -1,6 +1,5 @@
 package com.kis.youranimelist.data.repository
 
-import android.accounts.NetworkErrorException
 import com.haroldadmin.cnradapter.NetworkResponse
 import com.kis.youranimelist.data.network.api.MyAnimeListAPI
 import com.kis.youranimelist.data.network.api.MyAnimeListOAuthAPI
@@ -10,6 +9,8 @@ import com.kis.youranimelist.data.network.model.TokenResponse
 import com.kis.youranimelist.data.network.model.UserResponse
 import com.kis.youranimelist.data.network.model.personallist.AnimeStatusResponse
 import com.kis.youranimelist.data.network.model.personallist.PersonalAnimeListResponse
+import com.kis.youranimelist.domain.model.ResultWrapper
+import com.kis.youranimelist.domain.model.asResult
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -28,7 +29,8 @@ class RemoteDataSourceImpl(
             "id, title, main_picture, list_status, media_type, num_episodes, mean"
         private const val ANIME_FIELDS =
             "id, title, mean, main_picture, start_season, synopsis, genres, pictures, related_anime, media_type, num_episodes"
-
+        private const val REFRESH_TOKEN_GRANT_TYPE = "refresh_token"
+        private const val ACCESS_TOKEN_GRANT_TYPE = "authorization_code"
     }
 
     override suspend fun getAnimeRankingList(
@@ -67,20 +69,18 @@ class RemoteDataSourceImpl(
         }
     }
 
-    override fun getAccessToken(
+    override suspend fun getAccessToken(
         clientID: String,
         code: String,
         codeVerifier: String,
-        grantType: String,
-    ): TokenResponse {
+    ): ResultWrapper<TokenResponse> {
+        return malOauthService.getAccessToken(clientID, code, codeVerifier, ACCESS_TOKEN_GRANT_TYPE).asResult()
+    }
 
-        val result =
-            malOauthService.getAccessToken(clientID, code, codeVerifier, grantType).execute()
-
-        return when {
-            result.isSuccessful -> result.body() ?: throw NetworkErrorException()
-            else -> throw NetworkErrorException()
-        }
+    override suspend fun refreshAccessToken(
+        refreshToken: String,
+    ): ResultWrapper<TokenResponse> {
+        return malOauthService.refreshToken(REFRESH_TOKEN_GRANT_TYPE, refreshToken).asResult()
     }
 
     override suspend fun getUserData(): NetworkResponse<UserResponse, ErrorResponse> =

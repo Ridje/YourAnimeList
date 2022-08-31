@@ -19,3 +19,13 @@ fun <I, O> NetworkResponse<I, *>.asResult(
         is NetworkResponse.UnknownError -> ResultWrapper.Error(this.error)
     }
 }
+
+fun <I> NetworkResponse<I, *>.asResult(
+): ResultWrapper<I> {
+    return when (this) {
+        is NetworkResponse.Success -> ResultWrapper.Success(this.body)
+        is NetworkResponse.ServerError -> ResultWrapper.Error(this.error ?: NetworkErrorException(this.response?.message()))
+        is NetworkResponse.NetworkError -> ResultWrapper.Error(this.error)
+        is NetworkResponse.UnknownError -> ResultWrapper.Error(this.error)
+    }
+}

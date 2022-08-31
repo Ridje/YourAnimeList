@@ -3,10 +3,10 @@ package com.kis.youranimelist.di
 import android.content.Context
 import com.kis.youranimelist.core.ResourceProvider
 import com.kis.youranimelist.core.ResourceProviderImpl
-import com.kis.youranimelist.domain.auth.AuthUseCase
-import com.kis.youranimelist.data.network.AuthInterceptor
-import com.kis.youranimelist.data.network.api.MyAnimeListOAuthAPI
 import com.kis.youranimelist.core.utils.AppPreferences
+import com.kis.youranimelist.data.network.AuthInterceptor
+import com.kis.youranimelist.data.repository.RemoteDataSource
+import com.kis.youranimelist.domain.auth.AuthUseCase
 import dagger.Lazy
 import dagger.Module
 import dagger.Provides
@@ -35,11 +35,11 @@ object AppModule {
 
     @Provides
     fun provideAuthUseCase(
+        remoteDataSource: Lazy<RemoteDataSource>,
         appPreferences: AppPreferences,
         authInterceptor: AuthInterceptor,
-        oAuthAPI: Lazy<MyAnimeListOAuthAPI>,
     ): AuthUseCase {
-        return AuthUseCase(appPreferences, authInterceptor, oAuthAPI)
+        return AuthUseCase(remoteDataSource, appPreferences, authInterceptor)
     }
 
     @Provides

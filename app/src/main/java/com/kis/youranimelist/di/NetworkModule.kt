@@ -80,11 +80,13 @@ object NetworkModule {
     @Provides
     fun provideMALOAuthService(
         converterFactory: Converter.Factory,
+        callAdapterFactory: CallAdapter.Factory,
         okHttpClient: OkHttpClient,
     ): MyAnimeListOAuthAPI {
         return Retrofit
             .Builder()
             .addConverterFactory(converterFactory)
+            .addCallAdapterFactory(callAdapterFactory)
             .client(okHttpClient)
             .baseUrl(Urls.oauthBaseUrl)
             .build()
