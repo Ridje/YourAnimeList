@@ -101,6 +101,10 @@ class LocalDataSourceImpl(
     override suspend fun savePersonalAnimeStatusToCache(status: AnimePersonalStatusPersistence): Boolean {
         return withContext(dispatchers.IO) {
             database.runInTransaction {
+                status.statusId?.let { personalStatusValue ->
+                    personalAnimeDAO.addAnimeStatus(
+                        AnimeStatusPersistence(personalStatusValue))
+                }
                 personalAnimeDAO.addPersonalAnimeStatus(status)
                 syncJobDao.addPersonalAnimeListSyncJob(
                     DeferredPersonalAnimeListChange(

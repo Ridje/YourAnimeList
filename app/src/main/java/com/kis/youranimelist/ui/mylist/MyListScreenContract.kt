@@ -1,6 +1,7 @@
 package com.kis.youranimelist.ui.mylist
 
 import androidx.compose.ui.graphics.Color
+import com.kis.youranimelist.domain.personalanimelist.model.AnimeStatus
 import com.kis.youranimelist.domain.personalanimelist.model.AnimeStatusValue
 
 object MyListScreenContract {
@@ -33,4 +34,19 @@ object MyListScreenContract {
         fun onResetStateClicked()
         fun onSwipeRefresh()
     }
+}
+
+fun AnimeStatus.asMyListItem(): MyListScreenContract.Item {
+    return MyListScreenContract.Item(
+        this.anime.id,
+        this.status.presentIndex,
+        this.anime.title,
+        this.status.color,
+        this.anime.picture?.large,
+        this.anime.mediaType,
+        this.numWatchedEpisodes,
+        this.anime.numEpisodes,
+        this.score,
+        this.anime.mean,
+    )
 }

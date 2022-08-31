@@ -48,18 +48,7 @@ class MyListViewModel @Inject constructor(
                                 isLoading = false,
                                 isError = false,
                                 items = result.data.map {
-                                    MyListScreenContract.Item(
-                                        it.anime.id,
-                                        it.status.presentIndex,
-                                        it.anime.title,
-                                        it.status.color,
-                                        it.anime.picture?.large,
-                                        it.anime.mediaType,
-                                        it.numWatchedEpisodes,
-                                        it.anime.numEpisodes,
-                                        it.score,
-                                        it.anime.mean,
-                                    )
+                                    it.asMyListItem()
                                 }.sortedWith(compareBy({ it.status }, { it.title })))
                         }
                         is ResultWrapper.Error -> {

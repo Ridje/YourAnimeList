@@ -8,8 +8,8 @@ import androidx.paging.cachedIn
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.map
 import com.kis.youranimelist.domain.searchlist.SearchListUseCase
-import com.kis.youranimelist.ui.endlesslist.EndlessListScreenMapper
-import com.kis.youranimelist.ui.endlesslist.Item
+import com.kis.youranimelist.ui.endlesslist.EndlessListItem
+import com.kis.youranimelist.ui.endlesslist.asEndlessListItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -39,11 +39,12 @@ class SearchScreenViewModel @Inject constructor(
         return if (searchValue.length >= 3) {
             _screenState.value = _screenState.value.copy(
                 items = Pager(PagingConfig(pageSize = 20,
-                    initialLoadSize = 20)) { searchUseCase.getSearchListProducer(searchValue) }.flow.map { pagingData ->
-                    pagingData.map {
-                        EndlessListScreenMapper.map(it)
-                    }
-                }.cachedIn(viewModelScope),
+                    initialLoadSize = 20)
+                ) { searchUseCase.getSearchListProducer(searchValue) }
+                    .flow
+                    .map { pagingData ->
+                        pagingData.map { it.asEndlessListItem() }
+                    }.cachedIn(viewModelScope),
             )
             true
         } else {
@@ -60,7 +61,7 @@ class SearchScreenViewModel @Inject constructor(
         )
     }
 
-    override fun onReloadClicked(items: LazyPagingItems<Item>) {
+    override fun onReloadClicked(items: LazyPagingItems<EndlessListItem>) {
         items.retry()
     }
 }

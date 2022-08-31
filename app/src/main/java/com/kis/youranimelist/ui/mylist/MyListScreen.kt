@@ -75,7 +75,10 @@ fun MyListScreenRoute(
         scaffoldState = scaffoldState,
         isLoading = screenState.value.isLoading,
         isError = screenState.value.isError,
-        listItems = screenState.value.items.filter { screenState.value.currentTab == 0 || it.status == screenState.value.tabs[screenState.value.currentTab] },
+        listItems = screenState.value.items
+            .filter {
+                screenState.value.currentTab == 0 || it.status == screenState.value.tabs[screenState.value.currentTab]
+            },
         tabs = screenState.value.tabs,
         currentTab = screenState.value.currentTab,
         paddingValues = paddingValues,
@@ -149,7 +152,7 @@ fun MyListScreen(
                     Box(modifier = Modifier
                         .fillMaxSize()
                         .verticalScroll(rememberScrollState()), contentAlignment = Center) {
-                        Text(text = "No items in list", modifier = Modifier.align(Center))
+                        Text(text = stringResource(R.string.list_empty), modifier = Modifier.align(Center))
                     }
                 } else {
                     LazyColumn(contentPadding = PaddingValues(start = 8.dp,
@@ -229,7 +232,7 @@ fun MyListScreen(
                                                     Spacer(modifier = Modifier.width(8.dp))
                                                 }
                                                 IconWithText(
-                                                    text = "${item.mean}",
+                                                    text = "${item.mean ?: stringResource(id = R.string.not_rated)}",
                                                     textStyle = MaterialTheme.typography.subtitle1,
                                                     icon = R.drawable.ic_star_solid,
                                                     tint = Color.Yellow,

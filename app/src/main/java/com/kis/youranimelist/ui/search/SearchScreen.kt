@@ -15,8 +15,8 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.kis.youranimelist.R
 import com.kis.youranimelist.ui.apptopbar.SearchAnimeScreenToolbar
+import com.kis.youranimelist.ui.endlesslist.EndlessListItem
 import com.kis.youranimelist.ui.endlesslist.EndlessListScreenBody
-import com.kis.youranimelist.ui.endlesslist.Item
 import com.kis.youranimelist.ui.navigation.NavigationKeys
 import kotlinx.coroutines.flow.Flow
 
@@ -44,7 +44,7 @@ fun SearchScreenRoute(
             eventsListener.onSearchValueChanged(searchValue)
         },
         onItemClick = { itemId: Int -> navController.navigate(NavigationKeys.Route.EXPLORE + "/$itemId") },
-        onSnackbarPerformedAction = { items: LazyPagingItems<Item> ->
+        onSnackbarPerformedAction = { items: LazyPagingItems<EndlessListItem> ->
             eventsListener.onReloadClicked(items)
         },
         onSnackbarDismissedAction = {},
@@ -55,7 +55,7 @@ fun SearchScreenRoute(
 
 @Composable
 fun SearchScreen(
-    listItems: LazyPagingItems<Item>?,
+    listItems: LazyPagingItems<EndlessListItem>?,
     searchValue: String,
     scaffoldState: ScaffoldState,
     effectFlow: Flow<SearchScreenContract.Effect>,
@@ -63,7 +63,7 @@ fun SearchScreen(
     onNavigationIconClick: () -> Unit,
     onSearchClick: (String) -> Boolean,
     onSearchValueChanged: (String) -> Unit,
-    onSnackbarPerformedAction: (LazyPagingItems<Item>) -> Unit,
+    onSnackbarPerformedAction: (LazyPagingItems<EndlessListItem>) -> Unit,
     onSnackbarDismissedAction: () -> Unit,
     onSearchSnackbarActionPerformed: () -> Unit,
     onSearchSnackbarDismissed: () -> Unit,
@@ -104,6 +104,5 @@ fun SearchScreen(
                 onSnackbarDismissedAction,
             )
         }
-
     }
 }

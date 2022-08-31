@@ -43,9 +43,7 @@ class EndlessListScreenViewModel @Inject constructor(
                 items = Pager(PagingConfig(pageSize = 20, initialLoadSize = 20)) {
                     rankingPageSource
                 }.flow.map { pagingData ->
-                    pagingData.map {
-                        EndlessListScreenMapper.map(it)
-                    }
+                    pagingData.map { it.asEndlessListItem() }
                 }.cachedIn(viewModelScope),
                 title,
             )
@@ -55,7 +53,7 @@ class EndlessListScreenViewModel @Inject constructor(
             return _screenState
         }
 
-    override fun onReloadClicked(items: LazyPagingItems<Item>) {
+    override fun onReloadClicked(items: LazyPagingItems<EndlessListItem>) {
         items.retry()
     }
 
