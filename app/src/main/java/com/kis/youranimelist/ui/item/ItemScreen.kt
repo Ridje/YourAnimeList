@@ -1,10 +1,8 @@
 package com.kis.youranimelist.ui.item
 
 import androidx.annotation.DrawableRes
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -17,6 +15,8 @@ import androidx.compose.foundation.layout.requiredHeightIn
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -63,9 +63,11 @@ fun ItemScreenRoute(
     navController: NavController,
     viewModel: ItemViewModel = hiltViewModel(),
 ) {
-    val screeState by viewModel.screenState.collectAsStateWithLifecycle()
+    val screenState by viewModel.screenState.collectAsStateWithLifecycle()
     ItemScreen(
-        screeState.item,
+        screenState.item,
+        screenState.listRelatedItems,
+        screenState.listRecommendedItems,
         { navController.popBackStack() },
         {
             val currentRoute = navController.currentDestination?.route ?: ""
@@ -73,6 +75,7 @@ fun ItemScreenRoute(
                 navController.backQueue.last { it.destination.route != currentRoute }.destination.id
             navController.popBackStack(newRoute, false, false)
         },
+        { animeId: Int -> navController.navigate(NavigationKeys.Route.EXPLORE + "/$animeId") },
         { animeId: Int -> navController.navigate(NavigationKeys.Route.EXPLORE + "/$animeId") },
         { animeId: Int -> navController.navigate(NavigationKeys.Route.MY_LIST + "/$animeId") }
     )
@@ -82,10 +85,13 @@ fun ItemScreenRoute(
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun ItemScreen(
-    anime: AnimeItem,
+    anime: ItemScreenContract.AnimeItem,
+    listRelatedItems: List<ItemScreenContract.RelatedAnimeItem>,
+    listRecommendedItems: List<ItemScreenContract.RecommendedAnimeItem>,
     onBackButtonPressed: () -> Unit,
     onHomeButtonPressed: () -> Unit,
     onRelatedAnimeClicked: (Int) -> Unit,
+    onRecommendedAnimeClicked: (Int) -> Unit,
     onEditButtonPressed: (Int) -> Unit,
 ) {
     ConstraintLayout(modifier = Modifier
@@ -196,11 +202,16 @@ fun ItemScreen(
             Spacer(modifier = Modifier.height(12.dp))
             ExpandableText(text = anime.synopsis)
             RelatedItems(
-                anime.relatedAnime,
+                listRelatedItems,
                 onRelatedAnimeClicked,
+            )
+            RecommendedItems(
+                recommendedAnimeItems = listRecommendedItems,
+                onItemClick = onRecommendedAnimeClicked
             )
         }
     }
+
 }
 
 
@@ -231,26 +242,54 @@ fun NavigateButton(
 
 @Composable
 fun RelatedItems(
-    relatedAnimeItem: List<RelatedAnimeItem>,
+    relatedAnimeItems: List<ItemScreenContract.RelatedAnimeItem>,
     onItemClick: (Int) -> Unit,
 ) {
-    Row(modifier = Modifier
-        .horizontalScroll(rememberScrollState())
-        .height(IntrinsicSize.Max)
-    ) {
-        for (relatedAnime in relatedAnimeItem) {
-            AnimeCategoryListItemRounded(
-                relatedAnime.picture,
-                relatedAnime.title,
-                relatedAnime.relationType,
-                130.dp,
-                3,
-            ) { onItemClick.invoke(relatedAnime.id) }
-            Divider(
-                color = Color.Transparent,
-                modifier = Modifier
-                    .width(16.dp)
-            )
+    Column {
+        Text(text = "Related", style = MaterialTheme.typography.h6)
+        Spacer(modifier = Modifier.height(10.dp))
+        LazyRow(modifier = Modifier.height(270.dp)) {
+            items(relatedAnimeItems, key = { item -> item.id }) { relatedAnime ->
+                AnimeCategoryListItemRounded(
+                    relatedAnime.picture,
+                    relatedAnime.title,
+                    relatedAnime.relationType,
+                    130.dp,
+                    3,
+                ) { onItemClick.invoke(relatedAnime.id) }
+                Divider(
+                    color = Color.Transparent,
+                    modifier = Modifier
+                        .width(16.dp)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun RecommendedItems(
+    recommendedAnimeItems: List<ItemScreenContract.RecommendedAnimeItem>,
+    onItemClick: (Int) -> Unit,
+) {
+    Column() {
+        Text(text = "Recommendations", style = MaterialTheme.typography.h6)
+        Spacer(modifier = Modifier.height(10.dp))
+        LazyRow(modifier = Modifier.height(270.dp)) {
+            items(recommendedAnimeItems, { it.id }) { recommendedAnime ->
+                AnimeCategoryListItemRounded(
+                    recommendedAnime.picture,
+                    recommendedAnime.title,
+                    recommendedAnime.recommendedTimes.toString(),
+                    130.dp,
+                    3,
+                ) { onItemClick.invoke(recommendedAnime.id) }
+                Divider(
+                    color = Color.Transparent,
+                    modifier = Modifier
+                        .width(16.dp)
+                )
+            }
         }
     }
 }

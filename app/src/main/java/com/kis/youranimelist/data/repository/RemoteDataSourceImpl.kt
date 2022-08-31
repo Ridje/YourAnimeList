@@ -26,7 +26,7 @@ class RemoteDataSourceImpl(
         private const val USER_ANIME_FIELDS =
             "id, title, main_picture, list_status, media_type, num_episodes, mean"
         private const val ANIME_FIELDS =
-            "id, title, mean, main_picture, start_season, synopsis, genres, pictures, related_anime, media_type, num_episodes"
+            "id, title, mean, main_picture, start_season, synopsis, genres, pictures, related_anime, media_type, num_episodes, recommendations"
         private const val REFRESH_TOKEN_GRANT_TYPE = "refresh_token"
         private const val ACCESS_TOKEN_GRANT_TYPE = "authorization_code"
     }

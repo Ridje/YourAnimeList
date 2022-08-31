@@ -8,6 +8,7 @@ import com.kis.youranimelist.data.network.model.searchresponse.AnimeSearchRespon
 import com.kis.youranimelist.domain.rankinglist.model.Anime
 import com.kis.youranimelist.domain.rankinglist.model.Genre
 import com.kis.youranimelist.domain.rankinglist.model.Picture
+import com.kis.youranimelist.domain.rankinglist.model.RecommendedAnime
 import com.kis.youranimelist.domain.rankinglist.model.RelatedAnime
 import com.kis.youranimelist.domain.rankinglist.model.Season
 import javax.inject.Inject
@@ -50,7 +51,8 @@ class AnimeMapper @Inject constructor(
 
     fun map(
         from: AnimeDetailedDataPersistence,
-        listRelatedAnimePictures: List<PicturePersistence?>,
+        listRelatedAnimePictures: List<PicturePersistence?> = listOf(),
+        listRecommendedAnimePictures: List<PicturePersistence?> = listOf(),
     ): Anime {
         return Anime(
             id = from.anime.id,
@@ -61,16 +63,32 @@ class AnimeMapper @Inject constructor(
             synopsis = from.anime.synopsis,
             genres = from.genres.map { Genre(it.id, it.name) },
             pictures = from.pictures.map { Picture(it.large, it.medium) },
-            relatedAnime = from.relatedAnime
-                .mapIndexed { index, anime ->
-                    RelatedAnime(
-                        anime = listRelatedAnimePictures[index]?.let { mainPicture ->
-                            this.map(anime,
-                                mainPicture)
-                        } ?: this.map(anime),
-                        relatedTypeFormatted = from.relatedAnimeAdditionValues[index].relatedTypeFormatted,
-                        relatedType = from.relatedAnimeAdditionValues[index].relatedType)
-                },
+            relatedAnime = if (listRelatedAnimePictures.isEmpty()) listOf() else {
+                from.relatedAnime
+                    .mapIndexed { index, anime ->
+                        RelatedAnime(
+                            anime = listRelatedAnimePictures.getOrNull(index)?.let { mainPicture ->
+                                this.map(anime,
+                                    mainPicture)
+                            } ?: this.map(anime),
+                            relatedTypeFormatted = from.relatedAnimeAdditionValues[index].relatedTypeFormatted,
+                            relatedType = from.relatedAnimeAdditionValues[index].relatedType,
+                        )
+                    }
+            },
+            recommendedAnime = if (listRecommendedAnimePictures.isEmpty()) listOf() else {
+                from.recommendedAnime
+                    .mapIndexed { index, anime ->
+                        RecommendedAnime(
+                            anime = listRecommendedAnimePictures.getOrNull(index)
+                                ?.let { mainPicture ->
+                                    this.map(anime,
+                                        mainPicture)
+                                } ?: this.map(anime),
+                            recommendedTimes = from.recommendedAnimeAdditionValues[index].recommendedTimes,
+                        )
+                    }
+            },
             mediaType = from.anime.mediaType,
             numEpisodes = from.anime.numEpisodes,
         )

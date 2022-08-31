@@ -51,7 +51,6 @@ class ExploreViewModel @Inject constructor(
                         null,
                     )
                 })
-
             }
 
             for (i in jobsList.indices) {

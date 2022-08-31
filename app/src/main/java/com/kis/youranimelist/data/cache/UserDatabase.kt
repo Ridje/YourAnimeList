@@ -12,6 +12,7 @@ import com.kis.youranimelist.data.cache.model.PicturePersistence
 import com.kis.youranimelist.data.cache.model.UserPersistence
 import com.kis.youranimelist.data.cache.model.anime.AnimeGenrePersistence
 import com.kis.youranimelist.data.cache.model.anime.AnimePersistence
+import com.kis.youranimelist.data.cache.model.anime.RecommendedAnimePersistence
 import com.kis.youranimelist.data.cache.model.anime.RelatedAnimePersistence
 import com.kis.youranimelist.data.cache.model.anime.SeasonPersistence
 import com.kis.youranimelist.data.cache.model.personalanime.AnimePersonalStatusPersistence
@@ -30,6 +31,7 @@ import com.kis.youranimelist.data.cache.model.syncjob.DeferredPersonalAnimeListC
         RelatedAnimePersistence::class,
         AnimeGenrePersistence::class,
         DeferredPersonalAnimeListChange::class,
+        RecommendedAnimePersistence::class,
     ],
     version = 3,
     exportSchema = true)

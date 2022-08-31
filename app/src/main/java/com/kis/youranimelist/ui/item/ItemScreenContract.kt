@@ -1,51 +1,59 @@
 package com.kis.youranimelist.ui.item
 
 import com.kis.youranimelist.domain.rankinglist.model.Anime
+import com.kis.youranimelist.domain.rankinglist.model.RecommendedAnime
 import com.kis.youranimelist.domain.rankinglist.model.RelatedAnime
+import com.kis.youranimelist.ui.item.ItemScreenContract.defaultAnimeItem
 import okhttp3.internal.toImmutableList
 
 object ItemScreenContract {
     data class ScreenState(
         val item: AnimeItem,
+        val listRecommendedItems: List<RecommendedAnimeItem>,
+        val listRelatedItems: List<RelatedAnimeItem>,
+    )
+
+    data class RelatedAnimeItem(
+        val id: Int,
+        val title: String,
+        val relationType: String,
+        val picture: String?,
+    )
+
+    data class RecommendedAnimeItem(
+        val id: Int,
+        val title: String,
+        val recommendedTimes: Int,
+        val picture: String?,
+    )
+
+    data class AnimeItem(
+        val id: Int,
+        val title: String,
+        val images: List<String>,
+        val synopsis: String,
+        val year: Int,
+        val mean: Float,
+        val genres: String,
+    )
+
+    val defaultAnimeItem = AnimeItem(
+        0,
+        title = "Loading",
+        synopsis = "Not written yet",
+        year = 0,
+        mean = 0.0f,
+        images = listOf(),
+        genres = "",
     )
 }
 
-data class AnimeItem(
-    val id: Int,
-    val title: String,
-    val images: List<String>,
-    val synopsis: String,
-    val year: Int,
-    val mean: Float,
-    val genres: String,
-    val relatedAnime: List<RelatedAnimeItem> = listOf(),
-)
-
-val defaultAnimeItem = AnimeItem(
-    0,
-    title = "Loading",
-    synopsis = "Not written yet",
-    year = 0,
-    mean = 0.0f,
-    images = listOf(),
-    genres = "",
-)
-
-data class RelatedAnimeItem(
-    val id: Int,
-    val title: String,
-    val relationType: String,
-    val picture: String?,
-)
-
-
 fun Anime?.asAnimeItemScreen(
-    relatedAnimeMapper: (RelatedAnime) -> RelatedAnimeItem = RelatedAnime::asRelatedAnimeItemScreen,
-): AnimeItem {
-    if (this == null) {
-        return defaultAnimeItem
+): ItemScreenContract.AnimeItem {
+    return if (this == null) {
+        defaultAnimeItem
     } else {
-        return AnimeItem(
+        ItemScreenContract.AnimeItem(
             id = this.id,
             title = this.title,
             images = mutableListOf<String>().plus(this.picture?.large)
@@ -54,15 +62,22 @@ fun Anime?.asAnimeItemScreen(
             mean = this.mean ?: 0.0f,
             genres = this.genres.map { it.name }.take(3).joinToString(separator = ", "),
             year = this.startSeason?.year ?: 0,
-            relatedAnime = this.relatedAnime.map {
-                relatedAnimeMapper(it)
-            }
         )
     }
 }
 
-fun RelatedAnime.asRelatedAnimeItemScreen(): RelatedAnimeItem {
-    return RelatedAnimeItem(this.anime.id,
+fun RecommendedAnime.asRecommendedAnimeItemScreen(): ItemScreenContract.RecommendedAnimeItem {
+    return ItemScreenContract.RecommendedAnimeItem(
+        this.anime.id,
+        this.anime.title,
+        this.recommendedTimes,
+        this.anime.picture?.large,
+    )
+}
+
+fun RelatedAnime.asRelatedAnimeItemScreen(): ItemScreenContract.RelatedAnimeItem {
+    return ItemScreenContract.RelatedAnimeItem(
+        this.anime.id,
         this.anime.title,
         this.relatedTypeFormatted,
         this.anime.picture?.large

@@ -13,6 +13,7 @@ import com.kis.youranimelist.data.cache.model.UserPersistence
 import com.kis.youranimelist.data.cache.model.anime.AnimeDetailedDataPersistence
 import com.kis.youranimelist.data.cache.model.anime.AnimeGenrePersistence
 import com.kis.youranimelist.data.cache.model.anime.AnimePersistence
+import com.kis.youranimelist.data.cache.model.anime.RecommendedAnimePersistence
 import com.kis.youranimelist.data.cache.model.anime.RelatedAnimePersistence
 import com.kis.youranimelist.data.cache.model.anime.SeasonPersistence
 import com.kis.youranimelist.data.cache.model.personalanime.AnimePersonalStatusPersistence
@@ -23,6 +24,7 @@ import com.kis.youranimelist.domain.personalanimelist.model.AnimeStatus
 import com.kis.youranimelist.domain.rankinglist.model.Anime
 import com.kis.youranimelist.domain.rankinglist.model.Genre
 import com.kis.youranimelist.domain.rankinglist.model.Picture
+import com.kis.youranimelist.domain.rankinglist.model.RecommendedAnime
 import com.kis.youranimelist.domain.rankinglist.model.RelatedAnime
 import com.kis.youranimelist.domain.user.mapper.UserMapper
 import com.kis.youranimelist.domain.user.model.User
@@ -126,7 +128,7 @@ class LocalDataSourceImpl(
         return true
     }
 
-    override suspend fun getRelatedAnimeMainPicture(pictureId: Long): PicturePersistence? {
+    override suspend fun getAnimeMainPicture(pictureId: Long): PicturePersistence? {
         return withContext(dispatchers.IO) {
             try {
                 return@withContext sideDAO.getAnimeMainPictureById(pictureId = pictureId)
@@ -267,6 +269,10 @@ class LocalDataSourceImpl(
                     saveRelatedAnime(anime, anime.relatedAnime)
                 }
 
+                if (anime.recommendedAnime.isNotEmpty()) {
+                    saveRecommendedAnime(anime, anime.recommendedAnime)
+                }
+
                 if (anime.pictures.isNotEmpty()) {
                     saveAnimePictures(anime, anime.pictures)
                 }
@@ -326,6 +332,22 @@ class LocalDataSourceImpl(
                         relatedAnime.anime.id,
                         relatedAnime.relatedTypeFormatted,
                         relatedAnime.relatedType,
+                    )
+                )
+            }
+        }
+
+    suspend fun saveRecommendedAnime(anime: Anime, recommendedAnimeList: List<RecommendedAnime>) =
+        withContext(dispatchers.IO) {
+            for (recommendedAnime in recommendedAnimeList) {
+                if (!animeDAO.isAnimeRecordExist(recommendedAnime.anime.id)) {
+                    saveAnimeToCache(recommendedAnime.anime)
+                }
+                animeDAO.addRecommendedAnime(
+                    RecommendedAnimePersistence(
+                        anime.id,
+                        recommendedAnime.anime.id,
+                        recommendedAnime.recommendedTimes
                     )
                 )
             }

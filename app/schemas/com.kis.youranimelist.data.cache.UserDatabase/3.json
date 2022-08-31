@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 3,
-    "identityHash": "579b0163b29ccd4e031f31b85480186f",
+    "identityHash": "322b342d32de51a711fd34dab31d817d",
     "entities": [
       {
         "tableName": "anime",
@@ -552,12 +552,45 @@
             ]
           }
         ]
+      },
+      {
+        "tableName": "recommended_anime",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`anime_id` INTEGER NOT NULL, `recommended_anime_id` INTEGER NOT NULL, `recommended_times` INTEGER NOT NULL, PRIMARY KEY(`anime_id`, `recommended_anime_id`))",
+        "fields": [
+          {
+            "fieldPath": "animeId",
+            "columnName": "anime_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "recommendedAnime",
+            "columnName": "recommended_anime_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "recommendedTimes",
+            "columnName": "recommended_times",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "anime_id",
+            "recommended_anime_id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
       }
     ],
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '579b0163b29ccd4e031f31b85480186f')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '322b342d32de51a711fd34dab31d817d')"
     ]
   }
 }

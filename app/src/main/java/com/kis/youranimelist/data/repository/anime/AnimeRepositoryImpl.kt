@@ -3,17 +3,17 @@ package com.kis.youranimelist.data.repository.anime
 import com.haroldadmin.cnradapter.NetworkResponse
 import com.kis.youranimelist.data.cache.AnimeRankingMemoryCache
 import com.kis.youranimelist.data.cache.model.PicturePersistence
-import com.kis.youranimelist.data.network.model.TokenResponse
 import com.kis.youranimelist.data.network.model.rankingresponse.RankingRootResponse
 import com.kis.youranimelist.data.repository.LocalDataSource
 import com.kis.youranimelist.data.repository.RemoteDataSource
-import com.kis.youranimelist.data.repository.animelist.saveToLocalDataSource
 import com.kis.youranimelist.domain.model.ResultWrapper
 import com.kis.youranimelist.domain.model.asResult
 import com.kis.youranimelist.domain.rankinglist.mapper.AnimeMapper
 import com.kis.youranimelist.domain.rankinglist.model.Anime
 import com.kis.youranimelist.ui.model.AnimeRankType
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 
@@ -48,19 +48,29 @@ class AnimeRepositoryImpl(
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun getAnimeDetailedDataSource(animeID: Int) =
         localDataSource.getAnimeDetailedDataProducerFromCache(animeID)
+            .filterNotNull()
             .flatMapLatest { animeDetailedData ->
                 flow {
-                    animeDetailedData?.let {
-                        val relatedAnimeResults = mutableListOf<PicturePersistence?>()
-                        for (relatedAnime in animeDetailedData.relatedAnime) {
-                            val pictureResult = relatedAnime.pictureId?.let { pictureId ->
-                                localDataSource.getRelatedAnimeMainPicture(pictureId)
-                            }
-                            relatedAnimeResults.add(pictureResult)
+                    val relatedAnimeResults = mutableListOf<PicturePersistence?>()
+                    for (relatedAnime in animeDetailedData.relatedAnime) {
+                        val pictureResult = relatedAnime.pictureId?.let { pictureId ->
+                            localDataSource.getAnimeMainPicture(pictureId)
                         }
-                        val result = animeMapper.map(animeDetailedData, relatedAnimeResults.toList())
-                        emit(result)
+                        relatedAnimeResults.add(pictureResult)
                     }
+                    val recommendedAnimeResults = mutableListOf<PicturePersistence?>()
+                    for (recommendedAnime in animeDetailedData.recommendedAnime) {
+                        val pictureResult = recommendedAnime.pictureId?.let { pictureId ->
+                            localDataSource.getAnimeMainPicture(pictureId)
+                        }
+                        recommendedAnimeResults.add(pictureResult)
+                    }
+
+                    val enrichedRelatedAndRecommendedResult =
+                        animeMapper.map(animeDetailedData,
+                            relatedAnimeResults.toList(),
+                            recommendedAnimeResults.toList())
+                    emit(enrichedRelatedAndRecommendedResult)
                 }
             }
 

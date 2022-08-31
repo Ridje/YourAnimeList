@@ -4,7 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kis.youranimelist.domain.anime.AnimeDetailedUseCase
-import com.kis.youranimelist.domain.rankinglist.model.RelatedAnime
+import com.kis.youranimelist.ui.item.ItemScreenContract.defaultAnimeItem
 import com.kis.youranimelist.ui.navigation.InvalidNavArgumentException
 import com.kis.youranimelist.ui.navigation.NavigationKeys
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -26,10 +26,20 @@ class ItemViewModel @Inject constructor(
 
     val screenState: StateFlow<ItemScreenContract.ScreenState> =
         animeDetailedUseCase.getAnimeDetailedProducer(animeId)
-            .map { anime -> ItemScreenContract.ScreenState(anime.asAnimeItemScreen(RelatedAnime::asRelatedAnimeItemScreen)) }
+            .map { anime ->
+                ItemScreenContract.ScreenState(
+                    item = anime.asAnimeItemScreen(),
+                    listRelatedItems = anime.relatedAnime.map { it.asRelatedAnimeItemScreen() },
+                    listRecommendedItems = anime.recommendedAnime.map { it.asRecommendedAnimeItemScreen() }
+                )
+            }
             .stateIn(viewModelScope,
                 SharingStarted.Lazily,
-                initialValue = ItemScreenContract.ScreenState(item = defaultAnimeItem))
+                initialValue = ItemScreenContract.ScreenState(item = defaultAnimeItem,
+                    listOf(),
+                    listOf()
+                )
+            )
 
     init {
         viewModelScope.launch {

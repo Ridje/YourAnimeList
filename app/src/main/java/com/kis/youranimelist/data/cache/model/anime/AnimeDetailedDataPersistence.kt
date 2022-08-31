@@ -28,6 +28,23 @@ data class AnimeDetailedDataPersistence(
     val relatedAnimeAdditionValues: List<RelatedAnimePersistence>,
 
     @Relation(
+        parentColumn = "id",
+        entityColumn = "id",
+        associateBy = Junction(
+            value = RecommendedAnimePersistence::class,
+            parentColumn = "anime_id",
+            entityColumn = "recommended_anime_id"
+        ),
+    )
+    val recommendedAnime: List<AnimePersistence>,
+
+    @Relation(
+        parentColumn = "id",
+        entityColumn = "anime_id",
+    )
+    val recommendedAnimeAdditionValues: List<RecommendedAnimePersistence>,
+
+    @Relation(
         parentColumn = "picture_id",
         entityColumn = "id"
     )
@@ -54,5 +71,5 @@ data class AnimeDetailedDataPersistence(
             entityColumn = "genre_id"
         )
     )
-    val genres: List<GenrePersistence>
+    val genres: List<GenrePersistence>,
 )

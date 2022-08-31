@@ -27,7 +27,7 @@ interface LocalDataSource {
     suspend fun mergePersonalAnimeStatusToCache(status: AnimePersonalStatusPersistence): Boolean
     suspend fun deleteAnimePersonalStatusFromCache(animeId: Int): Boolean
     suspend fun saveAnimeToCache(anime: Anime): Boolean
-    suspend fun getRelatedAnimeMainPicture(pictureId: Long): PicturePersistence?
+    suspend fun getAnimeMainPicture(pictureId: Long): PicturePersistence?
     suspend fun getPersonalAnimeListSyncJobs(): List<DeferredPersonalAnimeListChange>
     suspend fun removePersonalAnimeListSyncJob(deferredJob: List<DeferredPersonalAnimeListChange>): Boolean
     suspend fun removePersonalAnimeListSyncJob(animeId: Int): Boolean

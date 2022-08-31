@@ -13,10 +13,6 @@ import com.kis.youranimelist.domain.model.ResultWrapper
 
 interface RemoteDataSource {
 
-    companion object {
-        const val CODE_FIELD = "code"
-    }
-
     suspend fun getAccessToken(
         clientID: String,
         code: String,

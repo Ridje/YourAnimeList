@@ -1,12 +1,9 @@
 package com.kis.youranimelist.domain.rankinglist.model
 
-import android.os.Parcelable
 import com.kis.youranimelist.data.network.model.AnimeResponse
 import com.kis.youranimelist.data.network.model.rankingresponse.AnimeRankingItem
 import com.kis.youranimelist.data.network.model.rankingresponse.RankingResponse
-import kotlinx.parcelize.Parcelize
 
-@Parcelize
 data class Anime(
     val id: Int,
     val title: String,
@@ -17,10 +14,11 @@ data class Anime(
     val genres: List<Genre> = listOf(),
     val pictures: List<Picture> = listOf(),
     val relatedAnime: List<RelatedAnime> = listOf(),
+    val recommendedAnime: List<RecommendedAnime> = listOf(),
     val rank: Int? = null,
     val mediaType: String? = null,
     val numEpisodes: Int? = null,
-) : Parcelable {
+) {
     constructor(animeRanked: AnimeRankingItem) : this(
         animeRanked.id,
         animeRanked.title,
@@ -47,6 +45,12 @@ data class Anime(
                 relatedType = it.relationType,
             )
         } ?: listOf(),
+        recommendedAnime = anime.recommendedAnime?.map {
+            RecommendedAnime(
+                anime = Anime(it.node),
+                recommendedTimes = it.recommendedTimes
+            )
+        } ?: listOf()
     )
 
     constructor(anime: AnimeResponse, ranking: RankingResponse) : this(
