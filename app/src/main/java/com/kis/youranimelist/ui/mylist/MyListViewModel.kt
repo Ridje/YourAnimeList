@@ -10,6 +10,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
@@ -24,19 +25,18 @@ class MyListViewModel @Inject constructor(
         personalAnimeListUseCase.getPersonalAnimeStatusesProducer()
 
     private val _screenState: MutableStateFlow<MyListScreenContract.ScreenState> = MutableStateFlow(
-        MyListScreenContract.ScreenState(isLoading = true, items = listOf()))
+        MyListScreenContract.ScreenState(isLoading = false, items = listOf()))
     val screenState: StateFlow<MyListScreenContract.ScreenState>
         get() = _screenState
 
     init {
         startObserveMyListChanges()
-        getLatestData()
     }
 
     private fun startObserveMyListChanges() {
         viewModelScope.launch {
             _screenState.value = _screenState.value.copy(
-                isLoading = true,
+                isLoading = false,
                 isError = false,
             )
             animeStatusesSource
@@ -81,6 +81,7 @@ class MyListViewModel @Inject constructor(
     }
 
     private fun getLatestData() {
+        _screenState.value = _screenState.value.copy(isLoading = true, isError = false)
         viewModelScope.launch {
             personalAnimeListUseCase.refreshPersonalAnimeStatuses()
         }
@@ -96,5 +97,9 @@ class MyListViewModel @Inject constructor(
 
     override fun onResetStateClicked() {
         _screenState.value = _screenState.value.copy(isLoading = false, isError = false)
+    }
+
+    override fun onSwipeRefresh() {
+        getLatestData()
     }
 }

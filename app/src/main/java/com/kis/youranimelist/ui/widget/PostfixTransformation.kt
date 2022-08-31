@@ -5,7 +5,7 @@ import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.input.VisualTransformation
 
-class PostfixTransformation(val postfix: String) : VisualTransformation {
+class PostfixTransformation(private val postfix: String) : VisualTransformation {
     override fun filter(text: AnnotatedString): TransformedText {
         return postfixFilter(text, postfix)
     }
