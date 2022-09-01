@@ -12,13 +12,10 @@ Client for myanimelist.net
 - Presentation Layer: Compose
 
 ### Implemented features:
-1. Login
-2. Explore screen
-3. Details list.
-4. Ranking lists.
-5. Personal anime list.
-6. User list.
-
-### Short video presentation:
-https://user-images.githubusercontent.com/4568712/181566167-30221523-64eb-46c3-a931-1cb545bc5e02.mp4
-
+1. Login, access token, refresh access token, database initialization.
+2. Explore screen.
+3. Detailed item list.
+4. Ranking lists, in-memory rank caching.
+5. Personal anime list, offline-first work for personal list.
+6. Profile.
+7. Search with remote api.
