@@ -9,6 +9,7 @@ import com.kis.youranimelist.data.cache.model.GenrePersistence
 import com.kis.youranimelist.data.cache.model.anime.AnimeDetailedDataPersistence
 import com.kis.youranimelist.data.cache.model.anime.AnimeGenrePersistence
 import com.kis.youranimelist.data.cache.model.anime.AnimePersistence
+import com.kis.youranimelist.data.cache.model.anime.RecommendedAnimePersistence
 import com.kis.youranimelist.data.cache.model.anime.RelatedAnimePersistence
 import kotlinx.coroutines.flow.Flow
 
@@ -37,6 +38,9 @@ interface AnimeDAO {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun addRelatedAnime(relatedAnimePersistence: RelatedAnimePersistence)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun addRecommendedAnime(recommendedAnimePersistence: RecommendedAnimePersistence)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun addAnimeGenre(animeGenrePersistence: AnimeGenrePersistence)

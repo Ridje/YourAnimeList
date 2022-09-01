@@ -1,10 +1,8 @@
 package com.kis.youranimelist.ui.item
 
 import androidx.annotation.DrawableRes
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -17,6 +15,8 @@ import androidx.compose.foundation.layout.requiredHeightIn
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -28,6 +28,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
@@ -41,6 +42,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.google.accompanist.pager.ExperimentalPagerApi
@@ -54,14 +57,17 @@ import com.kis.youranimelist.ui.navigation.NavigationKeys
 import com.kis.youranimelist.ui.widget.AnimeCategoryListItemRounded
 import com.kis.youranimelist.ui.widget.ExpandableText
 
+@OptIn(ExperimentalLifecycleComposeApi::class)
 @Composable
 fun ItemScreenRoute(
     navController: NavController,
     viewModel: ItemViewModel = hiltViewModel(),
 ) {
-    val screeState = viewModel.screenState.collectAsState()
+    val screenState by viewModel.screenState.collectAsStateWithLifecycle()
     ItemScreen(
-        screeState.value.item,
+        screenState.item,
+        screenState.listRelatedItems,
+        screenState.listRecommendedItems,
         { navController.popBackStack() },
         {
             val currentRoute = navController.currentDestination?.route ?: ""
@@ -69,6 +75,7 @@ fun ItemScreenRoute(
                 navController.backQueue.last { it.destination.route != currentRoute }.destination.id
             navController.popBackStack(newRoute, false, false)
         },
+        { animeId: Int -> navController.navigate(NavigationKeys.Route.EXPLORE + "/$animeId") },
         { animeId: Int -> navController.navigate(NavigationKeys.Route.EXPLORE + "/$animeId") },
         { animeId: Int -> navController.navigate(NavigationKeys.Route.MY_LIST + "/$animeId") }
     )
@@ -78,10 +85,13 @@ fun ItemScreenRoute(
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun ItemScreen(
-    anime: AnimeItem,
+    anime: ItemScreenContract.AnimeItem,
+    listRelatedItems: List<ItemScreenContract.RelatedAnimeItem>,
+    listRecommendedItems: List<ItemScreenContract.RecommendedAnimeItem>,
     onBackButtonPressed: () -> Unit,
     onHomeButtonPressed: () -> Unit,
     onRelatedAnimeClicked: (Int) -> Unit,
+    onRecommendedAnimeClicked: (Int) -> Unit,
     onEditButtonPressed: (Int) -> Unit,
 ) {
     ConstraintLayout(modifier = Modifier
@@ -192,11 +202,16 @@ fun ItemScreen(
             Spacer(modifier = Modifier.height(12.dp))
             ExpandableText(text = anime.synopsis)
             RelatedItems(
-                anime.relatedAnime,
+                listRelatedItems,
                 onRelatedAnimeClicked,
+            )
+            RecommendedItems(
+                recommendedAnimeItems = listRecommendedItems,
+                onItemClick = onRecommendedAnimeClicked
             )
         }
     }
+
 }
 
 
@@ -227,26 +242,54 @@ fun NavigateButton(
 
 @Composable
 fun RelatedItems(
-    relatedAnimeItem: List<RelatedAnimeItem>,
+    relatedAnimeItems: List<ItemScreenContract.RelatedAnimeItem>,
     onItemClick: (Int) -> Unit,
 ) {
-    Row(modifier = Modifier
-        .horizontalScroll(rememberScrollState())
-        .height(IntrinsicSize.Max)
-    ) {
-        for (relatedAnime in relatedAnimeItem) {
-            AnimeCategoryListItemRounded(
-                relatedAnime.picture,
-                relatedAnime.title,
-                relatedAnime.relationType,
-                130.dp,
-                3,
-            ) { onItemClick.invoke(relatedAnime.id) }
-            Divider(
-                color = Color.Transparent,
-                modifier = Modifier
-                    .width(16.dp)
-            )
+    Column {
+        Text(text = "Related", style = MaterialTheme.typography.h6)
+        Spacer(modifier = Modifier.height(10.dp))
+        LazyRow(modifier = Modifier.height(270.dp)) {
+            items(relatedAnimeItems, key = { item -> item.id }) { relatedAnime ->
+                AnimeCategoryListItemRounded(
+                    relatedAnime.picture,
+                    relatedAnime.title,
+                    relatedAnime.relationType,
+                    130.dp,
+                    3,
+                ) { onItemClick.invoke(relatedAnime.id) }
+                Divider(
+                    color = Color.Transparent,
+                    modifier = Modifier
+                        .width(16.dp)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun RecommendedItems(
+    recommendedAnimeItems: List<ItemScreenContract.RecommendedAnimeItem>,
+    onItemClick: (Int) -> Unit,
+) {
+    Column() {
+        Text(text = "Recommendations", style = MaterialTheme.typography.h6)
+        Spacer(modifier = Modifier.height(10.dp))
+        LazyRow(modifier = Modifier.height(270.dp)) {
+            items(recommendedAnimeItems, { it.id }) { recommendedAnime ->
+                AnimeCategoryListItemRounded(
+                    recommendedAnime.picture,
+                    recommendedAnime.title,
+                    recommendedAnime.recommendedTimes.toString(),
+                    130.dp,
+                    3,
+                ) { onItemClick.invoke(recommendedAnime.id) }
+                Divider(
+                    color = Color.Transparent,
+                    modifier = Modifier
+                        .width(16.dp)
+                )
+            }
         }
     }
 }

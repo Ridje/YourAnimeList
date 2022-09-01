@@ -11,10 +11,8 @@ import com.kis.youranimelist.data.network.model.personallist.AnimeStatusResponse
 import com.kis.youranimelist.data.network.model.personallist.PersonalAnimeListResponse
 import com.kis.youranimelist.domain.model.ResultWrapper
 import com.kis.youranimelist.domain.model.asResult
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-
 
 class RemoteDataSourceImpl(
     private val malService: MyAnimeListAPI,
@@ -28,7 +26,7 @@ class RemoteDataSourceImpl(
         private const val USER_ANIME_FIELDS =
             "id, title, main_picture, list_status, media_type, num_episodes, mean"
         private const val ANIME_FIELDS =
-            "id, title, mean, main_picture, start_season, synopsis, genres, pictures, related_anime, media_type, num_episodes"
+            "id, title, mean, main_picture, start_season, synopsis, genres, pictures, related_anime, media_type, num_episodes, recommendations"
         private const val REFRESH_TOKEN_GRANT_TYPE = "refresh_token"
         private const val ACCESS_TOKEN_GRANT_TYPE = "authorization_code"
     }
@@ -49,24 +47,8 @@ class RemoteDataSourceImpl(
         return@withContext malService.animeSearching(search, limit, offset, ANIME_FIELDS)
     }
 
-    override suspend fun getAnimeInfo(animeID: Int): AnimeResponse? {
-        return withContext(dispatchers.IO) {
-            try {
-                val result = malService.animeDetails(animeID, ANIME_FIELDS).execute()
-
-                if (result.isSuccessful) {
-                    result.body()
-                } else {
-                    return@withContext null
-                }
-            } catch (e: Exception) {
-                if (e is CancellationException) {
-                    throw e
-                }
-
-                return@withContext null
-            }
-        }
+    override suspend fun getAnimeInfo(animeID: Int): NetworkResponse<AnimeResponse, ErrorResponse> {
+        return withContext(dispatchers.IO) { malService.animeDetails(animeID, ANIME_FIELDS) }
     }
 
     override suspend fun getAccessToken(
@@ -74,7 +56,8 @@ class RemoteDataSourceImpl(
         code: String,
         codeVerifier: String,
     ): ResultWrapper<TokenResponse> {
-        return malOauthService.getAccessToken(clientID, code, codeVerifier, ACCESS_TOKEN_GRANT_TYPE).asResult()
+        return malOauthService.getAccessToken(clientID, code, codeVerifier, ACCESS_TOKEN_GRANT_TYPE)
+            .asResult()
     }
 
     override suspend fun refreshAccessToken(
@@ -114,22 +97,7 @@ class RemoteDataSourceImpl(
         }
     }
 
-    override suspend fun getPersonalAnimeStatus(animeId: Int): AnimeStatusResponse? {
-        return withContext(dispatchers.IO) {
-            try {
-                val result =
-                    malService.getUserAnimeStatus(animeId).execute()
-                if (result.isSuccessful) {
-                    return@withContext result.body()
-                } else {
-                    return@withContext null
-                }
-            } catch (e: Exception) {
-                if (e is CancellationException) {
-                    throw e
-                }
-                return@withContext null
-            }
-        }
+    override suspend fun getPersonalAnimeStatus(animeId: Int): NetworkResponse<AnimeStatusResponse, ErrorResponse> {
+        return withContext(dispatchers.IO) { malService.getUserAnimeStatus(animeId) }
     }
 }

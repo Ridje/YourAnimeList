@@ -36,10 +36,10 @@ interface MyAnimeListAPI {
     ): NetworkResponse<SearchingRootResponse, ErrorResponse>
 
     @GET("anime/{anime_id}")
-    fun animeDetails(
+    suspend fun animeDetails(
         @Path("anime_id") animeID: Int,
         @Query("fields") fields: String,
-    ): Call<AnimeResponse>
+    ): NetworkResponse<AnimeResponse, ErrorResponse>
 
     @GET("users/@me")
     suspend fun userProfile(
@@ -65,9 +65,9 @@ interface MyAnimeListAPI {
     ): NetworkResponse<AnimeStatusResponse, ErrorResponse>
 
     @PATCH("anime/{anime_id}/my_list_status")
-    fun getUserAnimeStatus(
+    suspend fun getUserAnimeStatus(
         @Path("anime_id") animeId: Int,
-    ): Call<AnimeStatusResponse>
+    ): NetworkResponse<AnimeStatusResponse, ErrorResponse>
 
     @DELETE("anime/{anime_id}/my_list_status")
     suspend fun deleteUserAnimeStatus(
