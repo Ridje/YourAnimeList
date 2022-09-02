@@ -30,7 +30,9 @@ class ItemViewModel @Inject constructor(
                 ItemScreenContract.ScreenState(
                     item = anime.asAnimeItemScreen(),
                     listRelatedItems = anime.relatedAnime.map { it.asRelatedAnimeItemScreen() },
-                    listRecommendedItems = anime.recommendedAnime.map { it.asRecommendedAnimeItemScreen() }
+                    listRecommendedItems = anime.recommendedAnime
+                        .map { it.asRecommendedAnimeItemScreen() }
+                        .sortedByDescending { it.recommendedTimes }
                 )
             }
             .stateIn(viewModelScope,

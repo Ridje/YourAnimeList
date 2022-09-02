@@ -1,6 +1,9 @@
 package com.kis.youranimelist.ui.item
 
 import androidx.annotation.DrawableRes
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -14,6 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeightIn
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -22,13 +26,17 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.Chip
 import androidx.compose.material.Divider
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
@@ -39,7 +47,9 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
@@ -52,6 +62,7 @@ import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.google.accompanist.pager.rememberPagerState
 import com.kis.youranimelist.R
 import com.kis.youranimelist.ui.Theme
+import com.kis.youranimelist.ui.Theme.NumberValues.maxTitleLines
 import com.kis.youranimelist.ui.Theme.StringValues.separator
 import com.kis.youranimelist.ui.navigation.NavigationKeys
 import com.kis.youranimelist.ui.widget.AnimeCategoryListItemRounded
@@ -82,7 +93,7 @@ fun ItemScreenRoute(
 }
 
 
-@OptIn(ExperimentalPagerApi::class)
+@OptIn(ExperimentalPagerApi::class, ExperimentalMaterialApi::class)
 @Composable
 fun ItemScreen(
     anime: ItemScreenContract.AnimeItem,
@@ -98,8 +109,28 @@ fun ItemScreen(
         .fillMaxHeight()
         .verticalScroll(rememberScrollState())
     ) {
-        val (image, content) = createRefs()
+        val (image, content, blocks) = createRefs()
         val pagerState = rememberPagerState()
+        var openDialog by remember { mutableStateOf(false) }
+        if (openDialog) {
+            val dialogPagerState = rememberPagerState(
+                initialPage = pagerState.currentPage
+            )
+            Dialog(onDismissRequest = { openDialog = false }, content = {
+                HorizontalPager(modifier = Modifier
+                    .wrapContentSize()
+                    .background(Color.Transparent),
+                    count = anime.images.size,
+                    state = dialogPagerState) { page ->
+                    AsyncImage(
+                        modifier = Modifier.fillMaxWidth(),
+                        model = anime.images[page],
+                        contentDescription = stringResource(id = R.string.default_content_description),
+                        contentScale = ContentScale.Fit,
+                    )
+                }
+            })
+        }
         HorizontalPager(
             count = anime.images.size,
             modifier = Modifier.constrainAs(image) {
@@ -110,19 +141,18 @@ fun ItemScreen(
             state = pagerState
         ) { page ->
             AsyncImage(
-                model =
-                anime.images[page],
+                model = anime.images[page],
                 contentDescription = stringResource(id = R.string.default_content_description),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .aspectRatio(0.75f)
-                    .graphicsLayer { alpha = 0.99f }
+                    .aspectRatio(Theme.NumberValues.defaultImageRatio)
+                    .graphicsLayer { alpha = Theme.NumberValues.almostOpaque }
                     .drawWithContent {
                         val colors = listOf(
                             Theme.Colors.background,
                             Theme.Colors.background,
-                            Theme.Colors.background.copy(alpha = 0.99f),
-                            Theme.Colors.background.copy(alpha = 0.1f),
+                            Theme.Colors.background.copy(alpha = Theme.NumberValues.itemMiddleFadeValue),
+                            Theme.Colors.background.copy(alpha = Theme.NumberValues.itemBottomFadeValue),
                             Color.Transparent,
                         )
                         drawContent()
@@ -130,7 +160,8 @@ fun ItemScreen(
                             brush = Brush.verticalGradient(colors),
                             blendMode = BlendMode.DstIn
                         )
-                    },
+                    }
+                    .clickable { openDialog = true },
                 contentScale = ContentScale.Crop,
             )
         }
@@ -138,7 +169,7 @@ fun ItemScreen(
             .padding(20.dp)
             .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween) {
-            Row() {
+            Row {
                 NavigateButton(
                     onButtonPressed = onBackButtonPressed,
                     iconRes = R.drawable.ic_arrow_left_solid,
@@ -158,17 +189,18 @@ fun ItemScreen(
         Column(
             modifier = Modifier
                 .constrainAs(content) {
-                    top.linkTo(anchor = image.bottom, margin = (-150).dp)
+                    top.linkTo(anchor = image.bottom,
+                        margin = Theme.NumberValues.contentShiftToImage)
                 }
-                .padding(24.dp),
+                .padding(top = 24.dp, start = 24.dp, end = 24.dp),
         ) {
             HorizontalPagerIndicator(
                 pagerState = pagerState,
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
                     .padding(16.dp),
-                activeColor = Color.Red.copy(0.8f),
-                inactiveColor = Color.Red.copy(alpha = 0.3f),
+                activeColor = MaterialTheme.colors.secondary,
+                inactiveColor = MaterialTheme.colors.secondary.copy(alpha = Theme.NumberValues.secondaryColorNotActiveAlpha),
             )
             Text(text = anime.title, style = MaterialTheme.typography.h5)
             Row(verticalAlignment = Alignment.Top) {
@@ -180,15 +212,25 @@ fun ItemScreen(
                 )
                 Text(text = separator, style = MaterialTheme.typography.caption)
                 Text(
-                    text = anime.genres,
+                    text = anime.mediaType,
                     style = MaterialTheme.typography.caption,
-                    maxLines = 1,
-                    modifier = Modifier.weight(1f, false)
+                    modifier = Modifier
+                        .wrapContentWidth()
+                )
+                Text(text = separator, style = MaterialTheme.typography.caption)
+                Text(
+                    text = "${anime.numEpisodes} ep.",
+                    style = MaterialTheme.typography.caption,
+                )
+                Text(text = separator, style = MaterialTheme.typography.caption)
+                Text(
+                    text = anime.airingStatus,
+                    style = MaterialTheme.typography.caption,
                 )
                 Text(text = separator, style = MaterialTheme.typography.caption)
                 Icon(
                     painter = painterResource(id = R.drawable.ic_star_solid),
-                    contentDescription = "mean",
+                    contentDescription = stringResource(id = R.string.default_content_description),
                     tint = Color.Yellow,
                     modifier = Modifier
                         .requiredHeightIn(max = 14.dp)
@@ -200,7 +242,26 @@ fun ItemScreen(
                 )
             }
             Spacer(modifier = Modifier.height(12.dp))
+            Row(modifier = Modifier.horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                for (genre in anime.genres) {
+                    Chip({}) {
+                        Text(
+                            text = genre,
+                            style = MaterialTheme.typography.caption,
+                        )
+                    }
+                }
+            }
+            Spacer(modifier = Modifier.height(12.dp))
             ExpandableText(text = anime.synopsis)
+            Spacer(modifier = Modifier.height(12.dp))
+        }
+        Column(
+            modifier = Modifier.constrainAs(blocks) {
+                top.linkTo(content.bottom)
+            }
+        ) {
             RelatedItems(
                 listRelatedItems,
                 onRelatedAnimeClicked,
@@ -245,23 +306,28 @@ fun RelatedItems(
     relatedAnimeItems: List<ItemScreenContract.RelatedAnimeItem>,
     onItemClick: (Int) -> Unit,
 ) {
-    Column {
-        Text(text = "Related", style = MaterialTheme.typography.h6)
-        Spacer(modifier = Modifier.height(10.dp))
-        LazyRow(modifier = Modifier.height(270.dp)) {
-            items(relatedAnimeItems, key = { item -> item.id }) { relatedAnime ->
-                AnimeCategoryListItemRounded(
-                    relatedAnime.picture,
-                    relatedAnime.title,
-                    relatedAnime.relationType,
-                    130.dp,
-                    3,
-                ) { onItemClick.invoke(relatedAnime.id) }
-                Divider(
-                    color = Color.Transparent,
-                    modifier = Modifier
-                        .width(16.dp)
-                )
+    if (relatedAnimeItems.isNotEmpty()) {
+        Column {
+            Text(text = stringResource(R.string.related),
+                style = MaterialTheme.typography.h6,
+                modifier = Modifier.padding(PaddingValues(horizontal = 6.dp, vertical = 0.dp)))
+            Spacer(modifier = Modifier.height(10.dp))
+            LazyRow(modifier = Modifier.height(270.dp),
+                contentPadding = PaddingValues(horizontal = 6.dp, vertical = 0.dp)) {
+                items(relatedAnimeItems, key = { item -> item.id }) { relatedAnime ->
+                    AnimeCategoryListItemRounded(
+                        relatedAnime.picture,
+                        relatedAnime.title,
+                        relatedAnime.relationType,
+                        130.dp,
+                        maxTitleLines,
+                    ) { onItemClick.invoke(relatedAnime.id) }
+                    Divider(
+                        color = Color.Transparent,
+                        modifier = Modifier
+                            .width(16.dp)
+                    )
+                }
             }
         }
     }
@@ -272,24 +338,40 @@ fun RecommendedItems(
     recommendedAnimeItems: List<ItemScreenContract.RecommendedAnimeItem>,
     onItemClick: (Int) -> Unit,
 ) {
-    Column() {
-        Text(text = "Recommendations", style = MaterialTheme.typography.h6)
-        Spacer(modifier = Modifier.height(10.dp))
-        LazyRow(modifier = Modifier.height(270.dp)) {
-            items(recommendedAnimeItems, { it.id }) { recommendedAnime ->
-                AnimeCategoryListItemRounded(
-                    recommendedAnime.picture,
-                    recommendedAnime.title,
-                    recommendedAnime.recommendedTimes.toString(),
-                    130.dp,
-                    3,
-                ) { onItemClick.invoke(recommendedAnime.id) }
-                Divider(
-                    color = Color.Transparent,
-                    modifier = Modifier
-                        .width(16.dp)
-                )
+    if (recommendedAnimeItems.isNotEmpty()) {
+        Column {
+            Text(text = stringResource(R.string.recommendations),
+                style = MaterialTheme.typography.h6,
+                modifier = Modifier.padding(PaddingValues(horizontal = 6.dp, vertical = 0.dp)))
+            Spacer(modifier = Modifier.height(10.dp))
+            LazyRow(modifier = Modifier.height(270.dp),
+                contentPadding = PaddingValues(horizontal = 6.dp, vertical = 0.dp)) {
+                items(recommendedAnimeItems, { it.id }) { recommendedAnime ->
+                    AnimeCategoryListItemRounded(
+                        recommendedAnime.picture,
+                        recommendedAnime.title,
+                        stringResource(R.string.recommended_times,
+                            recommendedAnime.recommendedTimes),
+                        130.dp,
+                        maxTitleLines,
+                    ) { onItemClick.invoke(recommendedAnime.id) }
+                    Divider(
+                        color = Color.Transparent,
+                        modifier = Modifier
+                            .width(16.dp)
+                    )
+                }
             }
         }
     }
 }
+
+private val Theme.NumberValues.itemMiddleFadeValue: Float
+    get() = Theme.NumberValues.almostOpaque
+
+
+private val Theme.NumberValues.itemBottomFadeValue: Float
+    get() = 0.1f
+
+private val Theme.NumberValues.contentShiftToImage: Dp
+    get() = (-150).dp

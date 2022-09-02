@@ -34,7 +34,10 @@ object ItemScreenContract {
         val synopsis: String,
         val year: Int,
         val mean: Float,
-        val genres: String,
+        val genres: List<String>,
+        val mediaType: String,
+        val numEpisodes: Int,
+        val airingStatus: String,
     )
 
     val defaultAnimeItem = AnimeItem(
@@ -44,7 +47,10 @@ object ItemScreenContract {
         year = 0,
         mean = 0.0f,
         images = listOf(),
-        genres = "",
+        genres = listOf(),
+        mediaType = "",
+        numEpisodes = 0,
+        airingStatus = "",
     )
 }
 
@@ -60,8 +66,11 @@ fun Anime?.asAnimeItemScreen(
                 .plus(this.pictures.map { it.large }).filterNotNull().distinct().toImmutableList(),
             synopsis = this.synopsis ?: "Not written yet",
             mean = this.mean ?: 0.0f,
-            genres = this.genres.map { it.name }.take(3).joinToString(separator = ", "),
+            genres = this.genres.map { it.name },
             year = this.startSeason?.year ?: 0,
+            mediaType = this.mediaType?.uppercase() ?: "",
+            numEpisodes = this.numEpisodes ?: 0,
+            airingStatus = this.airingStatus?.replace("_", " ") ?: "",
         )
     }
 }

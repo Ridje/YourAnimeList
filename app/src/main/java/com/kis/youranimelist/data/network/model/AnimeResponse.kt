@@ -17,4 +17,5 @@ data class AnimeResponse(
     @SerialName("recommendations") val recommendedAnime: List<RecommendedAnimeResponse>?,
     @SerialName("media_type") val mediaType: String?,
     @SerialName("num_episodes") val numEpisodes: Int?,
+    @SerialName("status") val airingStatus: String?,
 )

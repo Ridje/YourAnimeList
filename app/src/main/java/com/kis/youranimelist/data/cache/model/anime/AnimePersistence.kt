@@ -17,7 +17,7 @@ import com.kis.youranimelist.data.cache.model.PicturePersistence
             entity = SeasonPersistence::class,
             parentColumns = ["id"],
             childColumns = ["start_season_id"]
-        )
+        ),
     ]
 )
 data class AnimePersistence(
@@ -34,4 +34,6 @@ data class AnimePersistence(
     val pictureId: Long?,
     @ColumnInfo("start_season_id")
     val startSeasonId: Long?,
+    @ColumnInfo("anime_airing_status")
+    val airingStatus: String?,
 )

@@ -20,4 +20,11 @@ object Theme {
     object StringValues {
         const val separator = " | "
     }
+
+    object NumberValues {
+        const val defaultImageRatio = 0.7f
+        const val almostOpaque = 0.99f
+        const val secondaryColorNotActiveAlpha = 0.3f
+        const val maxTitleLines = 3
+    }
 }

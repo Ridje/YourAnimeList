@@ -18,6 +18,7 @@ data class Anime(
     val rank: Int? = null,
     val mediaType: String? = null,
     val numEpisodes: Int? = null,
+    val airingStatus: String? = null,
 ) {
     constructor(animeRanked: AnimeRankingItem) : this(
         animeRanked.id,
@@ -38,6 +39,7 @@ data class Anime(
         pictures = anime.pictures?.map { Picture(it.large, it.medium) } ?: listOf(),
         mediaType = anime.mediaType,
         numEpisodes = anime.numEpisodes,
+        airingStatus = anime.airingStatus,
         relatedAnime = anime.relatedAnime?.map {
             RelatedAnime(
                 anime = Anime(it.node),
@@ -63,6 +65,7 @@ data class Anime(
         rank = ranking.rank,
         genres = anime.genres?.map { Genre(it.id, it.name) } ?: listOf(),
         mediaType = anime.mediaType,
+        airingStatus = anime.airingStatus,
         numEpisodes = anime.numEpisodes,
     )
 }

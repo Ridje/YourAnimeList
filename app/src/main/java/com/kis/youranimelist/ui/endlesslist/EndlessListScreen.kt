@@ -1,7 +1,8 @@
 package com.kis.youranimelist.ui.endlesslist
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -44,6 +45,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
 import coil.compose.AsyncImage
 import com.kis.youranimelist.R
+import com.kis.youranimelist.ui.Theme
 import com.kis.youranimelist.ui.navigation.BrowseAnimeListToolbar
 import com.kis.youranimelist.ui.navigation.NavigationKeys
 import com.kis.youranimelist.ui.widget.IconWithText
@@ -65,6 +67,7 @@ fun EndlessListScreenRoute(
         title = screenState.value.title,
         scaffoldState,
         onItemClick = { itemId: Int -> navController.navigate(NavigationKeys.Route.EXPLORE + "/$itemId") },
+        onItemLongPress = { itemId: Int -> navController.navigate(NavigationKeys.Route.MY_LIST + "/$itemId") },
         onClickBack = { navController.popBackStack() },
         onSnackbarPerformedAction = { items: LazyPagingItems<EndlessListItem> ->
             screenEventsListener.onReloadClicked(items)
@@ -80,6 +83,7 @@ fun EndlessListScreen(
     title: String,
     scaffoldState: ScaffoldState,
     onItemClick: (Int) -> Unit,
+    onItemLongPress: (Int) -> Unit,
     onClickBack: () -> Unit,
     onSnackbarPerformedAction: (LazyPagingItems<EndlessListItem>) -> Unit,
     onSnackbarDismissedAction: () -> Unit,
@@ -92,17 +96,20 @@ fun EndlessListScreen(
             listItems,
             scaffoldState,
             onItemClick,
+            onItemLongPress,
             onSnackbarPerformedAction,
             onSnackbarDismissedAction,
         )
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun EndlessListScreenBody(
     listItems: LazyPagingItems<EndlessListItem>,
     scaffoldState: ScaffoldState,
     onItemClick: (Int) -> Unit,
+    onItemLongPress: (Int) -> Unit,
     onSnackbarPerformedAction: (LazyPagingItems<EndlessListItem>) -> Unit,
     onSnackbarDismissedAction: () -> Unit,
 ) {
@@ -149,10 +156,10 @@ fun EndlessListScreenBody(
                     Card(
                         modifier = Modifier
                             .height(200.dp)
-                            .clip(RoundedCornerShape(20.dp))
-                            .clickable {
-                                item?.id?.let(onItemClick)
-                            }
+                            .clip(RoundedCornerShape(20.dp)).combinedClickable(
+                                onClick = { item?.id?.let(onItemClick) },
+                                onLongClick = { item?.id?.let(onItemLongPress) }
+                            )
                     ) {
                         Row {
                             Box {
@@ -162,7 +169,7 @@ fun EndlessListScreenBody(
                                     modifier = Modifier
                                         .align(Alignment.CenterStart)
                                         .fillMaxHeight()
-                                        .aspectRatio(0.7f)
+                                        .aspectRatio(Theme.NumberValues.defaultImageRatio)
                                         .clip(RoundedCornerShape(20.dp)),
                                     contentScale = ContentScale.Crop,
                                 )

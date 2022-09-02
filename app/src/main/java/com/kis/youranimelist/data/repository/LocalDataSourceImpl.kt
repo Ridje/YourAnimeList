@@ -92,11 +92,7 @@ class LocalDataSourceImpl(
 
     override suspend fun getAnimeDetailedData(animeId: Int): AnimePersistence {
         return withContext(dispatchers.IO) {
-            try {
-                return@withContext animeDAO.getAnimeDetailedData(animeId)
-            } catch (e: Exception) {
-                throw e
-            }
+            return@withContext animeDAO.getAnimeDetailedData(animeId)
         }
     }
 
@@ -262,6 +258,7 @@ class LocalDataSourceImpl(
                         mediaType = anime.mediaType,
                         pictureId = mainPictureId,
                         startSeasonId = startSeasonId,
+                        airingStatus = anime.airingStatus
                     )
                 )
 
@@ -357,6 +354,9 @@ class LocalDataSourceImpl(
         try {
             userDAO.getUserData()
         } catch (e: Exception) {
+            if (e is CancellationException) {
+                throw e
+            }
             null
         }
     }
