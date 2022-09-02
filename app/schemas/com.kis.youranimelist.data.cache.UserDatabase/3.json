@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 3,
-    "identityHash": "322b342d32de51a711fd34dab31d817d",
+    "identityHash": "da2aadc129959c0970d9895f8c3887c9",
     "entities": [
       {
         "tableName": "anime",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `num_episodes` INTEGER, `synopsis` TEXT, `mean` REAL, `media_type` TEXT, `picture_id` INTEGER, `start_season_id` INTEGER, FOREIGN KEY(`picture_id`) REFERENCES `picture`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`start_season_id`) REFERENCES `season`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `num_episodes` INTEGER, `synopsis` TEXT, `mean` REAL, `media_type` TEXT, `picture_id` INTEGER, `start_season_id` INTEGER, `anime_airing_status` TEXT, FOREIGN KEY(`picture_id`) REFERENCES `picture`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`start_season_id`) REFERENCES `season`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
         "fields": [
           {
             "fieldPath": "id",
@@ -54,6 +54,12 @@
             "fieldPath": "startSeasonId",
             "columnName": "start_season_id",
             "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "airingStatus",
+            "columnName": "anime_airing_status",
+            "affinity": "TEXT",
             "notNull": false
           }
         ],
@@ -590,7 +596,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '322b342d32de51a711fd34dab31d817d')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'da2aadc129959c0970d9895f8c3887c9')"
     ]
   }
 }

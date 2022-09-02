@@ -44,6 +44,7 @@ fun SearchScreenRoute(
             eventsListener.onSearchValueChanged(searchValue)
         },
         onItemClick = { itemId: Int -> navController.navigate(NavigationKeys.Route.EXPLORE + "/$itemId") },
+        onItemLongPress = { itemId: Int -> navController.navigate(NavigationKeys.Route.MY_LIST + "/$itemId") },
         onSnackbarPerformedAction = { items: LazyPagingItems<EndlessListItem> ->
             eventsListener.onReloadClicked(items)
         },
@@ -60,6 +61,7 @@ fun SearchScreen(
     scaffoldState: ScaffoldState,
     effectFlow: Flow<SearchScreenContract.Effect>,
     onItemClick: (Int) -> Unit,
+    onItemLongPress: (Int) -> Unit,
     onNavigationIconClick: () -> Unit,
     onSearchClick: (String) -> Boolean,
     onSearchValueChanged: (String) -> Unit,
@@ -100,6 +102,7 @@ fun SearchScreen(
                 listItems,
                 scaffoldState,
                 onItemClick,
+                onItemLongPress,
                 onSnackbarPerformedAction,
                 onSnackbarDismissedAction,
             )

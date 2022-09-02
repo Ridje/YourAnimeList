@@ -32,6 +32,7 @@ class AnimeMapper @Inject constructor(
             picture = null,
             mean = from.mean,
             mediaType = from.mediaType,
+            airingStatus = from.airingStatus,
         )
     }
 
@@ -46,6 +47,7 @@ class AnimeMapper @Inject constructor(
             ),
             mean = from.mean,
             mediaType = from.mediaType,
+            airingStatus = from.airingStatus,
         )
     }
 
@@ -63,6 +65,7 @@ class AnimeMapper @Inject constructor(
             synopsis = from.anime.synopsis,
             genres = from.genres.map { Genre(it.id, it.name) },
             pictures = from.pictures.map { Picture(it.large, it.medium) },
+            airingStatus = from.anime.airingStatus,
             relatedAnime = if (listRelatedAnimePictures.isEmpty()) listOf() else {
                 from.relatedAnime
                     .mapIndexed { index, anime ->
