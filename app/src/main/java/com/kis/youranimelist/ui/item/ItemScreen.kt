@@ -61,6 +61,7 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.google.accompanist.pager.rememberPagerState
 import com.kis.youranimelist.R
+import com.kis.youranimelist.core.utils.uppercaseMediaType
 import com.kis.youranimelist.ui.Theme
 import com.kis.youranimelist.ui.Theme.NumberValues.maxTitleLines
 import com.kis.youranimelist.ui.Theme.StringValues.separator
@@ -212,7 +213,7 @@ fun ItemScreen(
                 )
                 Text(text = separator, style = MaterialTheme.typography.caption)
                 Text(
-                    text = anime.mediaType,
+                    text = anime.mediaType.uppercaseMediaType(),
                     style = MaterialTheme.typography.caption,
                     modifier = Modifier
                         .wrapContentWidth()

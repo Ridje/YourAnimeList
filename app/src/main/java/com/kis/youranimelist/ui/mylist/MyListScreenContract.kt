@@ -12,6 +12,7 @@ object MyListScreenContract {
         val items: List<Item>,
         val tabs: List<String> = AnimeStatusValue.listOfIndices(),
         val currentTab: Int = 0,
+        val searchValue: String = "",
     )
 
     data class Item(
@@ -33,6 +34,7 @@ object MyListScreenContract {
         fun onReloadClicked()
         fun onResetStateClicked()
         fun onSwipeRefresh()
+        fun onSearchValueChanged(searchValue: String)
     }
 }
 

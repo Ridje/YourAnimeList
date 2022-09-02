@@ -26,5 +26,7 @@ object Theme {
         const val almostOpaque = 0.99f
         const val secondaryColorNotActiveAlpha = 0.3f
         const val maxTitleLines = 3
+        const val debounceDefaultDelay = 300L
+        const val fullUppercaseMediaTypeCharsThreshold = 3
     }
 }
