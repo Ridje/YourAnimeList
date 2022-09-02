@@ -10,7 +10,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
@@ -47,9 +46,10 @@ class MyListViewModel @Inject constructor(
                             _screenState.value.copy(
                                 isLoading = false,
                                 isError = false,
-                                items = result.data.map {
-                                    it.asMyListItem()
-                                }.sortedWith(compareBy({ it.status }, { it.title })))
+                                items = result.data
+                                    .map { it.asMyListItem() }
+                                    .sortedWith(compareBy({ it.status }, { it.title }))
+                            )
                         }
                         is ResultWrapper.Error -> {
                             _screenState.value.copy(
@@ -90,5 +90,9 @@ class MyListViewModel @Inject constructor(
 
     override fun onSwipeRefresh() {
         getLatestData()
+    }
+
+    override fun onSearchValueChanged(searchValue: String) {
+        _screenState.value = _screenState.value.copy(searchValue = searchValue)
     }
 }

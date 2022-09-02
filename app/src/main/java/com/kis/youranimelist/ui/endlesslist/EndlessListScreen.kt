@@ -45,6 +45,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
 import coil.compose.AsyncImage
 import com.kis.youranimelist.R
+import com.kis.youranimelist.core.utils.uppercaseMediaType
 import com.kis.youranimelist.ui.Theme
 import com.kis.youranimelist.ui.navigation.BrowseAnimeListToolbar
 import com.kis.youranimelist.ui.navigation.NavigationKeys
@@ -209,7 +210,7 @@ fun EndlessListScreenBody(
                                         space = 6.dp
                                     )
                                     Text(
-                                        text = "${item?.mediaType?.uppercase() ?: ""}\u00A0(${item?.numEpisodes?.toString()})",
+                                        text = "${item?.mediaType?.uppercaseMediaType() ?: ""}\u00A0(${item?.numEpisodes?.toString()})",
                                         style = MaterialTheme.typography.body1,
                                         softWrap = false,
                                     )
