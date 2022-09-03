@@ -5,6 +5,7 @@ import com.kis.youranimelist.data.cache.model.anime.AnimeDetailedDataPersistence
 import com.kis.youranimelist.data.cache.model.anime.AnimePersistence
 import com.kis.youranimelist.data.network.model.rankingresponse.AnimeRankedResponse
 import com.kis.youranimelist.data.network.model.searchresponse.AnimeSearchResponse
+import com.kis.youranimelist.data.network.model.suggestingresponse.SuggestedAnimeResponse
 import com.kis.youranimelist.domain.rankinglist.model.Anime
 import com.kis.youranimelist.domain.rankinglist.model.Genre
 import com.kis.youranimelist.domain.rankinglist.model.Picture
@@ -21,6 +22,10 @@ class AnimeMapper @Inject constructor(
     }
 
     fun map(from: AnimeSearchResponse): Anime {
+        return Anime(from.anime)
+    }
+
+    fun map(from: SuggestedAnimeResponse): Anime {
         return Anime(from.anime)
     }
 

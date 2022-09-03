@@ -8,6 +8,7 @@ object NavigationKeys {
         const val PROFILE = "profile"
         const val RANKING_LIST = "ranking"
         const val SEARCH = "search"
+        const val SUGGESTIONS = "suggestions"
     }
 
     object Argument {

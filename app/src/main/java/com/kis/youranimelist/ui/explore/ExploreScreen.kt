@@ -1,6 +1,5 @@
 package com.kis.youranimelist.ui.explore
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -13,25 +12,24 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.kis.youranimelist.domain.rankinglist.model.Anime
-import com.kis.youranimelist.domain.rankinglist.model.AnimeCategory
+import androidx.paging.LoadState
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.items
+import com.kis.youranimelist.ui.Theme
 import com.kis.youranimelist.ui.apptopbar.SearchAnimeToolbar
-import com.kis.youranimelist.ui.model.AnimeRankType
 import com.kis.youranimelist.ui.navigation.NavigationKeys
 import com.kis.youranimelist.ui.widget.AnimeCategoryListItemRounded
 import me.onebone.toolbar.CollapsingToolbarScaffold
@@ -47,21 +45,25 @@ fun ExploreScreenRoute(
     val screenState = viewModel.screenState.collectAsState()
     ExploreScreen(
         animeCategories = screenState.value.categories,
-        animeLoadingErrors = screenState.value.listErrors,
         paddingValues = paddingValues,
         onItemClick = { animeId: Int -> navController.navigate(NavigationKeys.Route.EXPLORE + "/$animeId") },
-        onRankingListClick = { rankType: String -> navController.navigate(NavigationKeys.Route.RANKING_LIST + "/$rankType") },
+        onRankingListClick = { rankType: String, navScreen: ExploreScreenContract.EndlessListNavType ->
+            val navigateTo = when (navScreen) {
+                is ExploreScreenContract.EndlessListNavType.SuggestionsList -> NavigationKeys.Route.SUGGESTIONS
+                is ExploreScreenContract.EndlessListNavType.RankedList -> NavigationKeys.Route.RANKING_LIST + "/$rankType"
+            }
+            navController.navigate(navigateTo)
+        },
         onSearchClick = { navController.navigate(NavigationKeys.Route.SEARCH) }
     )
 }
 
 @Composable
 fun ExploreScreen(
-    animeCategories: List<AnimeCategory>,
-    animeLoadingErrors: List<Boolean>,
+    animeCategories: List<ExploreScreenContract.AnimeCategory>,
     paddingValues: PaddingValues,
     onItemClick: (Int) -> Unit,
-    onRankingListClick: (String) -> Unit,
+    onRankingListClick: (String, ExploreScreenContract.EndlessListNavType) -> Unit,
     onSearchClick: () -> Unit,
 ) {
     CollapsingToolbarScaffold(
@@ -70,48 +72,28 @@ fun ExploreScreen(
         modifier = Modifier,
         scrollStrategy = ScrollStrategy.EnterAlwaysCollapsed) {
         LazyColumn {
-            itemsIndexed(animeCategories) { index, category ->
+            items(animeCategories) { category ->
                 Row(horizontalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier.fillMaxWidth()) {
-                    Text(text = category.rankType.presentName,
+                    Text(text = category.category.title,
                         modifier = Modifier.padding(6.dp),
                         style = MaterialTheme.typography.h6)
-                    Text(
-                        text = "See all",
-                        modifier = Modifier
-                            .padding(6.dp)
-                            .clip(RoundedCornerShape(8.dp))
-                            .clickable { onRankingListClick.invoke(category.rankType.tag) }
-                            .padding(6.dp),
-                        style = MaterialTheme.typography.body1,
-                        textDecoration = TextDecoration.Underline,
-                    )
-                }
-                LazyRow(modifier = Modifier
-                    .wrapContentHeight()
-                    .height(280.dp),
-                    contentPadding = PaddingValues(horizontal = 6.dp, vertical = 0.dp)
-                ) {
-                    items(category.animeList) { anime ->
-                        AnimeCategoryListItemRounded(
-                            cover = anime?.picture?.large,
-                            firstLine = anime?.title ?: "Loading",
-                            secondLine = anime?.let { "${anime.startSeason?.year ?: ""} ${anime.startSeason?.season ?: ""}" }
-                                ?: "",
-                            showPlaceholder = anime == null && !animeLoadingErrors[index],
-                            showError = animeLoadingErrors[index]
-                        ) {
-                            anime?.let { clickedAnime ->
-                                onItemClick.invoke(clickedAnime.id)
-                            }
-                        }
-                        Divider(
-                            color = Color.Transparent,
-                            modifier = Modifier
-                                .width(16.dp)
+                    TextButton(onClick = {
+                        onRankingListClick.invoke(category.category.tag,
+                            category.category.navigationScreen)
+                    }) {
+                        Text(
+                            text = "See all",
+                            color = MaterialTheme.colors.onBackground,
+                            style = MaterialTheme.typography.body1,
+                            textDecoration = TextDecoration.Underline,
                         )
                     }
                 }
+                ExploreScreenCarousel(
+                    lazyItems = category.pagingDataFlow.collectAsLazyPagingItems(),
+                    onItemClick = onItemClick
+                )
             }
             item {
                 Spacer(modifier = Modifier.height(paddingValues.calculateBottomPadding()))
@@ -121,77 +103,71 @@ fun ExploreScreen(
 }
 
 @Composable
-@Preview
-fun ExploreScreePreview() {
-    ExploreScreen(
-        animeCategories = listOf(
-            AnimeCategory(AnimeRankType.Airing, listOf(
-                Anime(
-                    123,
-                    "Boku no Hero Academia 2nd Season",
-                    null,
-                    null,
-                    null,
-                    null,
-                    listOf(),
-                ),
-                Anime(
-                    124,
-                    "Naruto: Shippuuden",
-                    null,
-                    null,
-                    null,
-                    null,
-                    listOf(),
-                ),
-                Anime(
-                    128,
-                    "Boku no Hero Academia 2nd Season",
-                    null,
-                    null,
-                    null,
-                    null,
-                    listOf(),
-                ),
-                Anime(
-                    121,
-                    "Naruto: Shippuuden",
-                    null,
-                    null,
-                    null,
-                    null,
-                )
-            )
-            ),
-            AnimeCategory(AnimeRankType.TopRanked, listOf(
-                Anime(
-                    126,
-                    "Fullmetal Alchemist: Brotherhood",
-                    null,
-                    null,
-                    null,
-                    null,
-                ),
-                Anime(
-                    127,
-                    "Sword Art Online",
-                    null,
-                    null,
-                    null,
-                    null,
-                )
-            )
-            )
-        ),
-        listOf(
-            false,
-            false
-        ),
-        PaddingValues(0.dp),
-        {},
-        {},
-        {}
-    )
+fun ExploreScreenCarousel(
+    lazyItems: LazyPagingItems<ExploreScreenContract.AnimeCategoryItem>,
+    onItemClick: (Int) -> Unit,
+) {
+    LazyRow(modifier = Modifier
+        .wrapContentHeight()
+        .height(280.dp),
+        contentPadding = PaddingValues(horizontal = 6.dp, vertical = 0.dp)
+    ) {
+        when (lazyItems.loadState.refresh) {
+            is LoadState.Loading -> {
+                items(Theme.NumberValues.previewItemsInCarousel) {
+                    AnimeCategoryListItemRounded(
+                        cover = null,
+                        firstLine = "Loading",
+                        secondLine = "",
+                        showPlaceholder = true,
+                        showError = false,
+                    ) {}
+                    Divider(
+                        color = Color.Transparent,
+                        modifier = Modifier
+                            .width(16.dp)
+                    )
+                }
+            }
+            is LoadState.Error -> {
+                items(Theme.NumberValues.previewItemsInCarousel) {
+                    AnimeCategoryListItemRounded(
+                        cover = null,
+                        firstLine = "Error",
+                        secondLine = "",
+                        showPlaceholder = false,
+                        showError = true,
+                    ) {}
+                    Divider(
+                        color = Color.Transparent,
+                        modifier = Modifier
+                            .width(16.dp)
+                    )
+                }
+            }
+            else -> {
+                items(lazyItems) { animeItem ->
+                    AnimeCategoryListItemRounded(
+                        cover = animeItem?.pictureUrl,
+                        firstLine = animeItem?.title ?: "",
+                        secondLine = "${animeItem?.year ?: ""} ${animeItem?.season ?: ""}",
+                        showPlaceholder = false,
+                        showError = false,
+                    ) {
+                        animeItem?.let { clickedAnime ->
+                            onItemClick.invoke(clickedAnime.id)
+                        }
+                    }
+                    Divider(
+                        color = Color.Transparent,
+                        modifier = Modifier
+                            .width(16.dp)
+                    )
+                }
+            }
+        }
+    }
 }
 
-
+private val Theme.NumberValues.previewItemsInCarousel
+    get() = 6

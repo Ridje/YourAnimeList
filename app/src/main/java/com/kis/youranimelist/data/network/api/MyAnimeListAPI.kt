@@ -8,7 +8,7 @@ import com.kis.youranimelist.data.network.model.personallist.AnimeStatusResponse
 import com.kis.youranimelist.data.network.model.personallist.PersonalAnimeListResponse
 import com.kis.youranimelist.data.network.model.rankingresponse.RankingRootResponse
 import com.kis.youranimelist.data.network.model.searchresponse.SearchingRootResponse
-import retrofit2.Call
+import com.kis.youranimelist.data.network.model.suggestingresponse.SuggestingRootResponse
 import retrofit2.http.DELETE
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
@@ -34,6 +34,13 @@ interface MyAnimeListAPI {
         @Query("offset") offset: Int?,
         @Query("fields") fields: String?,
     ): NetworkResponse<SearchingRootResponse, ErrorResponse>
+
+    @GET("anime/suggestions")
+    suspend fun animeSuggestions(
+        @Query("limit") limit: Int?,
+        @Query("offset") offset: Int?,
+        @Query("fields") fields: String?,
+    ): NetworkResponse<SuggestingRootResponse, ErrorResponse>
 
     @GET("anime/{anime_id}")
     suspend fun animeDetails(

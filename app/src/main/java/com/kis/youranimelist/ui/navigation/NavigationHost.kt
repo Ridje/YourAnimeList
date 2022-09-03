@@ -26,6 +26,7 @@ import com.google.accompanist.navigation.material.ModalBottomSheetLayout
 import com.google.accompanist.navigation.material.bottomSheet
 import com.kis.youranimelist.ui.Theme
 import com.kis.youranimelist.ui.endlesslist.EndlessListScreenRoute
+import com.kis.youranimelist.ui.endlesslist.EndlessListScreenSuggestionsRoute
 import com.kis.youranimelist.ui.explore.ExploreScreenRoute
 import com.kis.youranimelist.ui.item.ItemScreenRoute
 import com.kis.youranimelist.ui.itembottomsheetdialog.ItemBottomScreenRoute
@@ -144,6 +145,12 @@ fun YourAnimeListNavHost(
                 })
             ) {
                 EndlessListScreenRoute(navController = navController, scaffoldState = scaffoldState)
+            }
+            composable(
+                route = NavigationKeys.Route.SUGGESTIONS,
+            ) {
+                EndlessListScreenSuggestionsRoute(navController = navController,
+                    scaffoldState = scaffoldState)
             }
         }
     }

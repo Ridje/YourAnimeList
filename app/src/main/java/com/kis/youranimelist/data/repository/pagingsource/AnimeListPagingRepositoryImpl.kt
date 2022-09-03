@@ -49,6 +49,5 @@ class AnimeListPagingRepositoryImpl<T>(
                 }
             }
         }
-
     }
 }
