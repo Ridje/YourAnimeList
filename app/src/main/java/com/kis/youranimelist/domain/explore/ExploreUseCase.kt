@@ -17,6 +17,7 @@ class ExploreUseCase @Inject constructor(
         rankedCategory(ExploreCategory.Ranked.Upcoming),
         rankedCategory(ExploreCategory.Ranked.Airing),
         suggestionsCategory(),
+        rankedCategory(ExploreCategory.Ranked.Movies),
     )
 
     private fun rankedCategory(rankedCategory: ExploreCategory.Ranked): Pair<ExploreCategory, Pager<Int, Anime>> {
