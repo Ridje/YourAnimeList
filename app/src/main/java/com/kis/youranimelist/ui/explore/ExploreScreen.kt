@@ -47,7 +47,13 @@ fun ExploreScreenRoute(
         animeCategories = screenState.value.categories,
         paddingValues = paddingValues,
         onItemClick = { animeId: Int -> navController.navigate(NavigationKeys.Route.EXPLORE + "/$animeId") },
-        onRankingListClick = { rankType: String -> navController.navigate(NavigationKeys.Route.RANKING_LIST + "/$rankType") },
+        onRankingListClick = { rankType: String, navScreen: ExploreScreenContract.EndlessListNavType ->
+            val navigateTo = when (navScreen) {
+                is ExploreScreenContract.EndlessListNavType.SuggestionsList -> NavigationKeys.Route.SUGGESTIONS
+                is ExploreScreenContract.EndlessListNavType.RankedList -> NavigationKeys.Route.RANKING_LIST + "/$rankType"
+            }
+            navController.navigate(navigateTo)
+        },
         onSearchClick = { navController.navigate(NavigationKeys.Route.SEARCH) }
     )
 }
@@ -57,7 +63,7 @@ fun ExploreScreen(
     animeCategories: List<ExploreScreenContract.AnimeCategory>,
     paddingValues: PaddingValues,
     onItemClick: (Int) -> Unit,
-    onRankingListClick: (String) -> Unit,
+    onRankingListClick: (String, ExploreScreenContract.EndlessListNavType) -> Unit,
     onSearchClick: () -> Unit,
 ) {
     CollapsingToolbarScaffold(
@@ -72,7 +78,10 @@ fun ExploreScreen(
                     Text(text = category.category.title,
                         modifier = Modifier.padding(6.dp),
                         style = MaterialTheme.typography.h6)
-                    TextButton(onClick = { onRankingListClick.invoke(category.category.tag) }) {
+                    TextButton(onClick = {
+                        onRankingListClick.invoke(category.category.tag,
+                            category.category.navigationScreen)
+                    }) {
                         Text(
                             text = "See all",
                             color = MaterialTheme.colors.onBackground,

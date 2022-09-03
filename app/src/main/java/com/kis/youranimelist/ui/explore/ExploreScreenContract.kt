@@ -5,8 +5,7 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
 import com.kis.youranimelist.domain.rankinglist.model.Anime
-import com.kis.youranimelist.domain.rankinglist.model.AnimeCategory
-import com.kis.youranimelist.ui.model.AnimeRankType
+import com.kis.youranimelist.ui.model.ExploreCategory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -33,12 +32,18 @@ object ExploreScreenContract {
     data class AnimeCategoryDescription(
         val tag: String,
         val title: String,
+        val navigationScreen: EndlessListNavType,
     )
+
+    sealed class EndlessListNavType {
+        object SuggestionsList: EndlessListNavType()
+        object RankedList: EndlessListNavType()
+    }
 }
 
-fun List<Pair<AnimeRankType, Pager<Int, Anime>>>.asExploreScreenContractScreenState(
+fun List<Pair<ExploreCategory, Pager<Int, Anime>>>.asExploreScreenContractScreenState(
     cachedScope: CoroutineScope,
-    animeCategoryMapper: (AnimeRankType) -> ExploreScreenContract.AnimeCategoryDescription = AnimeRankType::asAnimeCategoryDescription,
+    animeCategoryMapper: (ExploreCategory) -> ExploreScreenContract.AnimeCategoryDescription = ExploreCategory::asAnimeCategoryDescription,
     animeCategoryItemMapper: (Anime) -> ExploreScreenContract.AnimeCategoryItem = Anime::asAnimeCategoryItem,
 ): ExploreScreenContract.ScreenState {
 
@@ -69,9 +74,17 @@ fun Anime.asAnimeCategoryItem(): ExploreScreenContract.AnimeCategoryItem {
     )
 }
 
-fun AnimeRankType.asAnimeCategoryDescription(): ExploreScreenContract.AnimeCategoryDescription {
-    return ExploreScreenContract.AnimeCategoryDescription(
-        tag = this.tag,
-        title = this.presentName,
-    )
+fun ExploreCategory.asAnimeCategoryDescription(): ExploreScreenContract.AnimeCategoryDescription {
+    return when (this) {
+        is ExploreCategory.Ranked -> ExploreScreenContract.AnimeCategoryDescription(
+            tag = this.tag,
+            title = this.presentName,
+            navigationScreen = ExploreScreenContract.EndlessListNavType.RankedList,
+        )
+        is ExploreCategory.Suggestions -> ExploreScreenContract.AnimeCategoryDescription(
+            tag = "suggestions",
+            title = "Suggestions",
+            navigationScreen = ExploreScreenContract.EndlessListNavType.SuggestionsList,
+        )
+    }
 }

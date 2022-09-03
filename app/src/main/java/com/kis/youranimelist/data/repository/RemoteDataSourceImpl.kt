@@ -9,6 +9,7 @@ import com.kis.youranimelist.data.network.model.TokenResponse
 import com.kis.youranimelist.data.network.model.UserResponse
 import com.kis.youranimelist.data.network.model.personallist.AnimeStatusResponse
 import com.kis.youranimelist.data.network.model.personallist.PersonalAnimeListResponse
+import com.kis.youranimelist.data.network.model.suggestingresponse.SuggestingRootResponse
 import com.kis.youranimelist.domain.model.ResultWrapper
 import com.kis.youranimelist.domain.model.asResult
 import kotlinx.coroutines.Dispatchers
@@ -36,8 +37,15 @@ class RemoteDataSourceImpl(
         rankingType: String,
         limit: Int?,
         offset: Int?,
-    ) = withContext(Dispatchers.IO) {
+    ) = withContext(dispatchers.IO) {
         return@withContext malService.animeRanking(rankingType, limit, offset, ANIME_FIELDS)
+    }
+
+    override suspend fun getAnimeSuggestingList(
+        limit: Int?,
+        offset: Int?,
+    ) = withContext(dispatchers.IO) {
+        return@withContext malService.animeSuggestions(limit, offset, ANIME_FIELDS)
     }
 
     override suspend fun getAnimeSearchList(

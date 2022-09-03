@@ -10,7 +10,7 @@ import com.kis.youranimelist.domain.model.ResultWrapper
 import com.kis.youranimelist.domain.model.asResult
 import com.kis.youranimelist.domain.rankinglist.mapper.AnimeMapper
 import com.kis.youranimelist.domain.rankinglist.model.Anime
-import com.kis.youranimelist.ui.model.AnimeRankType
+import com.kis.youranimelist.ui.model.ExploreCategory
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filterNotNull
@@ -25,7 +25,7 @@ class AnimeRepositoryImpl(
 ) : AnimeRepository {
 
     override fun getRankingAnimeListProducer(
-        rankingType: AnimeRankType,
+        rankingType: ExploreCategory.Ranked,
         limit: Int?,
         offset: Int?,
     ): Flow<ResultWrapper<List<Anime>>> = flow {
@@ -46,7 +46,7 @@ class AnimeRepositoryImpl(
     }
 
     override suspend fun getRankingAnimeList(
-        rankingType: AnimeRankType,
+        rankingType: ExploreCategory.Ranked,
         limit: Int?,
         offset: Int?,
     ): ResultWrapper<List<Anime>> {

@@ -13,6 +13,7 @@ import com.kis.youranimelist.data.network.api.MyAnimeListAPI
 import com.kis.youranimelist.data.network.api.MyAnimeListOAuthAPI
 import com.kis.youranimelist.data.network.model.rankingresponse.RankingRootResponse
 import com.kis.youranimelist.data.network.model.searchresponse.SearchingRootResponse
+import com.kis.youranimelist.data.network.model.suggestingresponse.SuggestingRootResponse
 import com.kis.youranimelist.data.repository.LocalDataSource
 import com.kis.youranimelist.data.repository.LocalDataSourceImpl
 import com.kis.youranimelist.data.repository.RemoteDataSource
@@ -22,6 +23,7 @@ import com.kis.youranimelist.data.repository.anime.AnimeRepositoryImpl
 import com.kis.youranimelist.data.repository.animelist.AnimeListRepository
 import com.kis.youranimelist.data.repository.animelist.AnimeRankingRepositoryImpl
 import com.kis.youranimelist.data.repository.animelist.AnimeSearchingRepositoryImpl
+import com.kis.youranimelist.data.repository.animelist.AnimeSuggestedRepositoryImpl
 import com.kis.youranimelist.data.repository.pagingsource.AnimeListPagingRepository
 import com.kis.youranimelist.data.repository.pagingsource.AnimeListPagingRepositoryImpl
 import com.kis.youranimelist.data.repository.personalanime.PersonalAnimeRepository
@@ -66,6 +68,15 @@ object RepositoryModule {
     }
 
     @Provides
+    @Suggestions
+    fun provideAnimeSuggestionsPagingRepository(
+        cacheFactory: AnimeRankingMemoryCache.Factory,
+        animeListRepository: AnimeListRepository<SuggestingRootResponse>,
+    ): AnimeListPagingRepository {
+        return AnimeListPagingRepositoryImpl(cacheFactory, animeListRepository)
+    }
+
+    @Provides
     fun provideAnimeRankingListRepository(
         remoteDataSource: RemoteDataSource,
         localDataSource: LocalDataSource,
@@ -81,6 +92,15 @@ object RepositoryModule {
         animeMapper: AnimeMapper,
     ): AnimeListRepository<SearchingRootResponse> {
         return AnimeSearchingRepositoryImpl(remoteDataSource, localDataSource, animeMapper)
+    }
+
+    @Provides
+    fun provideAnimeSuggestionsListRepository(
+        remoteDataSource: RemoteDataSource,
+        localDataSource: LocalDataSource,
+        animeMapper: AnimeMapper,
+    ): AnimeListRepository<SuggestingRootResponse> {
+        return AnimeSuggestedRepositoryImpl(remoteDataSource, localDataSource, animeMapper)
     }
 
     @Provides
@@ -182,3 +202,7 @@ annotation class Search
 @Qualifier
 @Retention(AnnotationRetention.RUNTIME)
 annotation class Ranking
+
+@Qualifier
+@Retention(AnnotationRetention.RUNTIME)
+annotation class Suggestions

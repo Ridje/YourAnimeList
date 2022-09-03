@@ -7,9 +7,8 @@ import com.kis.youranimelist.data.repository.LocalDataSource
 import com.kis.youranimelist.data.repository.RemoteDataSource
 import com.kis.youranimelist.domain.rankinglist.mapper.AnimeMapper
 import com.kis.youranimelist.domain.rankinglist.model.Anime
-import javax.inject.Inject
 
-class AnimeRankingRepositoryImpl @Inject constructor(
+class AnimeRankingRepositoryImpl(
     private val remoteDataSource: RemoteDataSource,
     private val localDataSource: LocalDataSource,
     private val animeMapper: AnimeMapper,

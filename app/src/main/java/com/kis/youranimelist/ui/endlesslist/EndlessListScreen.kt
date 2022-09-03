@@ -50,6 +50,7 @@ import com.kis.youranimelist.ui.Theme
 import com.kis.youranimelist.ui.navigation.BrowseAnimeListToolbar
 import com.kis.youranimelist.ui.navigation.NavigationKeys
 import com.kis.youranimelist.ui.widget.IconWithText
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import me.onebone.toolbar.CollapsingToolbarScaffold
 import me.onebone.toolbar.ScrollStrategy
@@ -60,6 +61,28 @@ fun EndlessListScreenRoute(
     navController: NavController,
     scaffoldState: ScaffoldState,
     viewModel: EndlessListScreenViewModel = hiltViewModel(),
+) {
+    val screenState = viewModel.screenState.collectAsState()
+    val screenEventsListener = viewModel as EndlessListScreenContract.ScreenEventsListener
+    EndlessListScreen(
+        listItems = screenState.value.items.collectAsLazyPagingItems(),
+        title = screenState.value.title,
+        scaffoldState,
+        onItemClick = { itemId: Int -> navController.navigate(NavigationKeys.Route.EXPLORE + "/$itemId") },
+        onItemLongPress = { itemId: Int -> navController.navigate(NavigationKeys.Route.MY_LIST + "/$itemId") },
+        onClickBack = { navController.popBackStack() },
+        onSnackbarPerformedAction = { items: LazyPagingItems<EndlessListItem> ->
+            screenEventsListener.onReloadClicked(items)
+        },
+        onSnackbarDismissedAction = { },
+    )
+}
+
+@Composable
+fun EndlessListScreenSuggestionsRoute(
+    navController: NavController,
+    scaffoldState: ScaffoldState,
+    viewModel: EndlessListScreenSuggestionsViewModel = hiltViewModel(),
 ) {
     val screenState = viewModel.screenState.collectAsState()
     val screenEventsListener = viewModel as EndlessListScreenContract.ScreenEventsListener
@@ -104,7 +127,6 @@ fun EndlessListScreen(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun EndlessListScreenBody(
     listItems: LazyPagingItems<EndlessListItem>,
@@ -146,115 +168,138 @@ fun EndlessListScreenBody(
             }
         }
         else -> {
-            LazyColumn(
-                contentPadding = PaddingValues(top = 0.dp,
-                    bottom = 0.dp,
-                    start = 6.dp,
-                    end = 6.dp),
-                modifier = Modifier.fillMaxSize(),
-            ) {
-                items(listItems) { item ->
-                    Card(
-                        modifier = Modifier
-                            .height(200.dp)
-                            .clip(RoundedCornerShape(20.dp)).combinedClickable(
-                                onClick = { item?.id?.let(onItemClick) },
-                                onLongClick = { item?.id?.let(onItemLongPress) }
-                            )
-                    ) {
-                        Row {
-                            Box {
-                                AsyncImage(
-                                    model = item?.imageUrl,
-                                    contentDescription = stringResource(id = R.string.default_content_description),
-                                    modifier = Modifier
-                                        .align(Alignment.CenterStart)
-                                        .fillMaxHeight()
-                                        .aspectRatio(Theme.NumberValues.defaultImageRatio)
-                                        .clip(RoundedCornerShape(20.dp)),
-                                    contentScale = ContentScale.Crop,
-                                )
-                                item?.rank?.let { rank ->
-                                    Text(text = rank.toString(),
-                                        style = MaterialTheme.typography.h3,
-                                        modifier = Modifier
-                                            .align(
-                                                Alignment.BottomEnd)
-                                            .clip(RoundedCornerShape(topStartPercent = 40))
-                                            .background(MaterialTheme.colors.background)
-                                            .padding(horizontal = 6.dp)
-                                    )
-                                }
+            EndlessListScreenBodyContent(
+                listItems,
+                scaffoldState,
+                localScope,
+                onItemClick,
+                onItemLongPress,
+                onSnackbarPerformedAction,
+                onSnackbarDismissedAction,
+            )
+        }
+    }
+}
 
-                            }
-                            Column(modifier = Modifier.padding(horizontal = 12.dp)) {
-                                Text(
-                                    text = item?.title ?: "",
-                                    style = MaterialTheme.typography.h6,
-                                    maxLines = 2,
-                                    overflow = TextOverflow.Ellipsis,
-                                )
-                                Text(
-                                    text = item?.genres ?: "",
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                    style = MaterialTheme.typography.caption,
-                                    softWrap = false,
-                                )
-                                Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                                    IconWithText(
-                                        text = item?.mean?.toString(),
-                                        textStyle = MaterialTheme.typography.body1,
-                                        icon = R.drawable.ic_star_solid,
-                                        tint = Color.Yellow,
-                                        space = 6.dp
-                                    )
-                                    Text(
-                                        text = "${item?.mediaType?.uppercaseMediaType() ?: ""}\u00A0(${item?.numEpisodes?.toString()})",
-                                        style = MaterialTheme.typography.body1,
-                                        softWrap = false,
-                                    )
-                                }
-                                Text(
-                                    text = item?.description
-                                        ?: stringResource(id = R.string.default_content_description),
-                                    style = MaterialTheme.typography.caption,
-                                    modifier = Modifier.padding(vertical = 8.dp),
-                                    overflow = TextOverflow.Ellipsis,
-                                )
-                            }
-                        }
-
-                    }
-                    Divider(
-                        color = Color.Transparent,
-                        modifier = Modifier
-                            .height(14.dp)
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun EndlessListScreenBodyContent(
+    listItems: LazyPagingItems<EndlessListItem>,
+    scaffoldState: ScaffoldState,
+    localScope: CoroutineScope,
+    onItemClick: (Int) -> Unit,
+    onItemLongPress: (Int) -> Unit,
+    onSnackbarPerformedAction: (LazyPagingItems<EndlessListItem>) -> Unit,
+    onSnackbarDismissedAction: () -> Unit,
+) {
+    LazyColumn(
+        contentPadding = PaddingValues(top = 0.dp,
+            bottom = 0.dp,
+            start = 6.dp,
+            end = 6.dp),
+        modifier = Modifier.fillMaxSize(),
+    ) {
+        items(listItems) { item ->
+            Card(
+                modifier = Modifier
+                    .height(200.dp)
+                    .clip(RoundedCornerShape(20.dp))
+                    .combinedClickable(
+                        onClick = { item?.id?.let(onItemClick) },
+                        onLongClick = { item?.id?.let(onItemLongPress) }
                     )
-                }
-                if (listItems.loadState.append == LoadState.Loading) {
-                    item {
-                        Row(modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.Center) {
-                            CircularProgressIndicator()
+            ) {
+                Row {
+                    Box {
+                        AsyncImage(
+                            model = item?.imageUrl,
+                            contentDescription = stringResource(id = R.string.default_content_description),
+                            modifier = Modifier
+                                .align(Alignment.CenterStart)
+                                .fillMaxHeight()
+                                .aspectRatio(Theme.NumberValues.defaultImageRatio)
+                                .clip(RoundedCornerShape(20.dp)),
+                            contentScale = ContentScale.Crop,
+                        )
+                        item?.rank?.let { rank ->
+                            Text(text = rank.toString(),
+                                style = MaterialTheme.typography.h3,
+                                modifier = Modifier
+                                    .align(
+                                        Alignment.BottomEnd)
+                                    .clip(RoundedCornerShape(topStartPercent = 40))
+                                    .background(MaterialTheme.colors.background)
+                                    .padding(horizontal = 6.dp)
+                            )
                         }
+
+                    }
+                    Column(modifier = Modifier.padding(horizontal = 12.dp)) {
+                        Text(
+                            text = item?.title ?: "",
+                            style = MaterialTheme.typography.h6,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                        Text(
+                            text = item?.genres ?: "",
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            style = MaterialTheme.typography.caption,
+                            softWrap = false,
+                        )
+                        Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                            IconWithText(
+                                text = item?.mean?.toString(),
+                                textStyle = MaterialTheme.typography.body1,
+                                icon = R.drawable.ic_star_solid,
+                                tint = Color.Yellow,
+                                space = 6.dp
+                            )
+                            Text(
+                                text = "${item?.mediaType?.uppercaseMediaType() ?: ""}\u00A0(${item?.numEpisodes?.toString()})",
+                                style = MaterialTheme.typography.body1,
+                                softWrap = false,
+                            )
+                        }
+                        Text(
+                            text = item?.description
+                                ?: stringResource(id = R.string.default_content_description),
+                            style = MaterialTheme.typography.caption,
+                            modifier = Modifier.padding(vertical = 8.dp),
+                            overflow = TextOverflow.Ellipsis,
+                        )
                     }
                 }
-                if (listItems.loadState.append is LoadState.Error) {
-                    item {
-                        val context = LocalContext.current
-                        localScope.launch {
-                            val snackResult = scaffoldState.snackbarHostState.showSnackbar(
-                                message = context.resources.getString(R.string.data_not_loaded_error),
-                                actionLabel = context.resources.getString(R.string.reload_data),
-                                duration = SnackbarDuration.Long
-                            )
-                            when (snackResult) {
-                                SnackbarResult.Dismissed -> onSnackbarDismissedAction.invoke()
-                                SnackbarResult.ActionPerformed -> onSnackbarPerformedAction.invoke(
-                                    listItems)
-                            }
-                        }
+
+            }
+            Divider(
+                color = Color.Transparent,
+                modifier = Modifier
+                    .height(14.dp)
+            )
+        }
+        if (listItems.loadState.append == LoadState.Loading) {
+            item {
+                Row(modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center) {
+                    CircularProgressIndicator()
+                }
+            }
+        }
+        if (listItems.loadState.append is LoadState.Error) {
+            item {
+                val context = LocalContext.current
+                localScope.launch {
+                    val snackResult = scaffoldState.snackbarHostState.showSnackbar(
+                        message = context.resources.getString(R.string.data_not_loaded_error),
+                        actionLabel = context.resources.getString(R.string.reload_data),
+                        duration = SnackbarDuration.Long
+                    )
+                    when (snackResult) {
+                        SnackbarResult.Dismissed -> onSnackbarDismissedAction.invoke()
+                        SnackbarResult.ActionPerformed -> onSnackbarPerformedAction.invoke(
+                            listItems)
                     }
                 }
             }
