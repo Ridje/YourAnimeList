@@ -12,7 +12,6 @@ class LoginWebViewClient(
     private val codeVerifier: String,
 ) : AccompanistWebViewClient() {
 
-
     override fun shouldOverrideUrlLoading(
         view: WebView?,
         request: WebResourceRequest?,

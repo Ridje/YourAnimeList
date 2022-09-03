@@ -19,6 +19,8 @@ interface LocalDataSource {
     fun getAnimeDetailedDataProducerFromCache(animeId: Int): Flow<AnimeDetailedDataPersistence?>
 
     suspend fun saveAnimeWithPersonalStatusToCache(status: AnimeStatus): Boolean
+    suspend fun deleteSyncData(): Boolean
+    suspend fun clearUserData(): Boolean
     suspend fun getAnimeDetailedData(animeId: Int): AnimePersistence
     suspend fun saveAnimeWithPersonalStatusToCache(statuses: List<AnimeStatus>): Boolean
     suspend fun updateUserCache(user: User)

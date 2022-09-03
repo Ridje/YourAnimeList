@@ -68,7 +68,7 @@ fun Anime?.asAnimeItemScreen(
             mean = this.mean ?: 0.0f,
             genres = this.genres.map { it.name },
             year = this.startSeason?.year ?: 0,
-            mediaType = this.mediaType?.uppercase() ?: "",
+            mediaType = this.mediaType ?: "",
             numEpisodes = this.numEpisodes ?: 0,
             airingStatus = this.airingStatus?.replace("_", " ") ?: "",
         )

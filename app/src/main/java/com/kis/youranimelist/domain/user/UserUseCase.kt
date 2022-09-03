@@ -1,6 +1,8 @@
 package com.kis.youranimelist.domain.user
 
+import android.webkit.CookieManager
 import com.kis.youranimelist.data.repository.user.UserRepository
+import com.kis.youranimelist.domain.auth.AuthUseCase
 import com.kis.youranimelist.domain.model.ResultWrapper
 import com.kis.youranimelist.domain.personalanimelist.PersonalAnimeListUseCase
 import com.kis.youranimelist.domain.rankinglist.model.Anime
@@ -12,6 +14,7 @@ import kotlinx.coroutines.flow.combine
 import javax.inject.Inject
 
 class UserUseCase @Inject constructor(
+    private val loginUseCase: AuthUseCase,
     private val userRepository: UserRepository,
     private val personalAnimeListUseCase: PersonalAnimeListUseCase,
 ) {
@@ -32,6 +35,14 @@ class UserUseCase @Inject constructor(
                 else -> resultWrapper
             }
         }
+    }
+
+    suspend fun logOut() {
+        loginUseCase.clearAuthData()
+        userRepository.clearUserProfile()
+        personalAnimeListUseCase.deletePersonalSyncData()
+        CookieManager.getInstance().removeAllCookies(null)
+        loginUseCase.onLogoutFinished()
     }
 }
 

@@ -11,6 +11,8 @@ import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.transform
 import javax.inject.Inject
 
+private const val FAVOURITE_ANIME_THRESHOLD = 7
+
 class PersonalAnimeListUseCase @Inject constructor(
     private val personalAnimeRepository: PersonalAnimeRepository,
 ) {
@@ -52,11 +54,15 @@ class PersonalAnimeListUseCase @Inject constructor(
         return personalAnimeRepository.saveAnimeStatus(newStatus)
     }
 
+    suspend fun deletePersonalSyncData() {
+        personalAnimeRepository.deleteSyncPersonalData()
+    }
+
     fun getRandomFavouriteAnimeProducer(): Flow<Anime?> {
         return personalAnimeRepository.getPersonalAnimeStatusesProducer()
             .take(1)
             .map {
-                it.filter { anime -> anime.score > 7 }.randomOrNull()?.anime
+                it.filter { anime -> anime.score > FAVOURITE_ANIME_THRESHOLD }.randomOrNull()?.anime
             }
     }
 }

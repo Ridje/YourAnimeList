@@ -34,6 +34,7 @@ object AppModule {
     }
 
     @Provides
+    @Singleton
     fun provideAuthUseCase(
         remoteDataSource: Lazy<RemoteDataSource>,
         appPreferences: AppPreferences,

@@ -22,6 +22,9 @@ interface SyncJobDao {
     @Query("DELETE FROM deferred_personal_anime_list_change WHERE deferred_personal_anime_list_change.anime_id = :animeId")
     fun deletePersonalAnimeListSyncJob(animeId: Int)
 
+    @Query("DELETE FROM deferred_personal_anime_list_change")
+    fun deleteAllSyncJobs()
+
     @Transaction
     fun deletePersonalAnimeListSyncJob(jobs: List<DeferredPersonalAnimeListChange>) {
         for (job in jobs) {
