@@ -7,6 +7,12 @@ import kotlinx.coroutines.flow.Flow
 
 interface AnimeRepository {
 
+    fun getRankingAnimeListProducer(
+        rankingType: AnimeRankType,
+        limit: Int?,
+        offset: Int?,
+    ): Flow<ResultWrapper<List<Anime>>>
+
     suspend fun refreshAnimeDetailedData(animeID: Int): Boolean
 
     suspend fun getRankingAnimeList(

@@ -12,7 +12,7 @@ import com.kis.youranimelist.domain.rankinglist.mapper.AnimeMapper
 import com.kis.youranimelist.domain.rankinglist.model.Anime
 import com.kis.youranimelist.ui.model.AnimeRankType
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
@@ -23,6 +23,27 @@ class AnimeRepositoryImpl(
     private val animeMapper: AnimeMapper,
     private val cache: AnimeRankingMemoryCache.Factory,
 ) : AnimeRepository {
+
+    override fun getRankingAnimeListProducer(
+        rankingType: AnimeRankType,
+        limit: Int?,
+        offset: Int?,
+    ): Flow<ResultWrapper<List<Anime>>> = flow {
+        cache.getOrCreate(rankingType).cache?.get(offset ?: 0)?.let { cachedResult ->
+            emit(ResultWrapper.Success(cachedResult))
+        }
+
+        val remoteResult = remoteDataSource
+            .getAnimeRankingList(rankingType.tag, limit, offset)
+            .asResult { from: RankingRootResponse -> from.data.map { animeMapper.map(it) } }
+            .also { remoteResult ->
+                if (remoteResult is ResultWrapper.Success) {
+                    cache.getOrCreate(rankingType).updateCache(offset ?: 0, remoteResult.data)
+                    remoteResult.data.forEach { localDataSource.saveAnimeToCache(it) }
+                }
+            }
+        emit(remoteResult)
+    }
 
     override suspend fun getRankingAnimeList(
         rankingType: AnimeRankType,
