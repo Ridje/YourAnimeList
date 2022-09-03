@@ -41,6 +41,7 @@ object ProfileScreenContract {
     interface ScreenEventsListener {
         fun onReloadClicked()
         fun onResetStateClicked()
+        fun onLogoutClick()
     }
 }
 

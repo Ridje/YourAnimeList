@@ -78,15 +78,23 @@ fun LoginScreen(
     }
     if (isWebViewVisible) {
         val codeVerifier = Pkce.generateCodeVerifier()
+
         val webViewState =
-            rememberWebViewState(url = "${Urls.oauthBaseUrl}authorize?response_type=code&client_id=${BuildConfig.CLIENT_ID}&code_challenge=${codeVerifier}")
+            rememberWebViewState(url = Urls.oauthBaseUrl +
+                    "authorize?response_type=code&client_id=" +
+                    BuildConfig.CLIENT_ID +
+                    "&code_challenge=" +
+                    codeVerifier
+            )
         WebView(
             state = webViewState,
             client = LoginWebViewClient(
                 onLoginSucceed,
                 codeVerifier,
             ),
-            onCreated = { it.settings.javaScriptEnabled = true }
+            onCreated = {
+                it.settings.javaScriptEnabled = true
+            }
         )
     } else {
         Column(

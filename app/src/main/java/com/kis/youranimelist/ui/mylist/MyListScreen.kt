@@ -372,5 +372,5 @@ fun DebouncedSearch(
     )
 }
 
-val Theme.NumberValues.roundedCardPercents: Int
+private val Theme.NumberValues.roundedCardPercents: Int
     get() = 10

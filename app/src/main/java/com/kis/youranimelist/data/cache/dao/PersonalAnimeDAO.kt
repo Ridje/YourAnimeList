@@ -1,6 +1,7 @@
 package com.kis.youranimelist.data.cache.dao
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -31,6 +32,9 @@ interface PersonalAnimeDAO {
 
     @Query("DELETE FROM anime_personal_status WHERE anime_id = :animeId")
     fun deletePersonalAnimeStatus(animeId: Int)
+
+    @Query("DELETE FROM anime_personal_status")
+    fun deleteAllPersonalStatuses()
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun addAnimeStatus(status: AnimeStatusPersistence)

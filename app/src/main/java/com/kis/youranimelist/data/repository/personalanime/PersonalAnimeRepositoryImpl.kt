@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 private const val TAG = "PersonalAnimeRepositoryImpl"
+private const val MAX_ITEMS_PER_REQUEST = 1000
 
 class PersonalAnimeRepositoryImpl @Inject constructor(
     private val remoteDataSource: RemoteDataSource,
@@ -44,6 +45,11 @@ class PersonalAnimeRepositoryImpl @Inject constructor(
         } catch (e: Exception) {
             Log.d(TAG, "Error during cache invalidation, error message: ${e.message}")
         }
+    }
+
+    override suspend fun deleteSyncPersonalData(): Boolean {
+        workManager.cancelUniqueWork(SyncWorkName)
+        return localDataSource.deleteSyncData()
     }
 
     override suspend fun deletePersonalAnimeStatus(animeId: Int): Boolean {
@@ -146,7 +152,6 @@ class PersonalAnimeRepositoryImpl @Inject constructor(
             }
         }
 
-
         for (job in syncJobs.filter { !it.key.deleted }) {
             val foundRemoteStatus = remoteList.find { it.anime.id == job.key.animeId }
             if (foundRemoteStatus == null || job.key.changeTimestamp > foundRemoteStatus.updatedAt) {
@@ -171,7 +176,6 @@ class PersonalAnimeRepositoryImpl @Inject constructor(
             })
         }
 
-
         val finishedJobs = syncJobs.filter { it.value }
         if (finishedJobs.isNotEmpty()) {
             localDataSource.removePersonalAnimeListSyncJob(finishedJobs.keys.toList())
@@ -191,7 +195,7 @@ class PersonalAnimeRepositoryImpl @Inject constructor(
         val fetchedData = mutableListOf<PersonalAnimeItemResponse>()
         var hasNext = true
         while (hasNext) {
-            when (val fetchedValue = fetchData(1000, 0)) {
+            when (val fetchedValue = fetchData(MAX_ITEMS_PER_REQUEST, 0)) {
                 is NetworkResponse.Error -> hasNext = false
                 is NetworkResponse.Success -> {
                     if (fetchedValue.body.paging.next.isNullOrBlank()) {

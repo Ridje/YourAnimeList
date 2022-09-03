@@ -1,6 +1,8 @@
 package com.kis.youranimelist.data.repository
 
 import androidx.room.Transaction
+import com.kis.youranimelist.core.utils.returnCatchingWithCancellation
+import com.kis.youranimelist.core.utils.runCatchingWithCancellation
 import com.kis.youranimelist.data.cache.UserDatabase
 import com.kis.youranimelist.data.cache.dao.AnimeDAO
 import com.kis.youranimelist.data.cache.dao.PersonalAnimeDAO
@@ -89,6 +91,25 @@ class LocalDataSourceImpl(
             }
             return@withContext true
         }
+
+    override suspend fun deleteSyncData(): Boolean {
+        return withContext(dispatchers.IO) {
+            returnCatchingWithCancellation {
+                database.runInTransaction {
+                    syncJobDao.deleteAllSyncJobs()
+                    personalAnimeDAO.deleteAllPersonalStatuses()
+                 }
+            }
+        }
+    }
+
+    override suspend fun clearUserData(): Boolean {
+        return withContext(dispatchers.IO) {
+            returnCatchingWithCancellation {
+                userDAO.clearUserData()
+            }
+        }
+    }
 
     override suspend fun getAnimeDetailedData(animeId: Int): AnimePersistence {
         return withContext(dispatchers.IO) {

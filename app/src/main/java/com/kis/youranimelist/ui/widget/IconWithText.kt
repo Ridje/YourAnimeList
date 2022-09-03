@@ -28,24 +28,43 @@ fun IconWithText(
     icon: Int,
     tint: Color = LocalContentColor.current.copy(alpha = LocalContentAlpha.current),
     space: Dp = 8.dp,
+    reversedOrder: Boolean = false,
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Icon(
-            painter = painterResource(id = icon),
-            contentDescription = stringResource(id = R.string.default_content_description),
-            modifier = Modifier.size(textStyle.fontSize.value.dp),
-            tint = tint,
-        )
-        Spacer(modifier = Modifier.width(space))
-        Text(
-            text = if (text?.isNotBlank() == true) {
-                text
-            } else {
-                stringResource(id = R.string.not_rated)
-            },
-            style = textStyle,
-        )
+        if (reversedOrder) {
+            Text(
+                text = if (text?.isNotBlank() == true) {
+                    text
+                } else {
+                    stringResource(id = R.string.not_rated)
+                },
+                style = textStyle,
+            )
+            Spacer(modifier = Modifier.width(space))
+            Icon(
+                painter = painterResource(id = icon),
+                contentDescription = stringResource(id = R.string.default_content_description),
+                modifier = Modifier.size(textStyle.fontSize.value.dp),
+                tint = tint,
+            )
+        } else {
+            Icon(
+                painter = painterResource(id = icon),
+                contentDescription = stringResource(id = R.string.default_content_description),
+                modifier = Modifier.size(textStyle.fontSize.value.dp),
+                tint = tint,
+            )
+            Spacer(modifier = Modifier.width(space))
+            Text(
+                text = if (text?.isNotBlank() == true) {
+                    text
+                } else {
+                    stringResource(id = R.string.not_rated)
+                },
+                style = textStyle,
+            )
+        }
     }
 }

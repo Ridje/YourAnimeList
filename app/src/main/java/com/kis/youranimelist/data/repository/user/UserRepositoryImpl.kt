@@ -33,4 +33,8 @@ class UserRepositoryImpl @Inject constructor(
             emit(remoteConvertedResult)
         }
     }
+
+    override suspend fun clearUserProfile(): Boolean {
+        return localDataSource.clearUserData()
+    }
 }

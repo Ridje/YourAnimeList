@@ -24,6 +24,7 @@ import com.google.accompanist.navigation.material.BottomSheetNavigator
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.ModalBottomSheetLayout
 import com.google.accompanist.navigation.material.bottomSheet
+import com.kis.youranimelist.ui.Theme
 import com.kis.youranimelist.ui.endlesslist.EndlessListScreenRoute
 import com.kis.youranimelist.ui.explore.ExploreScreenRoute
 import com.kis.youranimelist.ui.item.ItemScreenRoute
@@ -47,7 +48,9 @@ fun YourAnimeListNavHost(
         viewModel
             .navigateEffects
             .collectLatest {
-                navController.navigate(NavigationKeys.Route.LOGIN)
+                navController.navigate(NavigationKeys.Route.LOGIN) {
+                    popUpTo(0)
+                }
             }
     }
     ModalBottomSheetLayout(
@@ -66,17 +69,17 @@ fun YourAnimeListNavHost(
                 route = NavigationKeys.Route.SEARCH,
                 enterTransition = {
                     slideInHorizontally(
-                        animationSpec = tween(500),
+                        animationSpec = tween(Theme.NumberValues.screenTransitionTime),
                         initialOffsetX = { it }
                     )
                 },
-                exitTransition = { fadeOut(animationSpec = tween(700)) },
+                exitTransition = { fadeOut(animationSpec = tween(Theme.NumberValues.screenTransitionTime)) },
                 popEnterTransition = {
-                    fadeIn(animationSpec = tween(700))
+                    fadeIn(animationSpec = tween(Theme.NumberValues.screenTransitionTime))
                 },
                 popExitTransition = {
                     slideOutHorizontally(
-                        animationSpec = tween(500),
+                        animationSpec = tween(Theme.NumberValues.screenTransitionTime),
                         targetOffsetX = { it }
                     )
                 }
@@ -95,25 +98,25 @@ fun YourAnimeListNavHost(
                 ),
                 enterTransition = {
                     slideInVertically(
-                        animationSpec = tween(500),
+                        animationSpec = tween(Theme.NumberValues.screenTransitionTime),
                         initialOffsetY = { it }
                     )
                 },
                 exitTransition = {
                     slideOutVertically(
-                        animationSpec = tween(500),
+                        animationSpec = tween(Theme.NumberValues.screenTransitionTime),
                         targetOffsetY = { -it }
                     )
                 },
                 popEnterTransition = {
                     slideInVertically(
-                        animationSpec = tween(500),
+                        animationSpec = tween(Theme.NumberValues.screenTransitionTime),
                         initialOffsetY = { -it }
                     )
                 },
                 popExitTransition = {
                     slideOutVertically(
-                        animationSpec = tween(500),
+                        animationSpec = tween(Theme.NumberValues.screenTransitionTime),
                         targetOffsetY = { it }
                     )
                 },
@@ -145,4 +148,8 @@ fun YourAnimeListNavHost(
         }
     }
 }
+
+private val Theme.NumberValues.screenTransitionTime
+    get() = 500
+
 

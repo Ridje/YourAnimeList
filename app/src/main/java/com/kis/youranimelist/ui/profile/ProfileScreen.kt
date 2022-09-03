@@ -22,7 +22,10 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.AlertDialog
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.SnackbarDuration
@@ -31,6 +34,8 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,13 +44,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.kis.youranimelist.R
 import com.kis.youranimelist.core.utils.Urls.malProfile
+import com.kis.youranimelist.ui.Theme
 import com.kis.youranimelist.ui.navigation.NavigationKeys
 import com.kis.youranimelist.ui.widget.IconWithText
 import kotlinx.coroutines.launch
@@ -81,6 +89,7 @@ fun ProfileScreenRoute(
         },
         onSnackbarPerformedAction = listener::onReloadClicked,
         onSnackbarDismissedAction = listener::onResetStateClicked,
+        onLogoutClick = listener::onLogoutClick,
     )
 }
 
@@ -101,7 +110,9 @@ fun ProfileScreen(
     onImageClick: () -> Unit,
     onSnackbarPerformedAction: () -> Unit,
     onSnackbarDismissedAction: () -> Unit,
+    onLogoutClick: () -> Unit,
 ) {
+    val showExitDialog = remember { mutableStateOf(false) }
     if (isLoading) {
         Column(modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Center,
@@ -124,7 +135,6 @@ fun ProfileScreen(
         }
     } else {
         val uriHandler = LocalUriHandler.current
-
         Column(modifier = Modifier
             .fillMaxHeight()
             .verticalScroll(rememberScrollState())
@@ -134,34 +144,71 @@ fun ProfileScreen(
                 contentDescription = stringResource(id = R.string.default_content_description),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .aspectRatio(1.55f)
+                    .aspectRatio(Theme.NumberValues.profileBackgroundRatio)
                     .clickable { onImageClick.invoke() },
                 contentScale = ContentScale.Crop
             )
             Column(
                 modifier = Modifier
-                    .offset(y = (-80).dp)
+                    .offset(y = Theme.NumberValues.avatarOffset)
                     .padding(horizontal = 20.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(40.dp)
             ) {
+                if (showExitDialog.value) {
+                    AlertDialog(
+                        title = {
+                            Text(stringResource(R.string.logout))
+                        },
+                        text = {
+                            Text(text = stringResource(R.string.logout_dialog_description))
+                        },
+                        onDismissRequest = { showExitDialog.value = false },
+                        confirmButton = {
+                            TextButton(onClick = {
+                                showExitDialog.value = false
+                                onLogoutClick.invoke()
+                            }) {
+                                Text(stringResource(R.string.ok))
+                            }
+                        },
+                        dismissButton = {
+                            TextButton(onClick = {
+                                showExitDialog.value = false
+                            }) {
+                                Text(stringResource(R.string.cancel))
+                            }
+                        }
+                    )
+                }
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     AsyncImage(
                         model = pictureURL,
                         contentDescription = stringResource(id = R.string.default_content_description),
                         modifier = Modifier
-                            .height(130.dp)
-                            .clip(RoundedCornerShape(20))
+                            .height(Theme.NumberValues.avatarHeight)
+                            .clip(RoundedCornerShape(Theme.NumberValues.avatarCorner))
                             .background(MaterialTheme.colors.background)
                             .padding(start = 4.dp, end = 4.dp, top = 4.dp)
-                            .clip(RoundedCornerShape(20))
-                            .widthIn(max = 150.dp)
+                            .clip(RoundedCornerShape(Theme.NumberValues.avatarCorner))
+                            .widthIn(max = 300.dp)
                     )
-                    TextButton(onClick = { userName?.let { uriHandler.openUri("$malProfile/$userName") } }
-                    ) {
-                        Text(
-                            text = "${stringResource(id = R.string.link_to_user)}$userName",
-                            style = MaterialTheme.typography.h6)
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        TextButton(onClick = { userName?.let { uriHandler.openUri("$malProfile/$userName") } }
+                        ) {
+                            Text(
+                                text = "${stringResource(id = R.string.link_to_user)}$userName",
+                                style = MaterialTheme.typography.h6
+                            )
+                        }
+                        IconButton(onClick = { showExitDialog.value = true },
+                            modifier = Modifier.size(24.dp)) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_sign_out),
+                                contentDescription = stringResource(R.string.default_content_description),
+                                tint = MaterialTheme.colors.primary,
+                            )
+                        }
                     }
                     IconWithText(text = location,
                         textStyle = MaterialTheme.typography.body2,
@@ -194,7 +241,7 @@ fun ProfileScreen(
                             )
                         }
                     }
-                    Spacer(modifier = Modifier.weight(0.3f))
+                    Spacer(modifier = Modifier.weight(Theme.NumberValues.spacerWeight))
                     statisticsLegend?.let {
                         Column(
                             modifier = Modifier
@@ -258,5 +305,20 @@ fun ProfileScreen(
         }
     }
 }
+
+private val Theme.NumberValues.profileBackgroundRatio: Float
+    get() = 1.55f
+
+private val Theme.NumberValues.avatarOffset: Dp
+    get() = (-80).dp
+
+private val Theme.NumberValues.avatarHeight: Dp
+    get() = 150.dp
+
+private val Theme.NumberValues.avatarCorner: Int
+    get() = 20
+
+private val Theme.NumberValues.spacerWeight: Float
+    get() = 0.3f
 
 

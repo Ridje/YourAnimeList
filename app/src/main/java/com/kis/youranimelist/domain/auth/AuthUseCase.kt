@@ -13,9 +13,9 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import javax.inject.Inject
+import okhttp3.internal.http.HTTP_UNAUTHORIZED
 
-class AuthUseCase @Inject constructor(
+class AuthUseCase(
     private val remoteDataSource: Lazy<RemoteDataSource>,
     private val appPreferences: AppPreferences,
     private val authInterceptor: AuthInterceptor,
@@ -33,15 +33,21 @@ class AuthUseCase @Inject constructor(
         }
     }
 
+    fun onLogoutFinished() {
+        CoroutineScope(context = (Dispatchers.IO)).launch {
+            errorHappenedFlow.emit(NavigationKeys.Route.LOGIN)
+        }
+    }
+
     fun isAuthDataValid(): Boolean {
         return authInterceptor.authorizationValid()
     }
 
     fun onAuthError(errorCode: Int): Boolean {
-        if (errorCode == 401 && authInterceptor.refreshToken != null) {
+        if (errorCode == HTTP_UNAUTHORIZED && authInterceptor.refreshToken != null) {
             val requestTokenResult = runBlocking {
                 remoteDataSource.get().refreshAccessToken(authInterceptor.refreshToken
-                        ?: throw RuntimeException("refresh token was nulled by another Thread")
+                    ?: throw NullPointerException("Refresh token was nullified by another Thread")
                 )
             }
             if (requestTokenResult is ResultWrapper.Success) {
