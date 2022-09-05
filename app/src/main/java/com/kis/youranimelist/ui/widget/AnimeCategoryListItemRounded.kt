@@ -25,11 +25,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.kis.youranimelist.R
+import com.kis.youranimelist.ui.Theme.NumberValues.defaultImageRatio
 
 @Composable
 fun AnimeCategoryListItemRounded(
@@ -52,7 +52,7 @@ fun AnimeCategoryListItemRounded(
         if (showPlaceholder) {
             Box(modifier = Modifier
                 .width(size)
-                .aspectRatio(0.7f)
+                .aspectRatio(defaultImageRatio)
                 .clip(RoundedCornerShape(20.dp))
                 .background(color = Color.White.copy(alpha = 0.1f))
             ) {
@@ -65,7 +65,7 @@ fun AnimeCategoryListItemRounded(
         } else if (showError) {
             Box(modifier = Modifier
                 .width(size)
-                .aspectRatio(0.7f)
+                .aspectRatio(defaultImageRatio)
                 .clip(RoundedCornerShape(20.dp))
                 .background(color = Color.White.copy(alpha = 0.1f))
             ) {
@@ -80,14 +80,14 @@ fun AnimeCategoryListItemRounded(
                 contentDescription = null,
                 modifier = Modifier
                     .width(size)
-                    .aspectRatio(0.7f)
+                    .aspectRatio(defaultImageRatio)
                     .clip(RoundedCornerShape(20.dp)),
                 contentScale = ContentScale.Crop,
             )
         }
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = if (showError) "Error" else firstLine,
+            text = if (showError) stringResource(R.string.error) else firstLine,
             style = MaterialTheme.typography.body2,
             fontWeight = FontWeight.Bold,
             maxLines = maxLines,
@@ -101,16 +101,4 @@ fun AnimeCategoryListItemRounded(
             overflow = TextOverflow.Ellipsis
         )
     }
-}
-
-
-@Composable
-@Preview
-fun AnimeCategoryListItemRoundedPreview() {
-    AnimeCategoryListItemRounded(
-        null,
-        "Youkoso Jitsuryoku Shijou Shugi no Kyoushitsu e (TV) 2nd Season",
-        "1996 spring",
-    )
-    {}
 }

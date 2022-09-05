@@ -32,6 +32,5 @@ object Theme {
         const val fullUppercaseMediaTypeCharsThreshold = 3
         const val bottomBarHeightDp = 56
         const val bottomBarPaddingValueForLazyList = bottomBarHeightDp + 6
-        const val searchSurfaceHeightDp = 70
     }
 }

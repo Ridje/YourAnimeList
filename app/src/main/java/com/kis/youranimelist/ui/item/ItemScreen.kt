@@ -4,19 +4,23 @@ import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeightIn
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyRow
@@ -24,6 +28,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Chip
@@ -49,7 +54,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
@@ -114,23 +118,7 @@ fun ItemScreen(
         val pagerState = rememberPagerState()
         var openDialog by remember { mutableStateOf(false) }
         if (openDialog) {
-            val dialogPagerState = rememberPagerState(
-                initialPage = pagerState.currentPage
-            )
-            Dialog(onDismissRequest = { openDialog = false }, content = {
-                HorizontalPager(modifier = Modifier
-                    .wrapContentSize()
-                    .background(Color.Transparent),
-                    count = anime.images.size,
-                    state = dialogPagerState) { page ->
-                    AsyncImage(
-                        modifier = Modifier.fillMaxWidth(),
-                        model = anime.images[page],
-                        contentDescription = stringResource(id = R.string.default_content_description),
-                        contentScale = ContentScale.Fit,
-                    )
-                }
-            })
+            PicturesDialog(pagerState.currentPage, anime, { openDialog = false })
         }
         HorizontalPager(
             count = anime.images.size,
@@ -366,6 +354,53 @@ fun RecommendedItems(
         }
     }
 }
+
+@OptIn(ExperimentalPagerApi::class)
+@Composable
+fun PicturesDialog(
+    initialPage: Int,
+    anime: ItemScreenContract.AnimeItem,
+    onDialogDismissed: () -> Unit,
+) {
+    val dialogPagerState = rememberPagerState(initialPage = initialPage)
+    AlertDialog(
+        onDismissRequest = onDialogDismissed,
+        buttons = {
+            HorizontalPager(
+                modifier = Modifier
+                    .wrapContentSize(),
+                count = anime.images.size,
+                state = dialogPagerState,
+            ) { page ->
+                Box(modifier = Modifier
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null,
+                        onClick = onDialogDismissed
+                    )
+                    .fillMaxSize()
+                ) {
+                    AsyncImage(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .wrapContentHeight()
+                            .align(Alignment.Center)
+                            .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null,
+                            onClick = {}
+                        ),
+                        model = anime.images[page],
+                        contentDescription = stringResource(id = R.string.default_content_description),
+                        contentScale = ContentScale.FillWidth,
+                    )
+                }
+            }
+        },
+        backgroundColor = Color.Transparent,
+    )
+}
+
 
 private val Theme.NumberValues.itemMiddleFadeValue: Float
     get() = Theme.NumberValues.almostOpaque

@@ -94,10 +94,9 @@ fun YourAnimeListMainScreen() {
             )
         },
         scaffoldState = scaffoldState,
-    ) { paddingValues ->
+    ) {
         YourAnimeListNavHost(
             navController,
-            paddingValues,
             scaffoldState,
             bottomSheetNavigator,
         )
