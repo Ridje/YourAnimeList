@@ -8,7 +8,6 @@ While the workflow remains the same, Mob isn't just blindly following Reigen aro
     <string name="no_synopsis">No synopsis</string>
     <string name="reload">Try again?</string>
     <string name="error_during_download">Error during download!</string>
-    <string name="nsfw_settings_key">nsfw</string>
     <string name="watching_items">Watching (%1$s)</string>
     <string name="completed_item">Completed (%1$s)</string>
     <string name="on_hold_items">On hold (%1$s)</string>
@@ -43,6 +42,18 @@ While the workflow remains the same, Mob isn't just blindly following Reigen aro
     <string name="searching_in_list">Search in list</string>
     <string name="logout">Logout</string>
     <string name="logout_dialog_description">Are you sure you want to logout? All not synced data will be deleted and you will be forwarded to login screen.</string>
+    <string name="nsfw">nsfw</string>
+    <string name="nsfw_setting_description">Load etti, hentai and other mature content</string>
+    <string name="api">API</string>
+    <string name="other">Other</string>
+    <string name="github">Github</string>
+    <string name="github_description">Visit project\'s github</string>
+    <string name="contact_developer">Contact devs</string>
+    <string name="contact_developer_description">We\'re open to talk</string>
+    <string name="mal_abb">MAL</string>
+    <string name="mal_abb_description">Visit myanimelist.net</string>
+    <string name="profile">Profile</string>
+    <string name="logout_description">Logout and go to login screen</string>
 
     <string-array name="personal_list_statuses">
         <item>all</item>

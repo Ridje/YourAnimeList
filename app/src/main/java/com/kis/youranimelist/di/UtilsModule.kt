@@ -2,6 +2,7 @@ package com.kis.youranimelist.di
 
 import android.content.Context
 import com.kis.youranimelist.core.utils.AppPreferences
+import com.kis.youranimelist.core.utils.AppPreferencesWrapper
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -14,7 +15,7 @@ class UtilsModule {
 
     @Singleton
     @Provides
-    fun provideAppPreferences(@ApplicationContext context: Context): AppPreferences {
-        return AppPreferences(context)
+    fun provideAppPreferencesWrapper(@ApplicationContext context: Context): AppPreferencesWrapper {
+        return AppPreferencesWrapper(AppPreferences(context))
     }
 }

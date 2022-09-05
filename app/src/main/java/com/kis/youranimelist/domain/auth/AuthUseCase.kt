@@ -1,6 +1,7 @@
 package com.kis.youranimelist.domain.auth
 
-import com.kis.youranimelist.core.utils.AppPreferences
+import com.kis.youranimelist.core.utils.AppPreferencesWrapper
+import com.kis.youranimelist.core.utils.Setting
 import com.kis.youranimelist.data.network.AuthInterceptor
 import com.kis.youranimelist.data.network.model.TokenResponse
 import com.kis.youranimelist.data.repository.RemoteDataSource
@@ -17,7 +18,7 @@ import okhttp3.internal.http.HTTP_UNAUTHORIZED
 
 class AuthUseCase(
     private val remoteDataSource: Lazy<RemoteDataSource>,
-    private val appPreferences: AppPreferences,
+    private val appPreferences: AppPreferencesWrapper,
     private val authInterceptor: AuthInterceptor,
 ) {
     private val errorHappenedFlow = MutableSharedFlow<String>()
@@ -63,10 +64,10 @@ class AuthUseCase(
     }
 
     fun clearAuthData() {
-        appPreferences.removeSetting(AppPreferences.ACCESS_TOKEN_SETTING_KEY)
-        appPreferences.removeSetting(AppPreferences.REFRESH_TOKEN_SETTING_KEY)
-        appPreferences.removeSetting(AppPreferences.EXPIRES_IN_TOKEN_SETTING_KEY)
-        appPreferences.removeSetting(AppPreferences.TYPE_TOKEN_SETTING_KEY)
+        appPreferences.removeSetting(Setting.AccessToken)
+        appPreferences.removeSetting(Setting.RefreshToken)
+        appPreferences.removeSetting(Setting.ExpiresInToken)
+        appPreferences.removeSetting(Setting.TypeToken)
 
         authInterceptor.clearAuthorization()
     }
@@ -78,18 +79,18 @@ class AuthUseCase(
         tokenType: String? = null,
     ) {
         accessToken?.let {
-            appPreferences.writeString(AppPreferences.ACCESS_TOKEN_SETTING_KEY, accessToken)
+            appPreferences.writeValue(Setting.AccessToken, accessToken)
             authInterceptor.setAuthorization(accessToken = accessToken)
         }
         refreshToken?.let {
-            appPreferences.writeString(AppPreferences.REFRESH_TOKEN_SETTING_KEY, refreshToken)
+            appPreferences.writeValue(Setting.RefreshToken, refreshToken)
             authInterceptor.setAuthorization(refreshToken = refreshToken)
         }
         expiresIn?.let {
-            appPreferences.writeInt(AppPreferences.EXPIRES_IN_TOKEN_SETTING_KEY, expiresIn)
+            appPreferences.writeValue(Setting.ExpiresInToken, expiresIn)
         }
         tokenType?.let {
-            appPreferences.writeString(AppPreferences.TYPE_TOKEN_SETTING_KEY, tokenType)
+            appPreferences.writeValue(Setting.TypeToken, tokenType)
             authInterceptor.setAuthorization(tokenType = tokenType)
         }
     }

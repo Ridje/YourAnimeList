@@ -2,10 +2,12 @@ package com.kis.youranimelist.di
 
 import com.haroldadmin.cnradapter.NetworkResponseAdapterFactory
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
-import com.kis.youranimelist.core.utils.AppPreferences
+import com.kis.youranimelist.core.utils.AppPreferencesWrapper
+import com.kis.youranimelist.core.utils.Setting
 import com.kis.youranimelist.core.utils.Urls
 import com.kis.youranimelist.data.network.AuthInterceptor
 import com.kis.youranimelist.data.network.MALTokenAuthenticator
+import com.kis.youranimelist.data.network.NSFWInterceptor
 import com.kis.youranimelist.data.network.api.MyAnimeListAPI
 import com.kis.youranimelist.data.network.api.MyAnimeListOAuthAPI
 import com.kis.youranimelist.domain.auth.AuthUseCase
@@ -49,24 +51,34 @@ object NetworkModule {
     @Provides
     fun provideOkHTTPClient(
         authInterceptor: AuthInterceptor,
+        nsfwInterceptor: NSFWInterceptor,
         malTokenAuthenticator: MALTokenAuthenticator,
     ): OkHttpClient {
         return OkHttpClient.Builder()
             .authenticator(malTokenAuthenticator)
             .addInterceptor(authInterceptor)
+            .addInterceptor(nsfwInterceptor)
             .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
             .build()
     }
 
     @Singleton
     @Provides
-    fun provideAuthInterceptor(appPreferences: AppPreferences): AuthInterceptor {
+    fun provideAuthInterceptor(appPreferences: AppPreferencesWrapper): AuthInterceptor {
         return AuthInterceptor().apply {
             setAuthorization(
-                appPreferences.readString(AppPreferences.TYPE_TOKEN_SETTING_KEY),
-                appPreferences.readString(AppPreferences.ACCESS_TOKEN_SETTING_KEY),
-                appPreferences.readString(AppPreferences.REFRESH_TOKEN_SETTING_KEY)
+                appPreferences.readValue(Setting.TypeToken),
+                appPreferences.readValue(Setting.AccessToken),
+                appPreferences.readValue(Setting.RefreshToken)
             )
+        }
+    }
+
+    @Singleton
+    @Provides
+    fun provideNSFWInterceptor(appPreferencesWrapper: AppPreferencesWrapper): NSFWInterceptor {
+        return NSFWInterceptor(appPreferencesWrapper).apply {
+            this.nsfw.set(appPreferencesWrapper.readValue(Setting.NSFW))
         }
     }
 

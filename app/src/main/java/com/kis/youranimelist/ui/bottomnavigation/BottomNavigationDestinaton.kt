@@ -6,7 +6,7 @@ import com.kis.youranimelist.ui.navigation.NavigationKeys
 sealed class BottomNavigationDestinaton(
     val title: String?,
     val icon: Int,
-    var screen_route: String,
+    val screenRoute: String,
 ) {
     object Explore :
         BottomNavigationDestinaton(null, R.drawable.ic_explore, NavigationKeys.Route.EXPLORE)
@@ -16,4 +16,6 @@ sealed class BottomNavigationDestinaton(
 
     object MyList :
         BottomNavigationDestinaton(null, R.drawable.ic_list_ol, NavigationKeys.Route.MY_LIST)
+
+    object Settings: BottomNavigationDestinaton(null, R.drawable.ic_settings, NavigationKeys.Route.SETTINGS)
 }

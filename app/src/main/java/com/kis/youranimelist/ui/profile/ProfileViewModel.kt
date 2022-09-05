@@ -77,10 +77,4 @@ class ProfileViewModel @Inject constructor(
     override fun onResetStateClicked() {
         _screenState.value = _screenState.value.copy(isLoading = false, isError = false)
     }
-
-    override fun onLogoutClick() {
-        viewModelScope.launch {
-            userUseCase.logOut()
-        }
-    }
 }
