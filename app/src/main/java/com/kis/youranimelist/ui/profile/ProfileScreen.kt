@@ -18,14 +18,10 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.AlertDialog
 import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.SnackbarDuration
@@ -34,8 +30,6 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,7 +38,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -89,7 +82,6 @@ fun ProfileScreenRoute(
         },
         onSnackbarPerformedAction = listener::onReloadClicked,
         onSnackbarDismissedAction = listener::onResetStateClicked,
-        onLogoutClick = listener::onLogoutClick,
     )
 }
 
@@ -110,9 +102,7 @@ fun ProfileScreen(
     onImageClick: () -> Unit,
     onSnackbarPerformedAction: () -> Unit,
     onSnackbarDismissedAction: () -> Unit,
-    onLogoutClick: () -> Unit,
 ) {
-    val showExitDialog = remember { mutableStateOf(false) }
     if (isLoading) {
         Column(modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Center,
@@ -155,32 +145,6 @@ fun ProfileScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(40.dp)
             ) {
-                if (showExitDialog.value) {
-                    AlertDialog(
-                        title = {
-                            Text(stringResource(R.string.logout))
-                        },
-                        text = {
-                            Text(text = stringResource(R.string.logout_dialog_description))
-                        },
-                        onDismissRequest = { showExitDialog.value = false },
-                        confirmButton = {
-                            TextButton(onClick = {
-                                showExitDialog.value = false
-                                onLogoutClick.invoke()
-                            }) {
-                                Text(stringResource(R.string.ok))
-                            }
-                        },
-                        dismissButton = {
-                            TextButton(onClick = {
-                                showExitDialog.value = false
-                            }) {
-                                Text(stringResource(R.string.cancel))
-                            }
-                        }
-                    )
-                }
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     AsyncImage(
                         model = pictureURL,
@@ -191,24 +155,14 @@ fun ProfileScreen(
                             .background(MaterialTheme.colors.background)
                             .padding(start = 4.dp, end = 4.dp, top = 4.dp)
                             .clip(RoundedCornerShape(Theme.NumberValues.avatarCorner))
-                            .widthIn(max = 300.dp)
+                            .width(165.dp)
                     )
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        TextButton(onClick = { userName?.let { uriHandler.openUri("$malProfile/$userName") } }
-                        ) {
-                            Text(
-                                text = "${stringResource(id = R.string.link_to_user)}$userName",
-                                style = MaterialTheme.typography.h6
-                            )
-                        }
-                        IconButton(onClick = { showExitDialog.value = true },
-                            modifier = Modifier.size(24.dp)) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_sign_out),
-                                contentDescription = stringResource(R.string.default_content_description),
-                                tint = MaterialTheme.colors.primary,
-                            )
-                        }
+                    TextButton(onClick = { userName?.let { uriHandler.openUri("$malProfile/$userName") } }
+                    ) {
+                        Text(
+                            text = "${stringResource(id = R.string.link_to_user)}$userName",
+                            style = MaterialTheme.typography.h6
+                        )
                     }
                     IconWithText(text = location,
                         textStyle = MaterialTheme.typography.body2,
@@ -271,37 +225,44 @@ fun ProfileScreen(
                     }
                 }
                 bottomStatisticsData?.let { bottomStat ->
-                    Row(
-                        horizontalArrangement = Arrangement.SpaceAround,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Text(text = bottomStat.days ?: "",
-                                style = MaterialTheme.typography.subtitle2)
-                            Text(text = stringResource(id = R.string.days_spent),
-                                style = MaterialTheme.typography.subtitle2)
-                        }
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Text(text = bottomStat.episodes ?: "",
-                                style = MaterialTheme.typography.subtitle2)
-                            Text(text = stringResource(id = R.string.episodes_watched),
-                                style = MaterialTheme.typography.subtitle2)
-                        }
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Text(text = bottomStat.meanScore ?: "",
-                                style = MaterialTheme.typography.subtitle2)
-                            Text(text = stringResource(id = R.string.mean_score),
-                                style = MaterialTheme.typography.subtitle2)
-                        }
-                    }
+                    BottomStatisticsBlock(bottomStat = bottomStat)
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun BottomStatisticsBlock(
+    bottomStat: ProfileScreenContract.BottomStatisticsData,
+) {
+    Row(
+        horizontalArrangement = Arrangement.SpaceAround,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(text = bottomStat.days ?: "",
+                style = MaterialTheme.typography.subtitle2)
+            Text(text = stringResource(id = R.string.days_spent),
+                style = MaterialTheme.typography.subtitle2)
+        }
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(text = bottomStat.episodes ?: "",
+                style = MaterialTheme.typography.subtitle2)
+            Text(text = stringResource(id = R.string.episodes_watched),
+                style = MaterialTheme.typography.subtitle2)
+        }
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(text = bottomStat.meanScore ?: "",
+                style = MaterialTheme.typography.subtitle2)
+            Text(text = stringResource(id = R.string.mean_score),
+                style = MaterialTheme.typography.subtitle2)
         }
     }
 }

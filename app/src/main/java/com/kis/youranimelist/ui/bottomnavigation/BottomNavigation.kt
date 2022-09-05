@@ -1,5 +1,6 @@
 package com.kis.youranimelist.ui.bottomnavigation
 
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -17,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.kis.youranimelist.R
+import com.kis.youranimelist.ui.Theme
 
 
 @Composable
@@ -25,12 +27,13 @@ fun MainScreenBottomNavigation(
     navigationList: List<BottomNavigationDestinaton>,
 ) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
-    if (navigationList.map { it.screen_route }.contains(navBackStackEntry?.destination?.route)) {
+    if (navigationList.map { it.screenRoute }.contains(navBackStackEntry?.destination?.route)) {
         BottomNavigation(
             contentColor = Color.Black,
             modifier = Modifier
                 .padding(end = 40.dp, start = 40.dp, bottom = 6.dp, top = 6.dp)
                 .clip(RoundedCornerShape(30.dp))
+                .height(Theme.NumberValues.bottomBarHeightDp.dp)
         ) {
             val currentRoute = navBackStackEntry?.destination?.route
             navigationList.forEach { item ->
@@ -41,15 +44,18 @@ fun MainScreenBottomNavigation(
                             modifier = Modifier.size(26.dp))
                     },
                     selectedContentColor = Color.White,
-                    unselectedContentColor = Color.White.copy(0.5f),
+                    unselectedContentColor = Color.White.copy(Theme.NumberValues.unselectedBottomNavigationContentColor),
                     alwaysShowLabel = true,
-                    selected = currentRoute == item.screen_route,
+                    selected = currentRoute == item.screenRoute,
                     onClick = {
                         navController.popBackStack()
-                        navController.navigate(item.screen_route)
+                        navController.navigate(item.screenRoute)
                     }
                 )
             }
         }
     }
 }
+
+val Theme.NumberValues.unselectedBottomNavigationContentColor
+    get() = 0.5f

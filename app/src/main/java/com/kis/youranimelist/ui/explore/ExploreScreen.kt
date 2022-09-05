@@ -3,7 +3,6 @@ package com.kis.youranimelist.ui.explore
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -11,7 +10,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -25,7 +25,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.paging.LoadState
-import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
 import com.kis.youranimelist.ui.Theme
@@ -39,13 +38,11 @@ import me.onebone.toolbar.rememberCollapsingToolbarScaffoldState
 @Composable
 fun ExploreScreenRoute(
     navController: NavController,
-    paddingValues: PaddingValues,
     viewModel: ExploreViewModel = hiltViewModel(),
 ) {
     val screenState = viewModel.screenState.collectAsState()
     ExploreScreen(
         animeCategories = screenState.value.categories,
-        paddingValues = paddingValues,
         onItemClick = { animeId: Int -> navController.navigate(NavigationKeys.Route.EXPLORE + "/$animeId") },
         onRankingListClick = { rankType: String, navScreen: ExploreScreenContract.EndlessListNavType ->
             val navigateTo = when (navScreen) {
@@ -61,7 +58,6 @@ fun ExploreScreenRoute(
 @Composable
 fun ExploreScreen(
     animeCategories: List<ExploreScreenContract.AnimeCategory>,
-    paddingValues: PaddingValues,
     onItemClick: (Int) -> Unit,
     onRankingListClick: (String, ExploreScreenContract.EndlessListNavType) -> Unit,
     onSearchClick: () -> Unit,
@@ -71,8 +67,8 @@ fun ExploreScreen(
         toolbar = { SearchAnimeToolbar(onSearchClick = onSearchClick) },
         modifier = Modifier,
         scrollStrategy = ScrollStrategy.EnterAlwaysCollapsed) {
-        LazyColumn {
-            items(animeCategories) { category ->
+        LazyColumn(contentPadding = PaddingValues(bottom = Theme.NumberValues.bottomBarPaddingValueForLazyList.dp)) {
+            itemsIndexed(animeCategories) { index, category ->
                 Row(horizontalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier.fillMaxWidth()) {
                     Text(text = category.category.title,
@@ -90,79 +86,79 @@ fun ExploreScreen(
                         )
                     }
                 }
-                ExploreScreenCarousel(
-                    lazyItems = category.pagingDataFlow.collectAsLazyPagingItems(),
-                    onItemClick = onItemClick
-                )
-            }
-            item {
-                Spacer(modifier = Modifier.height(paddingValues.calculateBottomPadding()))
-            }
-        }
-    }
-}
-
-@Composable
-fun ExploreScreenCarousel(
-    lazyItems: LazyPagingItems<ExploreScreenContract.AnimeCategoryItem>,
-    onItemClick: (Int) -> Unit,
-) {
-    LazyRow(modifier = Modifier
-        .wrapContentHeight()
-        .height(280.dp),
-        contentPadding = PaddingValues(horizontal = 6.dp, vertical = 0.dp)
-    ) {
-        when (lazyItems.loadState.refresh) {
-            is LoadState.Loading -> {
-                items(Theme.NumberValues.previewItemsInCarousel) {
-                    AnimeCategoryListItemRounded(
-                        cover = null,
-                        firstLine = "Loading",
-                        secondLine = "",
-                        showPlaceholder = true,
-                        showError = false,
-                    ) {}
-                    Divider(
-                        color = Color.Transparent,
-                        modifier = Modifier
-                            .width(16.dp)
-                    )
-                }
-            }
-            is LoadState.Error -> {
-                items(Theme.NumberValues.previewItemsInCarousel) {
-                    AnimeCategoryListItemRounded(
-                        cover = null,
-                        firstLine = "Error",
-                        secondLine = "",
-                        showPlaceholder = false,
-                        showError = true,
-                    ) {}
-                    Divider(
-                        color = Color.Transparent,
-                        modifier = Modifier
-                            .width(16.dp)
-                    )
-                }
-            }
-            else -> {
-                items(lazyItems) { animeItem ->
-                    AnimeCategoryListItemRounded(
-                        cover = animeItem?.pictureUrl,
-                        firstLine = animeItem?.title ?: "",
-                        secondLine = "${animeItem?.year ?: ""} ${animeItem?.season ?: ""}",
-                        showPlaceholder = false,
-                        showError = false,
-                    ) {
-                        animeItem?.let { clickedAnime ->
-                            onItemClick.invoke(clickedAnime.id)
+                val listState = rememberLazyListState()
+                val lazyItems = category.pagingDataFlow.collectAsLazyPagingItems()
+                when (lazyItems.loadState.refresh) {
+                    is LoadState.Loading -> {
+                        LazyRow(modifier = Modifier
+                            .wrapContentHeight()
+                            .height(280.dp),
+                            contentPadding = PaddingValues(horizontal = 6.dp, vertical = 0.dp)) {
+                            items(Theme.NumberValues.previewItemsInCarousel) {
+                                AnimeCategoryListItemRounded(
+                                    cover = null,
+                                    firstLine = "Loading",
+                                    secondLine = "",
+                                    showPlaceholder = true,
+                                    showError = false,
+                                ) {}
+                                Divider(
+                                    color = Color.Transparent,
+                                    modifier = Modifier
+                                        .width(16.dp)
+                                )
+                            }
                         }
                     }
-                    Divider(
-                        color = Color.Transparent,
-                        modifier = Modifier
-                            .width(16.dp)
-                    )
+                    is LoadState.Error -> {
+                        LazyRow(modifier = Modifier
+                            .wrapContentHeight()
+                            .height(280.dp),
+                            contentPadding = PaddingValues(horizontal = 6.dp, vertical = 0.dp)) {
+                            items(Theme.NumberValues.previewItemsInCarousel) {
+                                AnimeCategoryListItemRounded(
+                                    cover = null,
+                                    firstLine = "Error",
+                                    secondLine = "",
+                                    showPlaceholder = false,
+                                    showError = true,
+                                ) {}
+                                Divider(
+                                    color = Color.Transparent,
+                                    modifier = Modifier
+                                        .width(16.dp)
+                                )
+                            }
+                        }
+                    }
+                    else -> {
+                        LazyRow(
+                            modifier = Modifier
+                                .wrapContentHeight()
+                                .height(280.dp),
+                            contentPadding = PaddingValues(horizontal = 6.dp, vertical = 0.dp),
+                            state = listState,
+                        ) {
+                            items(lazyItems) { animeItem ->
+                                AnimeCategoryListItemRounded(
+                                    cover = animeItem?.pictureUrl,
+                                    firstLine = animeItem?.title ?: "",
+                                    secondLine = "${animeItem?.year ?: ""} ${animeItem?.season ?: ""}",
+                                    showPlaceholder = false,
+                                    showError = false,
+                                ) {
+                                    animeItem?.let { clickedAnime ->
+                                        onItemClick.invoke(clickedAnime.id)
+                                    }
+                                }
+                                Divider(
+                                    color = Color.Transparent,
+                                    modifier = Modifier
+                                        .width(16.dp)
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }

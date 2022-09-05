@@ -3,7 +3,7 @@ package com.kis.youranimelist.di
 import android.content.Context
 import com.kis.youranimelist.core.ResourceProvider
 import com.kis.youranimelist.core.ResourceProviderImpl
-import com.kis.youranimelist.core.utils.AppPreferences
+import com.kis.youranimelist.core.utils.AppPreferencesWrapper
 import com.kis.youranimelist.data.network.AuthInterceptor
 import com.kis.youranimelist.data.repository.RemoteDataSource
 import com.kis.youranimelist.domain.auth.AuthUseCase
@@ -37,7 +37,7 @@ object AppModule {
     @Singleton
     fun provideAuthUseCase(
         remoteDataSource: Lazy<RemoteDataSource>,
-        appPreferences: AppPreferences,
+        appPreferences: AppPreferencesWrapper,
         authInterceptor: AuthInterceptor,
     ): AuthUseCase {
         return AuthUseCase(remoteDataSource, appPreferences, authInterceptor)

@@ -17,7 +17,7 @@ class LoginWebViewClient(
         request: WebResourceRequest?,
     ): Boolean {
         request?.let {
-            if ((it.url.host + request.url.path) == Urls.appRedirectUrl) {
+            if (("${it.url.scheme}://${it.url.host}${request.url.path}") == Urls.appRedirectUrl) {
                 it.url.getQueryParameter(CODE_FIELD)?.let { token ->
                     redirectCallback.invoke(
                         token,

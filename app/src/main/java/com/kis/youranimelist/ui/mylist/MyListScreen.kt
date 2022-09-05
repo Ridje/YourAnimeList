@@ -85,7 +85,6 @@ import kotlinx.coroutines.launch
 @Composable
 fun MyListScreenRoute(
     navController: NavController,
-    paddingValues: PaddingValues = PaddingValues(0.dp),
     scaffoldState: ScaffoldState,
     viewModel: MyListViewModel = hiltViewModel(),
 ) {
@@ -107,7 +106,6 @@ fun MyListScreenRoute(
         },
         tabs = screenState.value.tabs,
         currentTab = screenState.value.currentTab,
-        paddingValues = paddingValues,
         onSwipeRefresh = screenEventsListener::onSwipeRefresh,
         onTabClicked = screenEventsListener::onTabClicked,
         onItemClicked = { itemId: Int -> navController.navigate(NavigationKeys.Route.EXPLORE + "/$itemId") },
@@ -128,7 +126,6 @@ fun MyListScreen(
     listItems: List<MyListScreenContract.Item>,
     tabs: List<String>,
     currentTab: Int,
-    paddingValues: PaddingValues = PaddingValues(0.dp),
     onSwipeRefresh: () -> Unit,
     onTabClicked: (Int) -> Unit,
     onItemClicked: (Int) -> Unit,
@@ -195,7 +192,8 @@ fun MyListScreen(
                     LazyColumn(contentPadding = PaddingValues(start = 8.dp,
                         end = 8.dp,
                         top = 8.dp,
-                        bottom = 0.dp), modifier = Modifier.fillMaxHeight()) {
+                        bottom = Theme.NumberValues.bottomBarPaddingValueForLazyList.dp),
+                        modifier = Modifier.fillMaxHeight()) {
                         items(
                             items = listItems,
                             key = { it.id }
@@ -298,9 +296,6 @@ fun MyListScreen(
                                     .width(16.dp)
                                     .height(8.dp)
                             )
-                        }
-                        item {
-                            Spacer(modifier = Modifier.height(paddingValues.calculateBottomPadding()))
                         }
                     }
                 }

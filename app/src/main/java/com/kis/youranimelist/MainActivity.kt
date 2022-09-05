@@ -29,9 +29,6 @@ import com.kis.youranimelist.ui.bottomnavigation.BottomNavigationDestinaton
 import com.kis.youranimelist.ui.bottomnavigation.MainScreenBottomNavigation
 import com.kis.youranimelist.ui.navigation.YourAnimeListNavHost
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -52,13 +49,14 @@ fun YourAnimeListTheme(
 ) {
     MaterialTheme(
         colors = colors.copy(
-            surface = Theme.Colors.background,
+            surface = Theme.Colors.surface,
             background = Theme.Colors.background,
             onPrimary = Theme.Colors.onPrimary,
             onBackground = Theme.Colors.onPrimary,
             primary = Theme.Colors.primary,
             onSurface = Theme.Colors.onSurface,
             secondary = Theme.Colors.secondary,
+            secondaryVariant = Theme.Colors.secondaryVariant,
         ),
         typography = typography,
         shapes = shapes,
@@ -74,7 +72,7 @@ fun YourAnimeListMainScreen() {
     val scaffoldState = rememberScaffoldState()
     val systemUiController = rememberSystemUiController()
 
-    val systemUiColor = colors.surface
+    val systemUiColor = colors.background
 
     LaunchedEffect(systemUiController) {
         systemUiController.setSystemBarsColor(
@@ -91,6 +89,7 @@ fun YourAnimeListMainScreen() {
                     BottomNavigationDestinaton.Explore,
                     BottomNavigationDestinaton.MyList,
                     BottomNavigationDestinaton.Profile,
+                    BottomNavigationDestinaton.Settings
                 )
             )
         },

@@ -10,7 +10,6 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material.ScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -34,13 +33,13 @@ import com.kis.youranimelist.ui.login.LoginScreenRoute
 import com.kis.youranimelist.ui.mylist.MyListScreenRoute
 import com.kis.youranimelist.ui.profile.ProfileScreenRoute
 import com.kis.youranimelist.ui.search.SearchScreenRoute
+import com.kis.youranimelist.ui.settings.SettingsScreenRoute
 import kotlinx.coroutines.flow.collectLatest
 
 @OptIn(ExperimentalMaterialNavigationApi::class)
 @Composable
 fun YourAnimeListNavHost(
     navController: NavHostController,
-    paddingValues: PaddingValues,
     scaffoldState: ScaffoldState,
     bottomSheetNavigator: BottomSheetNavigator,
     viewModel: NavigationViewModel = hiltViewModel(),
@@ -90,7 +89,7 @@ fun YourAnimeListNavHost(
             composable(
                 route = NavigationKeys.Route.EXPLORE,
             ) {
-                ExploreScreenRoute(navController = navController, paddingValues = paddingValues)
+                ExploreScreenRoute(navController = navController)
             }
             composable(
                 route = "${NavigationKeys.Route.EXPLORE}/{${NavigationKeys.Argument.ANIME_ID}}",
@@ -125,9 +124,10 @@ fun YourAnimeListNavHost(
                 ItemScreenRoute(navController)
             }
             composable(route = NavigationKeys.Route.MY_LIST) {
-                MyListScreenRoute(navController = navController,
-                    paddingValues = paddingValues,
-                    scaffoldState = scaffoldState)
+                MyListScreenRoute(
+                    navController = navController,
+                    scaffoldState = scaffoldState
+                )
             }
             bottomSheet(route = "${NavigationKeys.Route.MY_LIST}/{${NavigationKeys.Argument.ANIME_ID}}",
                 arguments = listOf(
@@ -137,6 +137,9 @@ fun YourAnimeListNavHost(
             }
             composable(route = NavigationKeys.Route.PROFILE) {
                 ProfileScreenRoute(navController = navController, scaffoldState = scaffoldState)
+            }
+            composable(route = NavigationKeys.Route.SETTINGS) {
+                SettingsScreenRoute(scaffoldState = scaffoldState)
             }
             composable(
                 route = "${NavigationKeys.Route.RANKING_LIST}/{${NavigationKeys.Argument.RANK}}",
