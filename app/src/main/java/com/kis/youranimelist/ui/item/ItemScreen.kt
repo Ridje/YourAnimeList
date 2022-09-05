@@ -6,12 +6,14 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -361,33 +363,41 @@ fun PicturesDialog(
     onDialogDismissed: () -> Unit,
 ) {
     val dialogPagerState = rememberPagerState(initialPage = initialPage)
-    AlertDialog(onDismissRequest = onDialogDismissed,
+    AlertDialog(
+        onDismissRequest = onDialogDismissed,
         buttons = {
             HorizontalPager(
                 modifier = Modifier
-                    .wrapContentSize()
-                    .background(Color.Transparent),
+                    .wrapContentSize(),
                 count = anime.images.size,
                 state = dialogPagerState,
             ) { page ->
-                AsyncImage(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .wrapContentHeight(),
-                    model = anime.images[page],
-                    contentDescription = stringResource(id = R.string.default_content_description),
-                    contentScale = ContentScale.FillWidth,
-                )
+                Box(modifier = Modifier
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null,
+                        onClick = onDialogDismissed
+                    )
+                    .fillMaxSize()
+                ) {
+                    AsyncImage(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .wrapContentHeight()
+                            .align(Alignment.Center)
+                            .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null,
+                            onClick = {}
+                        ),
+                        model = anime.images[page],
+                        contentDescription = stringResource(id = R.string.default_content_description),
+                        contentScale = ContentScale.FillWidth,
+                    )
+                }
             }
         },
         backgroundColor = Color.Transparent,
-        modifier = Modifier
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null,
-                onClick = onDialogDismissed
-            )
-            .wrapContentHeight()
     )
 }
 
