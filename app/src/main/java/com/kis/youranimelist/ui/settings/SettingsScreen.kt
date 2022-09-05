@@ -5,7 +5,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -102,7 +104,7 @@ fun SettingsScreen(
                 onValueChange = onNsfwCheckedChange,
                 icon = R.drawable.ic_rated_r
             )
-            Divider(thickness = 2.dp)
+            SettingCategoryDivider()
             Category(title = stringResource(R.string.other))
             ClickableMenu(title = stringResource(R.string.github).lowercase()
                 .replaceFirstChar { it.uppercase() },
@@ -121,7 +123,7 @@ fun SettingsScreen(
                 onClick = { uriHandler.openUri(Urls.malLink) },
                 icon = R.drawable.ic_myanimelist,
             )
-            Divider(thickness = 2.dp)
+            SettingCategoryDivider()
             Category(title = stringResource(R.string.profile))
             ClickableMenu(title = stringResource(R.string.logout).lowercase()
                 .replaceFirstChar { it.uppercase() },
@@ -180,6 +182,13 @@ fun SwitcherSetting(
         ))
     }
 }
+
+@Composable
+fun SettingCategoryDivider() {
+    Spacer(modifier = Modifier.height(12.dp))
+    Divider(thickness = 2.dp)
+}
+
 
 @Composable
 fun ClickableMenu(
