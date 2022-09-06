@@ -1,21 +1,29 @@
 package com.kis.youranimelist.data.cache.dao
 
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import com.kis.youranimelist.data.cache.model.UserPersistence
-import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface UserDAO {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun addUserData(user: UserPersistence)
 
+    @Transaction
+    fun addUserDataKeepSingle(user: UserPersistence) {
+        keepOneUserInDb(user.id)
+        addUserData(user)
+    }
+
+    @Query("DELETE FROM user WHERE user.id != :userId")
+    fun keepOneUserInDb(userId: Int)
+
     @Query("DELETE FROM user")
     fun clearUserData()
 
-    @Query("SELECT * FROM user LIMIT 1")
+    @Query("SELECT * FROM user")
     fun getUserData(): UserPersistence?
 }

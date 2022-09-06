@@ -1,17 +1,14 @@
 package com.kis.youranimelist.data.repository
 
-import androidx.room.Transaction
 import com.kis.youranimelist.core.utils.returnCatchingWithCancellation
-import com.kis.youranimelist.core.utils.runCatchingWithCancellation
 import com.kis.youranimelist.data.cache.UserDatabase
 import com.kis.youranimelist.data.cache.dao.AnimeDAO
 import com.kis.youranimelist.data.cache.dao.PersonalAnimeDAO
 import com.kis.youranimelist.data.cache.dao.SideDAO
 import com.kis.youranimelist.data.cache.dao.SyncJobDao
-import com.kis.youranimelist.data.cache.dao.UserDAO
+import com.kis.youranimelist.data.cache.localdatasource.UserLocalDataSource
 import com.kis.youranimelist.data.cache.model.GenrePersistence
 import com.kis.youranimelist.data.cache.model.PicturePersistence
-import com.kis.youranimelist.data.cache.model.UserPersistence
 import com.kis.youranimelist.data.cache.model.anime.AnimeDetailedDataPersistence
 import com.kis.youranimelist.data.cache.model.anime.AnimeGenrePersistence
 import com.kis.youranimelist.data.cache.model.anime.AnimePersistence
@@ -22,16 +19,16 @@ import com.kis.youranimelist.data.cache.model.personalanime.AnimePersonalStatusP
 import com.kis.youranimelist.data.cache.model.personalanime.AnimeStatusPersistence
 import com.kis.youranimelist.data.cache.model.personalanime.PersonalStatusOfAnimePersistence
 import com.kis.youranimelist.data.cache.model.syncjob.DeferredPersonalAnimeListChange
+import com.kis.youranimelist.di.Dispatcher
+import com.kis.youranimelist.di.YALDispatchers
 import com.kis.youranimelist.domain.personalanimelist.model.AnimeStatus
 import com.kis.youranimelist.domain.rankinglist.model.Anime
 import com.kis.youranimelist.domain.rankinglist.model.Genre
 import com.kis.youranimelist.domain.rankinglist.model.Picture
 import com.kis.youranimelist.domain.rankinglist.model.RecommendedAnime
 import com.kis.youranimelist.domain.rankinglist.model.RelatedAnime
-import com.kis.youranimelist.domain.user.mapper.UserMapper
-import com.kis.youranimelist.domain.user.model.User
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 
@@ -39,14 +36,14 @@ class LocalDataSourceImpl(
     private val database: UserDatabase,
     private val personalAnimeDAO: PersonalAnimeDAO,
     private val animeDAO: AnimeDAO,
-    private val userDAO: UserDAO,
+    private val userLocalDataSource: UserLocalDataSource,
     private val sideDAO: SideDAO,
     private val syncJobDao: SyncJobDao,
-    private val dispatchers: Dispatchers,
-) : LocalDataSource {
+    @Dispatcher(YALDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
+) : LocalDataSource, UserLocalDataSource by userLocalDataSource {
 
     override suspend fun saveAnimeWithPersonalStatusToCache(status: AnimeStatus) =
-        withContext(dispatchers.IO) {
+        withContext(ioDispatcher) {
             try {
                 saveAnimeToCache(status.anime)
                 val statusCache = AnimeStatusPersistence(status.status.presentIndex)
@@ -69,9 +66,8 @@ class LocalDataSourceImpl(
             return@withContext true
         }
 
-    @Transaction
     override suspend fun saveAnimeWithPersonalStatusToCache(statuses: List<AnimeStatus>) =
-        withContext(dispatchers.IO) {
+        withContext(ioDispatcher) {
             for (status in statuses) {
 
                 saveAnimeToCache(status.anime)
@@ -93,32 +89,24 @@ class LocalDataSourceImpl(
         }
 
     override suspend fun deleteSyncData(): Boolean {
-        return withContext(dispatchers.IO) {
+        return withContext(ioDispatcher) {
             returnCatchingWithCancellation {
                 database.runInTransaction {
                     syncJobDao.deleteAllSyncJobs()
                     personalAnimeDAO.deleteAllPersonalStatuses()
-                 }
-            }
-        }
-    }
-
-    override suspend fun clearUserData(): Boolean {
-        return withContext(dispatchers.IO) {
-            returnCatchingWithCancellation {
-                userDAO.clearUserData()
+                }
             }
         }
     }
 
     override suspend fun getAnimeDetailedData(animeId: Int): AnimePersistence {
-        return withContext(dispatchers.IO) {
+        return withContext(ioDispatcher) {
             return@withContext animeDAO.getAnimeDetailedData(animeId)
         }
     }
 
     override suspend fun savePersonalAnimeStatusToCache(status: AnimePersonalStatusPersistence): Boolean {
-        return withContext(dispatchers.IO) {
+        return withContext(ioDispatcher) {
             database.runInTransaction {
                 status.statusId?.let { personalStatusValue ->
                     personalAnimeDAO.addAnimeStatus(
@@ -139,14 +127,14 @@ class LocalDataSourceImpl(
     }
 
     override suspend fun mergePersonalAnimeStatusToCache(status: AnimePersonalStatusPersistence): Boolean {
-        withContext(dispatchers.IO) {
+        withContext(ioDispatcher) {
             personalAnimeDAO.mergeAnimePersonalStatus(status)
         }
         return true
     }
 
     override suspend fun getAnimeMainPicture(pictureId: Long): PicturePersistence? {
-        return withContext(dispatchers.IO) {
+        return withContext(ioDispatcher) {
             try {
                 return@withContext sideDAO.getAnimeMainPictureById(pictureId = pictureId)
             } catch (e: Exception) {
@@ -160,27 +148,27 @@ class LocalDataSourceImpl(
     }
 
     override suspend fun getPersonalAnimeListSyncJobs(): List<DeferredPersonalAnimeListChange> {
-        return withContext(dispatchers.IO) {
+        return withContext(ioDispatcher) {
             syncJobDao.getPersonalAnimeListSyncJobs()
         }
     }
 
     override suspend fun removePersonalAnimeListSyncJob(deferredJob: List<DeferredPersonalAnimeListChange>): Boolean {
-        return withContext(dispatchers.IO) {
+        return withContext(ioDispatcher) {
             syncJobDao.deletePersonalAnimeListSyncJob(deferredJob)
             true
         }
     }
 
     override suspend fun removePersonalAnimeListSyncJob(animeId: Int): Boolean {
-        return withContext(dispatchers.IO) {
+        return withContext(ioDispatcher) {
             syncJobDao.deletePersonalAnimeListSyncJob(animeId)
             true
         }
     }
 
     override suspend fun getAnimePersonalStatus(animeId: Int): AnimePersonalStatusPersistence? {
-        return withContext(dispatchers.IO) {
+        return withContext(ioDispatcher) {
             personalAnimeDAO.getAnimePersonalStatus(animeId)
         }
     }
@@ -197,37 +185,8 @@ class LocalDataSourceImpl(
         return animeDAO.getAnimeByIdObservable(animeId)
     }
 
-    override suspend fun updateUserCache(user: User) = withContext(dispatchers.IO) {
-        userDAO.clearUserData()
-        userDAO.addUserData(
-            UserPersistence(
-                id = user.id,
-                name = user.name,
-                gender = user.gender,
-                birthday = user.birthday?.let { UserMapper.bdayFormat.format(it) },
-                location = user.location,
-                joinedAt = user.joinedAt?.let { UserMapper.format.format(it) },
-                itemsWatching = user.userAnimeStatistic?.itemsWatching,
-                itemsCompleted = user.userAnimeStatistic?.itemsCompleted,
-                itemsOnHold = user.userAnimeStatistic?.itemsOnHold,
-                itemsDropped = user.userAnimeStatistic?.itemsDropped,
-                itemsPlanToWatch = user.userAnimeStatistic?.itemsPlanToWatch,
-                items = user.userAnimeStatistic?.items,
-                daysWatched = user.userAnimeStatistic?.daysWatched,
-                daysWatching = user.userAnimeStatistic?.daysWatching,
-                daysCompleted = user.userAnimeStatistic?.daysCompleted,
-                daysOnHold = user.userAnimeStatistic?.daysOnHold,
-                daysDropped = user.userAnimeStatistic?.daysDropped,
-                days = user.userAnimeStatistic?.days,
-                episodes = user.userAnimeStatistic?.episodes,
-                meanScore = user.userAnimeStatistic?.meanScore,
-                picture = user.picture,
-            )
-        )
-    }
-
     override suspend fun deleteAnimePersonalStatusFromCache(animeId: Int): Boolean {
-        return withContext(dispatchers.IO) {
+        return withContext(ioDispatcher) {
             database.runInTransaction {
                 personalAnimeDAO.deletePersonalAnimeStatus(animeId)
                 syncJobDao.addPersonalAnimeListSyncJob(
@@ -244,7 +203,7 @@ class LocalDataSourceImpl(
     }
 
     override suspend fun saveAnimeToCache(anime: Anime): Boolean {
-        return withContext(dispatchers.IO) {
+        return withContext(ioDispatcher) {
             try {
                 val startSeasonId = anime.startSeason?.let { startSeason ->
                     return@let sideDAO.getSeasonByYearAndSeason(startSeason.year,
@@ -310,7 +269,7 @@ class LocalDataSourceImpl(
     }
 
     suspend fun saveAnimeGenres(anime: Anime, genres: List<Genre>) =
-        withContext(dispatchers.IO) {
+        withContext(ioDispatcher) {
             for (genre in genres) {
                 sideDAO.addGenre(GenrePersistence(
                     genre.id,
@@ -325,7 +284,7 @@ class LocalDataSourceImpl(
         }
 
     suspend fun saveAnimePictures(anime: Anime, pictures: List<Picture>) =
-        withContext(dispatchers.IO) {
+        withContext(ioDispatcher) {
             sideDAO.replaceAnimePictures(
                 anime.id, pictures.map {
                     PicturePersistence(
@@ -339,7 +298,7 @@ class LocalDataSourceImpl(
         }
 
     suspend fun saveRelatedAnime(anime: Anime, relatedAnimeList: List<RelatedAnime>) =
-        withContext(dispatchers.IO) {
+        withContext(ioDispatcher) {
             for (relatedAnime in relatedAnimeList) {
                 if (!animeDAO.isAnimeRecordExist(relatedAnime.anime.id)) {
                     saveAnimeToCache(relatedAnime.anime)
@@ -356,7 +315,7 @@ class LocalDataSourceImpl(
         }
 
     suspend fun saveRecommendedAnime(anime: Anime, recommendedAnimeList: List<RecommendedAnime>) =
-        withContext(dispatchers.IO) {
+        withContext(ioDispatcher) {
             for (recommendedAnime in recommendedAnimeList) {
                 if (!animeDAO.isAnimeRecordExist(recommendedAnime.anime.id)) {
                     saveAnimeToCache(recommendedAnime.anime)
@@ -370,15 +329,4 @@ class LocalDataSourceImpl(
                 )
             }
         }
-
-    override suspend fun getUserCache(): UserPersistence? = withContext(dispatchers.IO) {
-        try {
-            userDAO.getUserData()
-        } catch (e: Exception) {
-            if (e is CancellationException) {
-                throw e
-            }
-            null
-        }
-    }
 }

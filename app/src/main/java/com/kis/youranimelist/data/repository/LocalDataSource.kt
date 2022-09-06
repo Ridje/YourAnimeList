@@ -1,7 +1,7 @@
 package com.kis.youranimelist.data.repository
 
+import com.kis.youranimelist.data.cache.localdatasource.UserLocalDataSource
 import com.kis.youranimelist.data.cache.model.PicturePersistence
-import com.kis.youranimelist.data.cache.model.UserPersistence
 import com.kis.youranimelist.data.cache.model.anime.AnimeDetailedDataPersistence
 import com.kis.youranimelist.data.cache.model.anime.AnimePersistence
 import com.kis.youranimelist.data.cache.model.personalanime.AnimePersonalStatusPersistence
@@ -9,10 +9,9 @@ import com.kis.youranimelist.data.cache.model.personalanime.PersonalStatusOfAnim
 import com.kis.youranimelist.data.cache.model.syncjob.DeferredPersonalAnimeListChange
 import com.kis.youranimelist.domain.personalanimelist.model.AnimeStatus
 import com.kis.youranimelist.domain.rankinglist.model.Anime
-import com.kis.youranimelist.domain.user.model.User
 import kotlinx.coroutines.flow.Flow
 
-interface LocalDataSource {
+interface LocalDataSource : UserLocalDataSource {
 
     fun getAnimeWithStatusProducerFromCache(): Flow<List<PersonalStatusOfAnimePersistence>>
     fun getAnimeWithStatusProducerFromCache(id: Int): Flow<PersonalStatusOfAnimePersistence?>
@@ -20,11 +19,8 @@ interface LocalDataSource {
 
     suspend fun saveAnimeWithPersonalStatusToCache(status: AnimeStatus): Boolean
     suspend fun deleteSyncData(): Boolean
-    suspend fun clearUserData(): Boolean
     suspend fun getAnimeDetailedData(animeId: Int): AnimePersistence
     suspend fun saveAnimeWithPersonalStatusToCache(statuses: List<AnimeStatus>): Boolean
-    suspend fun updateUserCache(user: User)
-    suspend fun getUserCache(): UserPersistence?
     suspend fun savePersonalAnimeStatusToCache(status: AnimePersonalStatusPersistence): Boolean
     suspend fun mergePersonalAnimeStatusToCache(status: AnimePersonalStatusPersistence): Boolean
     suspend fun deleteAnimePersonalStatusFromCache(animeId: Int): Boolean

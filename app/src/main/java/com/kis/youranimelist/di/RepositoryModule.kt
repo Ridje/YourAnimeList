@@ -8,7 +8,7 @@ import com.kis.youranimelist.data.cache.dao.AnimeDAO
 import com.kis.youranimelist.data.cache.dao.PersonalAnimeDAO
 import com.kis.youranimelist.data.cache.dao.SideDAO
 import com.kis.youranimelist.data.cache.dao.SyncJobDao
-import com.kis.youranimelist.data.cache.dao.UserDAO
+import com.kis.youranimelist.data.cache.localdatasource.UserLocalDataSource
 import com.kis.youranimelist.data.network.api.MyAnimeListAPI
 import com.kis.youranimelist.data.network.api.MyAnimeListOAuthAPI
 import com.kis.youranimelist.data.network.model.rankingresponse.RankingRootResponse
@@ -39,11 +39,11 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineDispatcher
 import javax.inject.Qualifier
 import javax.inject.Singleton
 
-@Module
+@Module(includes = [RepositoryBindsModule::class])
 @InstallIn(SingletonComponent::class)
 object RepositoryModule {
 
@@ -140,9 +140,9 @@ object RepositoryModule {
     fun provideRemoteDataSource(
         malService: MyAnimeListAPI,
         malOauthService: MyAnimeListOAuthAPI,
-        dispatchers: Dispatchers,
+        @Dispatcher(YALDispatchers.IO) ioDispatcher: CoroutineDispatcher,
     ): RemoteDataSource {
-        return RemoteDataSourceImpl(malService, malOauthService, dispatchers)
+        return RemoteDataSourceImpl(malService, malOauthService, ioDispatcher)
     }
 
 
@@ -152,18 +152,18 @@ object RepositoryModule {
         database: UserDatabase,
         animeDAO: AnimeDAO,
         personalAnimeDAO: PersonalAnimeDAO,
-        userDAO: UserDAO,
+        userLocalDataSource: UserLocalDataSource,
         sideDAO: SideDAO,
         syncJobDao: SyncJobDao,
-        dispatchers: Dispatchers,
+        @Dispatcher(YALDispatchers.IO) ioDispatcher: CoroutineDispatcher,
     ): LocalDataSource {
         return LocalDataSourceImpl(database,
             personalAnimeDAO,
             animeDAO,
-            userDAO,
+            userLocalDataSource,
             sideDAO,
             syncJobDao,
-            dispatchers)
+            ioDispatcher)
     }
 
     @Singleton
@@ -180,12 +180,6 @@ object RepositoryModule {
             animeStatusMapper,
             workManager
         )
-    }
-
-    @Singleton
-    @Provides
-    fun provideCoroutineDispatchers(): Dispatchers {
-        return Dispatchers
     }
 
     @Singleton

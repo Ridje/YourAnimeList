@@ -9,16 +9,18 @@ import com.kis.youranimelist.data.network.model.TokenResponse
 import com.kis.youranimelist.data.network.model.UserResponse
 import com.kis.youranimelist.data.network.model.personallist.AnimeStatusResponse
 import com.kis.youranimelist.data.network.model.personallist.PersonalAnimeListResponse
-import com.kis.youranimelist.data.network.model.suggestingresponse.SuggestingRootResponse
+import com.kis.youranimelist.di.Dispatcher
+import com.kis.youranimelist.di.YALDispatchers
 import com.kis.youranimelist.domain.model.ResultWrapper
 import com.kis.youranimelist.domain.model.asResult
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 class RemoteDataSourceImpl(
     private val malService: MyAnimeListAPI,
     private val malOauthService: MyAnimeListOAuthAPI,
-    private val dispatchers: Dispatchers,
+    @Dispatcher(YALDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
 ) : RemoteDataSource {
 
     companion object {
@@ -37,14 +39,14 @@ class RemoteDataSourceImpl(
         rankingType: String,
         limit: Int?,
         offset: Int?,
-    ) = withContext(dispatchers.IO) {
+    ) = withContext(ioDispatcher) {
         return@withContext malService.animeRanking(rankingType, limit, offset, ANIME_FIELDS)
     }
 
     override suspend fun getAnimeSuggestingList(
         limit: Int?,
         offset: Int?,
-    ) = withContext(dispatchers.IO) {
+    ) = withContext(ioDispatcher) {
         return@withContext malService.animeSuggestions(limit, offset, ANIME_FIELDS)
     }
 
@@ -57,7 +59,7 @@ class RemoteDataSourceImpl(
     }
 
     override suspend fun getAnimeInfo(animeID: Int): NetworkResponse<AnimeResponse, ErrorResponse> {
-        return withContext(dispatchers.IO) { malService.animeDetails(animeID, ANIME_FIELDS) }
+        return withContext(ioDispatcher) { malService.animeDetails(animeID, ANIME_FIELDS) }
     }
 
     override suspend fun getAccessToken(
@@ -84,14 +86,12 @@ class RemoteDataSourceImpl(
         limit: Int,
         offset: Int,
     ): NetworkResponse<PersonalAnimeListResponse, ErrorResponse> {
-        return withContext(dispatchers.IO) {
-
+        return withContext(ioDispatcher) {
             malService.userAnime(status, sort, limit, offset, USER_ANIME_FIELDS)
-
         }
     }
 
-    override suspend fun deletePersonalAnimeStatus(animeId: Int) = withContext(dispatchers.IO) {
+    override suspend fun deletePersonalAnimeStatus(animeId: Int) = withContext(ioDispatcher) {
         malService.deleteUserAnimeStatus(animeId)
     }
 
@@ -101,12 +101,12 @@ class RemoteDataSourceImpl(
         score: Int?,
         episodesWatched: Int?,
     ): NetworkResponse<AnimeStatusResponse, ErrorResponse> {
-        return withContext(dispatchers.IO) {
+        return withContext(ioDispatcher) {
             malService.updateUserAnime(animeId, status, score, episodesWatched)
         }
     }
 
     override suspend fun getPersonalAnimeStatus(animeId: Int): NetworkResponse<AnimeStatusResponse, ErrorResponse> {
-        return withContext(dispatchers.IO) { malService.getUserAnimeStatus(animeId) }
+        return withContext(ioDispatcher) { malService.getUserAnimeStatus(animeId) }
     }
 }

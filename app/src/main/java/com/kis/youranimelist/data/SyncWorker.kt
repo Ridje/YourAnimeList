@@ -15,9 +15,11 @@ import androidx.work.OutOfQuotaPolicy
 import androidx.work.WorkerParameters
 import com.kis.youranimelist.R
 import com.kis.youranimelist.data.repository.personalanime.PersonalAnimeRepository
+import com.kis.youranimelist.di.Dispatcher
+import com.kis.youranimelist.di.YALDispatchers
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 
 private const val SYNC_NOTIFICATION_ID = 0
@@ -28,14 +30,14 @@ class SyncWorker @AssistedInject constructor(
     @Assisted applicationContext: Context,
     @Assisted workerParams: WorkerParameters,
     private val personalAnimeRepository: PersonalAnimeRepository,
-    private val dispatchers: Dispatchers,
+    @Dispatcher(YALDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
 ) : CoroutineWorker(applicationContext, workerParams) {
 
     override suspend fun getForegroundInfo(): ForegroundInfo =
         applicationContext.syncForegroundInfo()
 
     override suspend fun doWork(): Result {
-        val result = withContext(dispatchers.IO) {
+        val result = withContext(ioDispatcher) {
             personalAnimeRepository.synchronize()
         }
         return if (result) Result.success() else Result.retry()
