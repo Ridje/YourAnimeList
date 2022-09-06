@@ -5,6 +5,7 @@ import com.kis.youranimelist.data.repository.RemoteDataSource
 import com.kis.youranimelist.domain.model.ResultWrapper
 import com.kis.youranimelist.domain.model.asResult
 import com.kis.youranimelist.domain.user.mapper.UserMapper
+import com.kis.youranimelist.domain.user.mapper.asUserPersistence
 import com.kis.youranimelist.domain.user.model.User
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -18,14 +19,18 @@ class UserRepositoryImpl @Inject constructor(
 
     override fun getUser(): Flow<ResultWrapper<User>> {
         return flow {
-            val cacheData = localDataSource.getUserCache()
-            if (cacheData != null) { emit(ResultWrapper.Success(userMapper.map(cacheData))) }
+            val cacheData = localDataSource.getUserData()
+            if (cacheData != null) {
+                emit(ResultWrapper.Success(userMapper.map(cacheData)))
+            }
 
             val remoteConvertedResult = remoteDataSource
                 .getUserData()
                 .asResult { response -> userMapper.map(response) }
             if (remoteConvertedResult is ResultWrapper.Success) {
-                localDataSource.updateUserCache(remoteConvertedResult.data)
+                localDataSource.updateUserData(
+                    remoteConvertedResult.data.asUserPersistence()
+                )
             }
             if (remoteConvertedResult is ResultWrapper.Error && cacheData != null) {
                 return@flow
