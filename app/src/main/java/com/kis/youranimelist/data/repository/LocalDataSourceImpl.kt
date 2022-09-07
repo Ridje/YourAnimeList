@@ -4,8 +4,8 @@ import com.kis.youranimelist.core.utils.returnCatchingWithCancellation
 import com.kis.youranimelist.data.cache.UserDatabase
 import com.kis.youranimelist.data.cache.dao.AnimeDAO
 import com.kis.youranimelist.data.cache.dao.PersonalAnimeDAO
-import com.kis.youranimelist.data.cache.dao.SideDAO
 import com.kis.youranimelist.data.cache.dao.SyncJobDao
+import com.kis.youranimelist.data.cache.localdatasource.SideLocalDataSource
 import com.kis.youranimelist.data.cache.localdatasource.UserLocalDataSource
 import com.kis.youranimelist.data.cache.model.GenrePersistence
 import com.kis.youranimelist.data.cache.model.PicturePersistence
@@ -14,7 +14,6 @@ import com.kis.youranimelist.data.cache.model.anime.AnimeGenrePersistence
 import com.kis.youranimelist.data.cache.model.anime.AnimePersistence
 import com.kis.youranimelist.data.cache.model.anime.RecommendedAnimePersistence
 import com.kis.youranimelist.data.cache.model.anime.RelatedAnimePersistence
-import com.kis.youranimelist.data.cache.model.anime.SeasonPersistence
 import com.kis.youranimelist.data.cache.model.personalanime.AnimePersonalStatusPersistence
 import com.kis.youranimelist.data.cache.model.personalanime.AnimeStatusPersistence
 import com.kis.youranimelist.data.cache.model.personalanime.PersonalStatusOfAnimePersistence
@@ -24,7 +23,6 @@ import com.kis.youranimelist.di.YALDispatchers
 import com.kis.youranimelist.domain.personalanimelist.model.AnimeStatus
 import com.kis.youranimelist.domain.rankinglist.model.Anime
 import com.kis.youranimelist.domain.rankinglist.model.Genre
-import com.kis.youranimelist.domain.rankinglist.model.Picture
 import com.kis.youranimelist.domain.rankinglist.model.RecommendedAnime
 import com.kis.youranimelist.domain.rankinglist.model.RelatedAnime
 import kotlinx.coroutines.CancellationException
@@ -37,10 +35,11 @@ class LocalDataSourceImpl(
     private val personalAnimeDAO: PersonalAnimeDAO,
     private val animeDAO: AnimeDAO,
     private val userLocalDataSource: UserLocalDataSource,
-    private val sideDAO: SideDAO,
+    private val sideLocalDataSource: SideLocalDataSource,
     private val syncJobDao: SyncJobDao,
     @Dispatcher(YALDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
-) : LocalDataSource, UserLocalDataSource by userLocalDataSource {
+) : LocalDataSource, UserLocalDataSource by userLocalDataSource,
+    SideLocalDataSource by sideLocalDataSource {
 
     override suspend fun saveAnimeWithPersonalStatusToCache(status: AnimeStatus) =
         withContext(ioDispatcher) {
@@ -80,7 +79,6 @@ class LocalDataSourceImpl(
                     animeId = status.anime.id,
                     updatedAt = status.updatedAt,
                 )
-
 
                 personalAnimeDAO.addAnimeStatus(statusCache)
                 personalAnimeDAO.mergeAnimePersonalStatus(personalAnimeStatus)
@@ -133,19 +131,6 @@ class LocalDataSourceImpl(
         return true
     }
 
-    override suspend fun getAnimeMainPicture(pictureId: Long): PicturePersistence? {
-        return withContext(ioDispatcher) {
-            try {
-                return@withContext sideDAO.getAnimeMainPictureById(pictureId = pictureId)
-            } catch (e: Exception) {
-                if (e is CancellationException) {
-                    throw e
-                }
-                return@withContext null
-            }
-
-        }
-    }
 
     override suspend fun getPersonalAnimeListSyncJobs(): List<DeferredPersonalAnimeListChange> {
         return withContext(ioDispatcher) {
@@ -205,28 +190,19 @@ class LocalDataSourceImpl(
     override suspend fun saveAnimeToCache(anime: Anime): Boolean {
         return withContext(ioDispatcher) {
             try {
-                val startSeasonId = anime.startSeason?.let { startSeason ->
-                    return@let sideDAO.getSeasonByYearAndSeason(startSeason.year,
-                        startSeason.season)?.id
-                        ?: sideDAO.addSeason(
-                            SeasonPersistence(
-                                0,
-                                anime.startSeason.year,
-                                anime.startSeason.season,
-                            )
-                        )
-                }
+                val startSeasonId = sideLocalDataSource.getOrCreateSeason(
+                    anime.startSeason?.year,
+                    anime.startSeason?.season
+                )?.id
 
-                val mainPictureId = anime.picture?.let { picture ->
-                    return@let sideDAO.addPicture(
-                        PicturePersistence(
-                            sideDAO.getAnimeMainPictureByAnimeId(anime.id)?.id ?: 0,
-                            null,
-                            picture.large,
-                            picture.medium
-                        )
+                val mainPictureId = sideLocalDataSource.saveAnimeMainPicture(anime.id,
+                    PicturePersistence(
+                        0,
+                        null,
+                        anime.picture?.large,
+                        anime.picture?.medium
                     )
-                }
+                )
 
                 animeDAO.addAnime(
                     AnimePersistence(
@@ -251,7 +227,17 @@ class LocalDataSourceImpl(
                 }
 
                 if (anime.pictures.isNotEmpty()) {
-                    saveAnimePictures(anime, anime.pictures)
+                    saveAnimePictures(
+                        animeId = anime.id,
+                        pictures = anime.pictures.map {
+                            PicturePersistence(
+                                0,
+                                anime.id,
+                                it.large,
+                                it.medium,
+                            )
+                        }
+                    )
                 }
 
                 if (anime.genres.isNotEmpty()) {
@@ -270,31 +256,14 @@ class LocalDataSourceImpl(
 
     suspend fun saveAnimeGenres(anime: Anime, genres: List<Genre>) =
         withContext(ioDispatcher) {
+            sideLocalDataSource.saveGenres(genres.map { GenrePersistence(it.id, it.name) })
             for (genre in genres) {
-                sideDAO.addGenre(GenrePersistence(
-                    genre.id,
-                    genre.name)
-                )
                 animeDAO.addAnimeGenre(
                     AnimeGenrePersistence(
                         anime.id, genre.id
                     )
                 )
             }
-        }
-
-    suspend fun saveAnimePictures(anime: Anime, pictures: List<Picture>) =
-        withContext(ioDispatcher) {
-            sideDAO.replaceAnimePictures(
-                anime.id, pictures.map {
-                    PicturePersistence(
-                        0,
-                        anime.id,
-                        it.large,
-                        it.medium,
-                    )
-                }
-            )
         }
 
     suspend fun saveRelatedAnime(anime: Anime, relatedAnimeList: List<RelatedAnime>) =
