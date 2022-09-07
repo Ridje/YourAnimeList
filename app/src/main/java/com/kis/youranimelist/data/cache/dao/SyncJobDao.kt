@@ -5,13 +5,15 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import androidx.room.Transaction
 import com.kis.youranimelist.data.cache.model.syncjob.DeferredPersonalAnimeListChange
 
 @Dao
 interface SyncJobDao {
     @Query("SELECT * FROM deferred_personal_anime_list_change")
     fun getPersonalAnimeListSyncJobs(): List<DeferredPersonalAnimeListChange>
+
+    @Query("SELECT * FROM deferred_personal_anime_list_change WHERE anime_id = :animeId")
+    fun getPersonalAnimeListSyncJob(animeId: Int): DeferredPersonalAnimeListChange
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun addPersonalAnimeListSyncJob(job: DeferredPersonalAnimeListChange)
@@ -25,10 +27,6 @@ interface SyncJobDao {
     @Query("DELETE FROM deferred_personal_anime_list_change")
     fun deleteAllSyncJobs()
 
-    @Transaction
-    fun deletePersonalAnimeListSyncJob(jobs: List<DeferredPersonalAnimeListChange>) {
-        for (job in jobs) {
-            deletePersonalAnimeListSyncJob(job)
-        }
-    }
+    @Delete
+    fun deletePersonalAnimeListSyncJob(jobs: List<DeferredPersonalAnimeListChange>)
 }

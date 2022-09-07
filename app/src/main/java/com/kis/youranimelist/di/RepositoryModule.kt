@@ -6,8 +6,8 @@ import com.kis.youranimelist.data.cache.AnimeRankingMemoryCache
 import com.kis.youranimelist.data.cache.UserDatabase
 import com.kis.youranimelist.data.cache.dao.AnimeDAO
 import com.kis.youranimelist.data.cache.dao.PersonalAnimeDAO
-import com.kis.youranimelist.data.cache.dao.SyncJobDao
 import com.kis.youranimelist.data.cache.localdatasource.SideLocalDataSource
+import com.kis.youranimelist.data.cache.localdatasource.SyncJobLocalDataSource
 import com.kis.youranimelist.data.cache.localdatasource.UserLocalDataSource
 import com.kis.youranimelist.data.network.api.MyAnimeListAPI
 import com.kis.youranimelist.data.network.api.MyAnimeListOAuthAPI
@@ -154,7 +154,7 @@ object RepositoryModule {
         personalAnimeDAO: PersonalAnimeDAO,
         userLocalDataSource: UserLocalDataSource,
         sideLocalDataSource: SideLocalDataSource,
-        syncJobDao: SyncJobDao,
+        syncJobLocalDataSource: SyncJobLocalDataSource,
         @Dispatcher(YALDispatchers.IO) ioDispatcher: CoroutineDispatcher,
     ): LocalDataSource {
         return LocalDataSourceImpl(database,
@@ -162,7 +162,7 @@ object RepositoryModule {
             animeDAO,
             userLocalDataSource,
             sideLocalDataSource,
-            syncJobDao,
+            syncJobLocalDataSource,
             ioDispatcher)
     }
 

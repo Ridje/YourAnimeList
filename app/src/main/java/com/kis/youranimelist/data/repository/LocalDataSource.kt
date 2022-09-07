@@ -1,17 +1,17 @@
 package com.kis.youranimelist.data.repository
 
 import com.kis.youranimelist.data.cache.localdatasource.SideLocalDataSource
+import com.kis.youranimelist.data.cache.localdatasource.SyncJobLocalDataSource
 import com.kis.youranimelist.data.cache.localdatasource.UserLocalDataSource
 import com.kis.youranimelist.data.cache.model.anime.AnimeDetailedDataPersistence
 import com.kis.youranimelist.data.cache.model.anime.AnimePersistence
 import com.kis.youranimelist.data.cache.model.personalanime.AnimePersonalStatusPersistence
 import com.kis.youranimelist.data.cache.model.personalanime.PersonalStatusOfAnimePersistence
-import com.kis.youranimelist.data.cache.model.syncjob.DeferredPersonalAnimeListChange
 import com.kis.youranimelist.domain.personalanimelist.model.AnimeStatus
 import com.kis.youranimelist.domain.rankinglist.model.Anime
 import kotlinx.coroutines.flow.Flow
 
-interface LocalDataSource : UserLocalDataSource, SideLocalDataSource {
+interface LocalDataSource : UserLocalDataSource, SideLocalDataSource, SyncJobLocalDataSource {
 
     fun getAnimeWithStatusProducerFromCache(): Flow<List<PersonalStatusOfAnimePersistence>>
     fun getAnimeWithStatusProducerFromCache(id: Int): Flow<PersonalStatusOfAnimePersistence?>
@@ -25,8 +25,5 @@ interface LocalDataSource : UserLocalDataSource, SideLocalDataSource {
     suspend fun mergePersonalAnimeStatusToCache(status: AnimePersonalStatusPersistence): Boolean
     suspend fun deleteAnimePersonalStatusFromCache(animeId: Int): Boolean
     suspend fun saveAnimeToCache(anime: Anime): Boolean
-    suspend fun getPersonalAnimeListSyncJobs(): List<DeferredPersonalAnimeListChange>
-    suspend fun removePersonalAnimeListSyncJob(deferredJob: List<DeferredPersonalAnimeListChange>): Boolean
-    suspend fun removePersonalAnimeListSyncJob(animeId: Int): Boolean
     suspend fun getAnimePersonalStatus(animeId: Int): AnimePersonalStatusPersistence?
 }

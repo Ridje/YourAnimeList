@@ -1,11 +1,12 @@
 package com.kis.youranimelist.data.repository
 
+import androidx.room.withTransaction
 import com.kis.youranimelist.core.utils.returnCatchingWithCancellation
 import com.kis.youranimelist.data.cache.UserDatabase
 import com.kis.youranimelist.data.cache.dao.AnimeDAO
 import com.kis.youranimelist.data.cache.dao.PersonalAnimeDAO
-import com.kis.youranimelist.data.cache.dao.SyncJobDao
 import com.kis.youranimelist.data.cache.localdatasource.SideLocalDataSource
+import com.kis.youranimelist.data.cache.localdatasource.SyncJobLocalDataSource
 import com.kis.youranimelist.data.cache.localdatasource.UserLocalDataSource
 import com.kis.youranimelist.data.cache.model.GenrePersistence
 import com.kis.youranimelist.data.cache.model.PicturePersistence
@@ -36,10 +37,12 @@ class LocalDataSourceImpl(
     private val animeDAO: AnimeDAO,
     private val userLocalDataSource: UserLocalDataSource,
     private val sideLocalDataSource: SideLocalDataSource,
-    private val syncJobDao: SyncJobDao,
+    private val syncJobLocalDataSource: SyncJobLocalDataSource,
     @Dispatcher(YALDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
-) : LocalDataSource, UserLocalDataSource by userLocalDataSource,
-    SideLocalDataSource by sideLocalDataSource {
+) : LocalDataSource,
+    UserLocalDataSource by userLocalDataSource,
+    SideLocalDataSource by sideLocalDataSource,
+    SyncJobLocalDataSource by syncJobLocalDataSource {
 
     override suspend fun saveAnimeWithPersonalStatusToCache(status: AnimeStatus) =
         withContext(ioDispatcher) {
@@ -89,8 +92,8 @@ class LocalDataSourceImpl(
     override suspend fun deleteSyncData(): Boolean {
         return withContext(ioDispatcher) {
             returnCatchingWithCancellation {
-                database.runInTransaction {
-                    syncJobDao.deleteAllSyncJobs()
+                database.withTransaction {
+                    syncJobLocalDataSource.deleteAllSyncJobs()
                     personalAnimeDAO.deleteAllPersonalStatuses()
                 }
             }
@@ -105,13 +108,13 @@ class LocalDataSourceImpl(
 
     override suspend fun savePersonalAnimeStatusToCache(status: AnimePersonalStatusPersistence): Boolean {
         return withContext(ioDispatcher) {
-            database.runInTransaction {
+            database.withTransaction {
                 status.statusId?.let { personalStatusValue ->
                     personalAnimeDAO.addAnimeStatus(
                         AnimeStatusPersistence(personalStatusValue))
                 }
                 personalAnimeDAO.addPersonalAnimeStatus(status)
-                syncJobDao.addPersonalAnimeListSyncJob(
+                syncJobLocalDataSource.addPersonalAnimeListSyncJob(
                     DeferredPersonalAnimeListChange(
                         status.animeId,
                         false,
@@ -129,27 +132,6 @@ class LocalDataSourceImpl(
             personalAnimeDAO.mergeAnimePersonalStatus(status)
         }
         return true
-    }
-
-
-    override suspend fun getPersonalAnimeListSyncJobs(): List<DeferredPersonalAnimeListChange> {
-        return withContext(ioDispatcher) {
-            syncJobDao.getPersonalAnimeListSyncJobs()
-        }
-    }
-
-    override suspend fun removePersonalAnimeListSyncJob(deferredJob: List<DeferredPersonalAnimeListChange>): Boolean {
-        return withContext(ioDispatcher) {
-            syncJobDao.deletePersonalAnimeListSyncJob(deferredJob)
-            true
-        }
-    }
-
-    override suspend fun removePersonalAnimeListSyncJob(animeId: Int): Boolean {
-        return withContext(ioDispatcher) {
-            syncJobDao.deletePersonalAnimeListSyncJob(animeId)
-            true
-        }
     }
 
     override suspend fun getAnimePersonalStatus(animeId: Int): AnimePersonalStatusPersistence? {
@@ -172,9 +154,9 @@ class LocalDataSourceImpl(
 
     override suspend fun deleteAnimePersonalStatusFromCache(animeId: Int): Boolean {
         return withContext(ioDispatcher) {
-            database.runInTransaction {
+            database.withTransaction {
                 personalAnimeDAO.deletePersonalAnimeStatus(animeId)
-                syncJobDao.addPersonalAnimeListSyncJob(
+                syncJobLocalDataSource.addPersonalAnimeListSyncJob(
                     DeferredPersonalAnimeListChange(
                         animeId,
                         true,

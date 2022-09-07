@@ -40,23 +40,23 @@ class SideLocalDataSourceTest {
     @Inject
     lateinit var animeDAO: AnimeDAO
 
-    val genreAction = GenrePersistence(
+    private val genreAction = GenrePersistence(
         1,
         "Action"
     )
-    val genreHorror = GenrePersistence(
+    private val genreHorror = GenrePersistence(
         2,
         "Horror"
     )
-    val pictureMain = PicturePersistence(
+    private val pictureMain = PicturePersistence(
         0,
         null,
         "link_1",
         "link_2",
     )
-    val genreHorrorDuplicate = genreHorror.copy(name = "Not horror")
-    val genres = listOf(genreAction, genreHorror)
-    val someAnime = AnimePersistence(
+    private val genreHorrorDuplicate = genreHorror.copy(name = "Not horror")
+    private val genres = listOf(genreAction, genreHorror)
+    private val someAnime = AnimePersistence(
         id = 1,
         title = "Some title",
         null,
@@ -67,7 +67,7 @@ class SideLocalDataSourceTest {
         null,
         null,
     )
-    val sidePicturesOfSomeAnime = listOf(
+    private val sidePicturesOfSomeAnime = listOf(
         PicturePersistence(
             0,
             someAnime.id,
@@ -82,8 +82,8 @@ class SideLocalDataSourceTest {
         )
     )
 
-    val seasonYear = 1994
-    val seasonSeason = "spring"
+    private val seasonYear = 1994
+    private val seasonSeason = "spring"
 
     @Before
     fun init() {
