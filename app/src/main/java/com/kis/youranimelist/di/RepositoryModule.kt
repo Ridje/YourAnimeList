@@ -4,8 +4,8 @@ import android.content.Context
 import androidx.work.WorkManager
 import com.kis.youranimelist.data.cache.AnimeRankingMemoryCache
 import com.kis.youranimelist.data.cache.UserDatabase
-import com.kis.youranimelist.data.cache.dao.AnimeDAO
 import com.kis.youranimelist.data.cache.dao.PersonalAnimeDAO
+import com.kis.youranimelist.data.cache.localdatasource.AnimeLocalDataSource
 import com.kis.youranimelist.data.cache.localdatasource.SideLocalDataSource
 import com.kis.youranimelist.data.cache.localdatasource.SyncJobLocalDataSource
 import com.kis.youranimelist.data.cache.localdatasource.UserLocalDataSource
@@ -150,8 +150,8 @@ object RepositoryModule {
     @Provides
     fun provideLocalDataSource(
         database: UserDatabase,
-        animeDAO: AnimeDAO,
         personalAnimeDAO: PersonalAnimeDAO,
+        animeLocalDataSource: AnimeLocalDataSource,
         userLocalDataSource: UserLocalDataSource,
         sideLocalDataSource: SideLocalDataSource,
         syncJobLocalDataSource: SyncJobLocalDataSource,
@@ -159,7 +159,7 @@ object RepositoryModule {
     ): LocalDataSource {
         return LocalDataSourceImpl(database,
             personalAnimeDAO,
-            animeDAO,
+            animeLocalDataSource,
             userLocalDataSource,
             sideLocalDataSource,
             syncJobLocalDataSource,

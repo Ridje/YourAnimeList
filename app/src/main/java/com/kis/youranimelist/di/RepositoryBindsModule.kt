@@ -1,5 +1,7 @@
 package com.kis.youranimelist.di
 
+import com.kis.youranimelist.data.cache.localdatasource.AnimeLocalDataSource
+import com.kis.youranimelist.data.cache.localdatasource.AnimeLocalDataSourceImpl
 import com.kis.youranimelist.data.cache.localdatasource.SideLocalDataSource
 import com.kis.youranimelist.data.cache.localdatasource.SideLocalDataSourceImpl
 import com.kis.youranimelist.data.cache.localdatasource.SyncJobLocalDataSource
@@ -13,6 +15,9 @@ import dagger.hilt.migration.DisableInstallInCheck
 @Module
 @DisableInstallInCheck
 interface RepositoryBindsModule {
+
+    @Binds
+    fun AnimeLocalDataSourceImpl.bindAnimeLocalDataSource(): AnimeLocalDataSource
 
     @Binds
     fun SyncJobLocalDataSourceImpl.bindSyncJobLocalDataSource(): SyncJobLocalDataSource

@@ -4,7 +4,7 @@ import android.util.Log
 import androidx.work.ExistingWorkPolicy
 import androidx.work.WorkManager
 import com.haroldadmin.cnradapter.NetworkResponse
-import com.kis.youranimelist.core.utils.runCatchingWithCancellation
+import com.kis.youranimelist.core.utils.returnCatchingWithCancellation
 import com.kis.youranimelist.data.SyncWorker
 import com.kis.youranimelist.data.SyncWorker.Companion.SyncWorkName
 import com.kis.youranimelist.data.cache.model.personalanime.AnimePersonalStatusPersistence
@@ -170,7 +170,7 @@ class PersonalAnimeRepositoryImpl @Inject constructor(
             }
         }
 
-        runCatchingWithCancellation {
+        returnCatchingWithCancellation {
             localDataSource.saveAnimeWithPersonalStatusToCache(remoteList.filter { remoteAnime ->
                 syncJobs.keys.find { job -> job.animeId == remoteAnime.anime.id } == null
             })

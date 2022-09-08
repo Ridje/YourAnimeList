@@ -127,6 +127,16 @@ class SideLocalDataSourceTest {
             ?: "returned nothing").isEqualTo("link_3")
     }
 
+
+    @Test
+    fun saveAnimeNullMainPictureDeleteCurrentMainPicture() = runTest {
+        sideLocalDataSource.saveAnimeMainPicture(someAnime.id, pictureMain.copy(id = 1))
+        animeDAO.addAnime(someAnime.copy(pictureId = 1))
+        sideLocalDataSource.saveAnimeMainPicture(someAnime.id,
+            PicturePersistence(0, null, null, null))
+        assertThat(sideDAO.getAnimeMainPictureByAnimeId(someAnime.id)).isNull()
+    }
+
     @Test
     fun saveAnimePicturesAddsNewPictures() = runTest {
         animeDAO.addAnime(someAnime)
@@ -184,6 +194,7 @@ class SideLocalDataSourceTest {
         val insertedFirstSeason = sideLocalDataSource.getOrCreateSeason(seasonYear, seasonSeason)
         assertThat(sideDAO.getSeasonByYearAndSeason(seasonYear, seasonSeason)).isNotNull()
         sideLocalDataSource.getOrCreateSeason(seasonYear, seasonSeason)
-        assertThat(sideDAO.getSeasonByYearAndSeason(seasonYear, seasonSeason)).isEqualTo(insertedFirstSeason)
+        assertThat(sideDAO.getSeasonByYearAndSeason(seasonYear, seasonSeason)).isEqualTo(
+            insertedFirstSeason)
     }
 }

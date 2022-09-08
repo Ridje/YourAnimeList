@@ -1,10 +1,10 @@
 package com.kis.youranimelist.data.cache.localdatasource
 
-import com.kis.youranimelist.core.utils.runCatchingWithCancellation
+import com.kis.youranimelist.core.utils.returnCatchingWithCancellation
 import com.kis.youranimelist.data.cache.dao.SideDAO
 import com.kis.youranimelist.data.cache.model.GenrePersistence
 import com.kis.youranimelist.data.cache.model.PicturePersistence
-import com.kis.youranimelist.data.cache.model.anime.SeasonPersistence
+import com.kis.youranimelist.data.cache.model.SeasonPersistence
 import com.kis.youranimelist.di.Dispatcher
 import com.kis.youranimelist.di.YALDispatchers
 import kotlinx.coroutines.CoroutineDispatcher
@@ -25,13 +25,13 @@ class SideLocalDataSourceImpl @Inject constructor(
 ) : SideLocalDataSource {
     override suspend fun saveGenres(genres: List<GenrePersistence>) {
         withContext(ioDispatcher) {
-            runCatchingWithCancellation { sideDAO.addGenres(genres) }
+            sideDAO.addGenres(genres)
         }
     }
 
     override suspend fun saveAnimePictures(animeId: Int, pictures: List<PicturePersistence>) {
         withContext(ioDispatcher) {
-            runCatchingWithCancellation {
+            returnCatchingWithCancellation {
                 sideDAO.replaceAnimePictures(
                     animeId,
                     pictures.map { it.copy(animeId = animeId) }
@@ -42,19 +42,24 @@ class SideLocalDataSourceImpl @Inject constructor(
 
     override suspend fun saveAnimeMainPicture(animeId: Int, picture: PicturePersistence): Long? {
         return withContext(ioDispatcher) {
-            runCatchingWithCancellation {
-                sideDAO.addPicture(
-                    picture.copy(
-                        id = sideDAO.getAnimeMainPictureByAnimeId(animeId)?.id ?: 0
+            returnCatchingWithCancellation {
+                if (picture.large == null && picture.medium == null) {
+                    sideDAO.deleteMainAnimePictureAndEraseReferenceFromAnime(animeId = animeId)
+                    return@withContext null
+                } else {
+                    sideDAO.addPicture(
+                        picture.copy(
+                            id = sideDAO.getAnimeMainPictureByAnimeId(animeId)?.id ?: 0
+                        )
                     )
-                )
+                }
             }
         }
     }
 
     override suspend fun getPictureById(pictureId: Long): PicturePersistence? {
         return withContext(ioDispatcher) {
-            runCatchingWithCancellation {
+            returnCatchingWithCancellation {
                 sideDAO.getPicture(pictureId = pictureId)
             }
         }
@@ -62,11 +67,15 @@ class SideLocalDataSourceImpl @Inject constructor(
 
     override suspend fun getOrCreateSeason(year: Int?, season: String?): SeasonPersistence? {
         return withContext(ioDispatcher) {
-            return@withContext runCatchingWithCancellation {
-                sideDAO.getSeasonByYearAndSeason(year, season) ?: run {
-                    val newSeason = SeasonPersistence(0, year, season)
-                    val newSeasonId = sideDAO.addSeason(newSeason)
-                    newSeason.copy(id = newSeasonId)
+            return@withContext returnCatchingWithCancellation {
+                if (year == null && season == null) {
+                    null
+                } else {
+                    sideDAO.getSeasonByYearAndSeason(year, season) ?: run {
+                        val newSeason = SeasonPersistence(0, year, season)
+                        val newSeasonId = sideDAO.addSeason(newSeason)
+                        newSeason.copy(id = newSeasonId)
+                    }
                 }
             }
         }

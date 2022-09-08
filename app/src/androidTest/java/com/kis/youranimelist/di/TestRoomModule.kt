@@ -13,6 +13,7 @@ import dagger.Provides
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import dagger.hilt.testing.TestInstallIn
+import java.util.concurrent.Executors
 import javax.inject.Singleton
 
 @Module
@@ -24,13 +25,15 @@ class TestRoomModule {
     fun provideUserDatabase(
         @ApplicationContext context: Context,
     ): UserDatabase {
-        return Room.inMemoryDatabaseBuilder(context, UserDatabase::class.java).build()
+        return Room.inMemoryDatabaseBuilder(context, UserDatabase::class.java)
+            .allowMainThreadQueries().setTransactionExecutor(
+                Executors.newSingleThreadExecutor()).build()
     }
 
     @Singleton
     @Provides
     fun provideAnimeDAO(
-        database: UserDatabase
+        database: UserDatabase,
     ): AnimeDAO {
         return database.animeDAO()
     }
@@ -38,7 +41,7 @@ class TestRoomModule {
     @Singleton
     @Provides
     fun providePersonalAnimeDAO(
-        database: UserDatabase
+        database: UserDatabase,
     ): PersonalAnimeDAO {
         return database.personalAnimeStatusesDAO()
     }
@@ -54,7 +57,7 @@ class TestRoomModule {
     @Singleton
     @Provides
     fun provideSideDAO(
-        database: UserDatabase
+        database: UserDatabase,
     ): SideDAO {
         return database.sideDAO()
     }
@@ -62,7 +65,7 @@ class TestRoomModule {
     @Singleton
     @Provides
     fun provideSyncJobDao(
-        database: UserDatabase
+        database: UserDatabase,
     ): SyncJobDao {
         return database.syncJobDAO()
     }

@@ -1,4 +1,4 @@
-package com.kis.youranimelist.data.cache.model.anime
+package com.kis.youranimelist.data.cache.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

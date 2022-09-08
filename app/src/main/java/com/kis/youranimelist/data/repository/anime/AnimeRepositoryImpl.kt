@@ -68,7 +68,7 @@ class AnimeRepositoryImpl(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun getAnimeDetailedDataSource(animeID: Int) =
-        localDataSource.getAnimeDetailedDataProducerFromCache(animeID)
+        localDataSource.getAnimeDetailedDataProducer(animeID)
             .filterNotNull()
             .flatMapLatest { animeDetailedData ->
                 flow {

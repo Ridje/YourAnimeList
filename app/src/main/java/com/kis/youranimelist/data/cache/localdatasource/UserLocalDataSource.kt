@@ -1,7 +1,7 @@
 package com.kis.youranimelist.data.cache.localdatasource
 
+import com.kis.youranimelist.core.utils.returnFinishedCatchingWithCancellation
 import com.kis.youranimelist.core.utils.returnCatchingWithCancellation
-import com.kis.youranimelist.core.utils.runCatchingWithCancellation
 import com.kis.youranimelist.data.cache.dao.UserDAO
 import com.kis.youranimelist.data.cache.model.UserPersistence
 import com.kis.youranimelist.di.Dispatcher
@@ -22,15 +22,15 @@ class UserLocalDataSourceImpl @Inject constructor(
 ) : UserLocalDataSource {
     override suspend fun updateUserData(user: UserPersistence) {
         withContext(ioDispatcher) {
-            runCatchingWithCancellation { userDAO.addUserDataKeepSingle(user) }
+            returnCatchingWithCancellation { userDAO.addUserDataKeepSingle(user) }
         }
     }
 
     override suspend fun getUserData(): UserPersistence? =
-        withContext(ioDispatcher) { runCatchingWithCancellation { userDAO.getUserData() } }
+        withContext(ioDispatcher) { returnCatchingWithCancellation { userDAO.getUserData() } }
 
     override suspend fun clearUserData(): Boolean = withContext(ioDispatcher) {
-        returnCatchingWithCancellation {
+        returnFinishedCatchingWithCancellation {
             userDAO.clearUserData()
         }
     }

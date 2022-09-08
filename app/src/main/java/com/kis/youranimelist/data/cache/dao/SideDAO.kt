@@ -7,7 +7,7 @@ import androidx.room.Query
 import androidx.room.Transaction
 import com.kis.youranimelist.data.cache.model.GenrePersistence
 import com.kis.youranimelist.data.cache.model.PicturePersistence
-import com.kis.youranimelist.data.cache.model.anime.SeasonPersistence
+import com.kis.youranimelist.data.cache.model.SeasonPersistence
 
 @Dao
 interface SideDAO {
@@ -20,6 +20,18 @@ interface SideDAO {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun addPicture(picturePersistence: PicturePersistence): Long
+
+    @Query("DELETE FROM picture WHERE picture.id in (SELECT anime.picture_id FROM anime WHERE anime.id = :animeId)")
+    fun deleteMainAnimePicture(animeId: Int)
+
+    @Query("UPDATE anime SET picture_id = NULL WHERE anime.id = :animeId")
+    fun eraseAnimeMainPictureReferenceFromAnime(animeId: Int)
+
+    @Transaction
+    fun deleteMainAnimePictureAndEraseReferenceFromAnime(animeId: Int) {
+        eraseAnimeMainPictureReferenceFromAnime(animeId)
+        deleteMainAnimePicture(animeId)
+    }
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun addPicture(picturePersistence: List<PicturePersistence>): List<Long>

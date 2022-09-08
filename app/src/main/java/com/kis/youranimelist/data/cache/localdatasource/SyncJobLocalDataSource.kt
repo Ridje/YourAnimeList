@@ -1,6 +1,6 @@
 package com.kis.youranimelist.data.cache.localdatasource
 
-import com.kis.youranimelist.core.utils.runCatchingWithCancellation
+import com.kis.youranimelist.core.utils.returnCatchingWithCancellation
 import com.kis.youranimelist.data.cache.dao.SyncJobDao
 import com.kis.youranimelist.data.cache.model.syncjob.DeferredPersonalAnimeListChange
 import com.kis.youranimelist.di.Dispatcher
@@ -23,13 +23,13 @@ class SyncJobLocalDataSourceImpl @Inject constructor(
 ) : SyncJobLocalDataSource {
     override suspend fun deleteAllSyncJobs() {
         withContext(ioDispatcher) {
-            runCatchingWithCancellation { syncJobDao.deleteAllSyncJobs() }
+            returnCatchingWithCancellation { syncJobDao.deleteAllSyncJobs() }
         }
     }
 
     override suspend fun addPersonalAnimeListSyncJob(deferredPersonalAnimeListChangeJob: DeferredPersonalAnimeListChange) {
         withContext(ioDispatcher) {
-            runCatchingWithCancellation {
+            returnCatchingWithCancellation {
                 syncJobDao.addPersonalAnimeListSyncJob(deferredPersonalAnimeListChangeJob)
             }
         }
@@ -37,18 +37,18 @@ class SyncJobLocalDataSourceImpl @Inject constructor(
 
     override suspend fun getPersonalAnimeListSyncJobs(): List<DeferredPersonalAnimeListChange> =
         withContext(ioDispatcher) {
-            runCatchingWithCancellation { syncJobDao.getPersonalAnimeListSyncJobs() } ?: listOf()
+            returnCatchingWithCancellation { syncJobDao.getPersonalAnimeListSyncJobs() } ?: listOf()
         }
 
     override suspend fun removePersonalAnimeListSyncJob(animeId: Int) {
         withContext(ioDispatcher) {
-            runCatchingWithCancellation { syncJobDao.deletePersonalAnimeListSyncJob(animeId) }
+            returnCatchingWithCancellation { syncJobDao.deletePersonalAnimeListSyncJob(animeId) }
         }
     }
 
     override suspend fun removePersonalAnimeListSyncJob(deferredPersonalAnimeListChangeJobs: List<DeferredPersonalAnimeListChange>) {
         withContext(ioDispatcher) {
-            runCatchingWithCancellation {
+            returnCatchingWithCancellation {
                 syncJobDao.deletePersonalAnimeListSyncJob(deferredPersonalAnimeListChangeJobs)
             }
         }

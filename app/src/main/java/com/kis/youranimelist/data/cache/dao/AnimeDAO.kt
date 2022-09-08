@@ -5,7 +5,6 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
-import com.kis.youranimelist.data.cache.model.GenrePersistence
 import com.kis.youranimelist.data.cache.model.anime.AnimeDetailedDataPersistence
 import com.kis.youranimelist.data.cache.model.anime.AnimeGenrePersistence
 import com.kis.youranimelist.data.cache.model.anime.AnimePersistence
@@ -24,14 +23,12 @@ interface AnimeDAO {
     @Query("SELECT * FROM anime")
     fun getAllAnime(): List<AnimePersistence>
 
-    @Query("SELECT * FROM anime WHERE id = :animeId")
-    fun getAnimeByIdObservable(animeId: Int): Flow<AnimeDetailedDataPersistence?>
-
     @Query("SELECT EXISTS(SELECT * FROM anime WHERE id = :animeId)")
     fun isAnimeRecordExist(animeId: Int): Boolean
 
     @Query("SELECT * FROM anime WHERE id = :animeId")
-    fun getAnimeDetailedDataObservable(animeId: Int): Flow<AnimeDetailedDataPersistence>
+    @Transaction
+    fun getAnimeDetailedDataObservable(animeId: Int): Flow<AnimeDetailedDataPersistence?>
 
     @Query("SELECT * FROM anime WHERE id = :animeId")
     fun getAnimeDetailedData(animeId: Int): AnimePersistence
@@ -39,10 +36,24 @@ interface AnimeDAO {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun addRelatedAnime(relatedAnimePersistence: RelatedAnimePersistence)
 
+    @Query("DELETE FROM related_anime WHERE related_anime.anime_id = :animeId")
+    fun deleteRelatedAnime(animeId: Int)
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun addRecommendedAnime(recommendedAnimePersistence: RecommendedAnimePersistence)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun addAnimeGenre(animeGenrePersistence: AnimeGenrePersistence)
+    @Query("DELETE FROM recommended_anime WHERE recommended_anime.anime_id = :animeId")
+    fun deleteRecommendedAnime(animeId: Int)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun addAnimeGenres(animeGenresPersistence: List<AnimeGenrePersistence>)
+
+    @Query("DELETE FROM anime_genre WHERE anime_id = :animeId")
+    fun deleteAnimeGenres(animeId: Int)
+
+    @Transaction
+    fun replaceAnimeGenres(animeId: Int, animeGenres: List<AnimeGenrePersistence>) {
+        deleteAnimeGenres(animeId)
+        addAnimeGenres(animeGenres)
+    }
 }

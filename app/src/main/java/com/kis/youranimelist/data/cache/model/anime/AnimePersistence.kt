@@ -3,10 +3,13 @@ package com.kis.youranimelist.data.cache.model.anime
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.kis.youranimelist.data.cache.model.PicturePersistence
+import com.kis.youranimelist.data.cache.model.SeasonPersistence
 
-@Entity(tableName = "anime",
+@Entity(
+    tableName = "anime",
     foreignKeys = [
         ForeignKey(
             entity = PicturePersistence::class,
@@ -18,6 +21,10 @@ import com.kis.youranimelist.data.cache.model.PicturePersistence
             parentColumns = ["id"],
             childColumns = ["start_season_id"]
         ),
+    ],
+    indices = [
+        Index(value = ["start_season_id"]),
+        Index(value = ["picture_id"]),
     ]
 )
 data class AnimePersistence(
