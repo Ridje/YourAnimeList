@@ -1,5 +1,5 @@
-## Privacy Policy
 # Privacy Policy
+## Privacy Policy
 
 [Ridje](https://github.com/Ridje) built the Your Anime List app as an Open Source app. This SERVICE is provided by Ridje at no cost and is intended for use as is.
 
