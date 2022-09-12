@@ -1,13 +1,6 @@
 <resources>
     <string name="app_name">Your Anime List</string>
-    <string name="anime_synopsis_example">Shigeo \"Mob" Kageyama is now maturing and understanding his role as a supernatural psychic that has the power to drastically affect the livelihood of others. He and his mentor Reigen Arataka continue to deal with supernatural requests from clients, whether it be exorcizing evil spirits or tackling urban legends that haunt the citizens.
-While the workflow remains the same, Mob isn't just blindly following Reigen around anymore. With all his experiences as a ridiculously strong psychic, Mob's supernatural adventures now have more weight to them. Things take on a serious and darker tone as the dangers Mob and Reigen face are much more tangible and unsettling than ever before.</string>
-    <string name="dummy_button">Dummy Button</string>
-    <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="login">Login</string>
-    <string name="no_synopsis">No synopsis</string>
-    <string name="reload">Try again?</string>
-    <string name="error_during_download">Error during download!</string>
     <string name="watching_items">Watching (%1$s)</string>
     <string name="completed_item">Completed (%1$s)</string>
     <string name="on_hold_items">On hold (%1$s)</string>
@@ -30,7 +23,6 @@ While the workflow remains the same, Mob isn't just blindly following Reigen aro
     <string name="plus_one">+1</string>
     <string name="score">Score</string>
     <string name="status">Status</string>
-    <string name="delete">Delete</string>
     <string name="ok">OK</string>
     <string name="delete_anime_question">Delete anime?</string>
     <string name="delete_anime_question_description">Are you sure you want to delete this anime from your list?</string>

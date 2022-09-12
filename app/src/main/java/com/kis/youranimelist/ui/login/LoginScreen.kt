@@ -94,6 +94,7 @@ fun LoginScreen(
             ),
             onCreated = {
                 it.settings.javaScriptEnabled = true
+                android.webkit.WebView.setWebContentsDebuggingEnabled(false)
             }
         )
     } else {

@@ -66,6 +66,7 @@
         <entry key="../../../../layout/compose-model-1662104772553.xml" value="0.10277777777777777" />
         <entry key="../../../../layout/compose-model-1662122747650.xml" value="0.1" />
         <entry key="../../../../layout/compose-model-1662389395153.xml" value="0.21363636363636362" />
+        <entry key="../../../../layout/compose-model-1662985913755.xml" value="0.22685185185185186" />
         <entry key="../../.gradle/caches/transforms-3/e548bbdbec57989b98790e244ac73674/transformed/coil-base-2.1.0/res/drawable/ic_100tb.xml" value="0.1" />
         <entry key="app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.181" />
         <entry key="app/src/main/res/drawable/button_back.xml" value="0.181" />
@@ -102,6 +103,8 @@
         <entry key="app/src/main/res/layout/item_fragment.xml" value="0.36049382716049383" />
         <entry key="app/src/main/res/layout/main_activity.xml" value="0.23333333333333334" />
         <entry key="app/src/main/res/menu/bottom_navigation.xml" value="0.2552083333333333" />
+        <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.1" />
+        <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.1" />
         <entry key="app/src/main/res/xml/root_preferences.xml" value="0.409375" />
       </map>
     </option>

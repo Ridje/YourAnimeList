@@ -17,15 +17,15 @@ android {
             keyPassword System.getenv('YAL_SIGNING_KEY_PASSWORD')
         }
     }
-    compileSdkVersion 33
+    compileSdkVersion 32
     buildToolsVersion "30.0.3"
 
     defaultConfig {
         applicationId "com.kis.youranimelist"
         minSdkVersion 26
-        targetSdkVersion 30
+        targetSdkVersion 32
         versionCode 1
-        versionName "1.0"
+        versionName "0.1"
 
         javaCompileOptions {
             annotationProcessorOptions {
@@ -47,6 +47,9 @@ android {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
+        }
+        debug {
+            applicationIdSuffix = ".debug"
         }
     }
     compileOptions {

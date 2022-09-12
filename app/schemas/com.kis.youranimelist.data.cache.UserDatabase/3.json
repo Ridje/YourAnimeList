@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 3,
-    "identityHash": "da2aadc129959c0970d9895f8c3887c9",
+    "identityHash": "f602939f9a21b790480ee49dbcb2d2a1",
     "entities": [
       {
         "tableName": "anime",
@@ -69,7 +69,26 @@
             "id"
           ]
         },
-        "indices": [],
+        "indices": [
+          {
+            "name": "index_anime_start_season_id",
+            "unique": false,
+            "columnNames": [
+              "start_season_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_anime_start_season_id` ON `${TABLE_NAME}` (`start_season_id`)"
+          },
+          {
+            "name": "index_anime_picture_id",
+            "unique": false,
+            "columnNames": [
+              "picture_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_anime_picture_id` ON `${TABLE_NAME}` (`picture_id`)"
+          }
+        ],
         "foreignKeys": [
           {
             "table": "picture",
@@ -376,7 +395,17 @@
             "id"
           ]
         },
-        "indices": [],
+        "indices": [
+          {
+            "name": "index_picture_anime_id",
+            "unique": false,
+            "columnNames": [
+              "anime_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_picture_anime_id` ON `${TABLE_NAME}` (`anime_id`)"
+          }
+        ],
         "foreignKeys": [
           {
             "table": "anime",
@@ -485,7 +514,17 @@
             "related_anime_id"
           ]
         },
-        "indices": [],
+        "indices": [
+          {
+            "name": "index_related_anime_related_anime_id",
+            "unique": false,
+            "columnNames": [
+              "related_anime_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_related_anime_related_anime_id` ON `${TABLE_NAME}` (`related_anime_id`)"
+          }
+        ],
         "foreignKeys": []
       },
       {
@@ -512,7 +551,17 @@
             "genre_id"
           ]
         },
-        "indices": [],
+        "indices": [
+          {
+            "name": "index_anime_genre_genre_id",
+            "unique": false,
+            "columnNames": [
+              "genre_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_anime_genre_genre_id` ON `${TABLE_NAME}` (`genre_id`)"
+          }
+        ],
         "foreignKeys": []
       },
       {
@@ -589,14 +638,24 @@
             "recommended_anime_id"
           ]
         },
-        "indices": [],
+        "indices": [
+          {
+            "name": "index_recommended_anime_recommended_anime_id",
+            "unique": false,
+            "columnNames": [
+              "recommended_anime_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_recommended_anime_recommended_anime_id` ON `${TABLE_NAME}` (`recommended_anime_id`)"
+          }
+        ],
         "foreignKeys": []
       }
     ],
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'da2aadc129959c0970d9895f8c3887c9')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'f602939f9a21b790480ee49dbcb2d2a1')"
     ]
   }
 }
