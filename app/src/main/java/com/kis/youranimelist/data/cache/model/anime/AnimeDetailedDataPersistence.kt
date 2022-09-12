@@ -5,6 +5,7 @@ import androidx.room.Junction
 import androidx.room.Relation
 import com.kis.youranimelist.data.cache.model.GenrePersistence
 import com.kis.youranimelist.data.cache.model.PicturePersistence
+import com.kis.youranimelist.data.cache.model.SeasonPersistence
 
 data class AnimeDetailedDataPersistence(
     @Embedded
@@ -48,13 +49,13 @@ data class AnimeDetailedDataPersistence(
         parentColumn = "picture_id",
         entityColumn = "id"
     )
-    val mainPicture: PicturePersistence,
+    val mainPicture: PicturePersistence?,
 
     @Relation(
         parentColumn = "start_season_id",
         entityColumn = "id"
     )
-    val startSeason: SeasonPersistence,
+    val startSeason: SeasonPersistence?,
 
     @Relation(
         parentColumn = "id",

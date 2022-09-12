@@ -41,14 +41,14 @@ class AnimeMapper @Inject constructor(
         )
     }
 
-    fun map(from: AnimePersistence, mainPicture: PicturePersistence): Anime {
+    fun map(from: AnimePersistence, mainPicture: PicturePersistence?): Anime {
         return Anime(
             id = from.id,
             title = from.title,
             numEpisodes = from.numEpisodes,
             picture = Picture(
-                mainPicture.large,
-                mainPicture.medium,
+                mainPicture?.large,
+                mainPicture?.medium,
             ),
             mean = from.mean,
             mediaType = from.mediaType,
@@ -64,14 +64,23 @@ class AnimeMapper @Inject constructor(
         return Anime(
             id = from.anime.id,
             title = from.anime.title,
-            picture = Picture(from.mainPicture.large, from.mainPicture.medium),
-            startSeason = Season(from.startSeason.year, from.startSeason.season),
+            picture = Picture(from.mainPicture?.large, from.mainPicture?.medium),
+            startSeason = Season(from.startSeason?.year, from.startSeason?.season),
             mean = from.anime.mean,
             synopsis = from.anime.synopsis,
             genres = from.genres.map { Genre(it.id, it.name) },
             pictures = from.pictures.map { Picture(it.large, it.medium) },
             airingStatus = from.anime.airingStatus,
-            relatedAnime = if (listRelatedAnimePictures.isEmpty()) listOf() else {
+            relatedAnime = if (listRelatedAnimePictures.isEmpty()) {
+                from.relatedAnime
+                    .mapIndexed { index, anime ->
+                        RelatedAnime(
+                            this.map(anime),
+                            relatedTypeFormatted = from.relatedAnimeAdditionValues[index].relatedTypeFormatted,
+                            relatedType = from.relatedAnimeAdditionValues[index].relatedType,
+                        )
+                    }
+            } else {
                 from.relatedAnime
                     .mapIndexed { index, anime ->
                         RelatedAnime(
@@ -84,7 +93,15 @@ class AnimeMapper @Inject constructor(
                         )
                     }
             },
-            recommendedAnime = if (listRecommendedAnimePictures.isEmpty()) listOf() else {
+            recommendedAnime = if (listRecommendedAnimePictures.isEmpty()) {
+                from.recommendedAnime
+                    .mapIndexed { index, anime ->
+                        RecommendedAnime(
+                            anime = this.map(anime),
+                            recommendedTimes = from.recommendedAnimeAdditionValues[index].recommendedTimes,
+                        )
+                    }
+            } else {
                 from.recommendedAnime
                     .mapIndexed { index, anime ->
                         RecommendedAnime(
@@ -101,5 +118,4 @@ class AnimeMapper @Inject constructor(
             numEpisodes = from.anime.numEpisodes,
         )
     }
-
 }

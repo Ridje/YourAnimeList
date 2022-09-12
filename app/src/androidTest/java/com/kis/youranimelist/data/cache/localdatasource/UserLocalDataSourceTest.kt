@@ -15,6 +15,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import javax.inject.Inject
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
 @SmallTest
@@ -60,14 +61,12 @@ class UserLocalDataSourceTest {
         hiltRule.inject()
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun dbShouldReturnNullIfNoUserData() = runTest {
         val userDataNull = userLocalDataSource.getUserData()
         assertThat(userDataNull).isNull()
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun dbShouldReturnUserJhonnyIfUpdatedJhonnyUserData() = runTest {
         userLocalDataSource.updateUserData(userBoboka)
@@ -75,7 +74,6 @@ class UserLocalDataSourceTest {
         assertThat(userDataOnlyOneBoboka).isEqualTo(userBoboka)
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun dbShouldReturnLastUserIfUpdatedTwoDifferentUserData() = runTest {
         assertThat(userLocalDataSource.getUserData()).isNull()
@@ -84,7 +82,6 @@ class UserLocalDataSourceTest {
         assertThat(userLocalDataSource.getUserData()).isEqualTo(userJhonny)
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun userDataShouldBeEmptyAfterItCleared() = runTest {
         userLocalDataSource.updateUserData(userBoboka)

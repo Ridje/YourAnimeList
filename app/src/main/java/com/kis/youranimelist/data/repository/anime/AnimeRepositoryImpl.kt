@@ -68,21 +68,21 @@ class AnimeRepositoryImpl(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun getAnimeDetailedDataSource(animeID: Int) =
-        localDataSource.getAnimeDetailedDataProducerFromCache(animeID)
+        localDataSource.getAnimeDetailedDataProducer(animeID)
             .filterNotNull()
             .flatMapLatest { animeDetailedData ->
                 flow {
                     val relatedAnimeResults = mutableListOf<PicturePersistence?>()
                     for (relatedAnime in animeDetailedData.relatedAnime) {
                         val pictureResult = relatedAnime.pictureId?.let { pictureId ->
-                            localDataSource.getAnimeMainPicture(pictureId)
+                            localDataSource.getPictureById(pictureId)
                         }
                         relatedAnimeResults.add(pictureResult)
                     }
                     val recommendedAnimeResults = mutableListOf<PicturePersistence?>()
                     for (recommendedAnime in animeDetailedData.recommendedAnime) {
                         val pictureResult = recommendedAnime.pictureId?.let { pictureId ->
-                            localDataSource.getAnimeMainPicture(pictureId)
+                            localDataSource.getPictureById(pictureId)
                         }
                         recommendedAnimeResults.add(pictureResult)
                     }
