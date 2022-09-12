@@ -41,14 +41,14 @@ class AnimeMapper @Inject constructor(
         )
     }
 
-    fun map(from: AnimePersistence, mainPicture: PicturePersistence): Anime {
+    fun map(from: AnimePersistence, mainPicture: PicturePersistence?): Anime {
         return Anime(
             id = from.id,
             title = from.title,
             numEpisodes = from.numEpisodes,
             picture = Picture(
-                mainPicture.large,
-                mainPicture.medium,
+                mainPicture?.large,
+                mainPicture?.medium,
             ),
             mean = from.mean,
             mediaType = from.mediaType,

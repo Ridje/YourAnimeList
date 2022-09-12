@@ -1,7 +1,6 @@
 package com.kis.youranimelist.data.cache.dao
 
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -15,13 +14,13 @@ import kotlinx.coroutines.flow.Flow
 interface PersonalAnimeDAO {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun addPersonalAnimeStatus(status: AnimePersonalStatusPersistence)
+    suspend fun addPersonalAnimeStatus(status: AnimePersonalStatusPersistence)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun addPersonalAnimeStatus(statuses: List<AnimePersonalStatusPersistence>)
 
     @Transaction
-    fun mergeAnimePersonalStatus(newStatus: AnimePersonalStatusPersistence) {
+    suspend fun mergeAnimePersonalStatus(newStatus: AnimePersonalStatusPersistence) {
         if ((getAnimePersonalStatus(newStatus.animeId)?.updatedAt ?: 0) < newStatus.updatedAt) {
             addPersonalAnimeStatus(newStatus)
         }
@@ -31,13 +30,13 @@ interface PersonalAnimeDAO {
     fun getAnimePersonalStatus(animeId: Int): AnimePersonalStatusPersistence?
 
     @Query("DELETE FROM anime_personal_status WHERE anime_id = :animeId")
-    fun deletePersonalAnimeStatus(animeId: Int)
+    suspend fun deletePersonalAnimeStatus(animeId: Int)
 
     @Query("DELETE FROM anime_personal_status")
     fun deleteAllPersonalStatuses()
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun addAnimeStatus(status: AnimeStatusPersistence)
+    suspend fun addAnimeStatus(status: AnimeStatusPersistence)
 
     @Query("SELECT * FROM anime_personal_status INNER JOIN anime ON anime_personal_status.anime_id = anime.id")
     @Transaction

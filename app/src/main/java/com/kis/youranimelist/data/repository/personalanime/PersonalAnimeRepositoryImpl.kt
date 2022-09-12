@@ -34,14 +34,14 @@ class PersonalAnimeRepositoryImpl @Inject constructor(
     private val workManager by lazy { workManager.get() }
 
     override fun getPersonalAnimeStatusesProducer(): Flow<List<AnimeStatus>> {
-        return localDataSource.getAnimeWithStatusProducerFromCache()
+        return localDataSource.getAnimeWithStatusProducer()
             .map { entities -> entities.map { entity -> animeStatusMapper.map(entity) } }
     }
 
     override suspend fun refreshPersonalAnimeStatuses() {
         val dataList = fetchAllData().map { animeStatusMapper.map(it) }
         try {
-            localDataSource.saveAnimeWithPersonalStatusToCache(dataList)
+            localDataSource.saveAnimeWithPersonalStatus(dataList)
         } catch (e: Exception) {
             Log.d(TAG, "Error during cache invalidation, error message: ${e.message}")
         }
@@ -53,7 +53,7 @@ class PersonalAnimeRepositoryImpl @Inject constructor(
     }
 
     override suspend fun deletePersonalAnimeStatus(animeId: Int): Boolean {
-        val localResult = localDataSource.deleteAnimePersonalStatusFromCache(animeId)
+        val localResult = localDataSource.deleteAnimePersonalStatus(animeId)
         val remoteResult = remoteDataSource.deletePersonalAnimeStatus(animeId)
 
         if (remoteResult is NetworkResponse.Error) {
@@ -74,7 +74,7 @@ class PersonalAnimeRepositoryImpl @Inject constructor(
     override suspend fun refreshPersonalAnimeStatus(animeId: Int) {
         val remoteResult = remoteDataSource.getPersonalAnimeStatus(animeId)
         if (remoteResult is NetworkResponse.Success) {
-            localDataSource.mergePersonalAnimeStatusToCache(
+            localDataSource.mergePersonalAnimeStatus(
                 remoteResult.body.asAnimePersonalStatusPersistence(animeId) { updatedAt ->
                     AnimeStatusMapper.formatter.parse(updatedAt)?.time ?: Long.MIN_VALUE
                 }
@@ -84,12 +84,12 @@ class PersonalAnimeRepositoryImpl @Inject constructor(
 
     override fun getPersonalAnimeStatusProducer(id: Int): Flow<AnimeStatus?> {
         return localDataSource
-            .getAnimeWithStatusProducerFromCache(id)
+            .getAnimeWithStatusProducer(id)
             .map { entity -> entity?.let { animeStatusMapper.map(entity) } }
     }
 
     override suspend fun saveAnimeStatus(animeStatus: AnimeStatus): Boolean {
-        val localResult = localDataSource.savePersonalAnimeStatusToCache(
+        val localResult = localDataSource.savePersonalAnimeStatus(
             AnimePersonalStatusPersistence(
                 score = animeStatus.score,
                 episodesWatched = animeStatus.numWatchedEpisodes,
@@ -136,7 +136,7 @@ class PersonalAnimeRepositoryImpl @Inject constructor(
                         syncJobs[job.key] = true
                     }
                 } else {
-                    localDataSource.savePersonalAnimeStatusToCache(
+                    localDataSource.savePersonalAnimeStatus(
                         AnimePersonalStatusPersistence(
                             score = foundRemoteStatus.score,
                             episodesWatched = foundRemoteStatus.numWatchedEpisodes,
@@ -165,13 +165,13 @@ class PersonalAnimeRepositoryImpl @Inject constructor(
                     syncJobs[job.key] = true
                 }
             } else if (job.key.changeTimestamp < foundRemoteStatus.updatedAt) {
-                localDataSource.saveAnimeWithPersonalStatusToCache(foundRemoteStatus)
+                localDataSource.saveAnimeWithPersonalStatus(foundRemoteStatus)
                 syncJobs[job.key] = true
             }
         }
 
         returnCatchingWithCancellation {
-            localDataSource.saveAnimeWithPersonalStatusToCache(remoteList.filter { remoteAnime ->
+            localDataSource.saveAnimeWithPersonalStatus(remoteList.filter { remoteAnime ->
                 syncJobs.keys.find { job -> job.animeId == remoteAnime.anime.id } == null
             })
         }

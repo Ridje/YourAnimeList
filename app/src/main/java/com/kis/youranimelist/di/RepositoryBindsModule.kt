@@ -2,6 +2,8 @@ package com.kis.youranimelist.di
 
 import com.kis.youranimelist.data.cache.localdatasource.AnimeLocalDataSource
 import com.kis.youranimelist.data.cache.localdatasource.AnimeLocalDataSourceImpl
+import com.kis.youranimelist.data.cache.localdatasource.PersonalAnimeLocalDataSource
+import com.kis.youranimelist.data.cache.localdatasource.PersonalAnimeLocalDataSourceImpl
 import com.kis.youranimelist.data.cache.localdatasource.SideLocalDataSource
 import com.kis.youranimelist.data.cache.localdatasource.SideLocalDataSourceImpl
 import com.kis.youranimelist.data.cache.localdatasource.SyncJobLocalDataSource
@@ -27,4 +29,7 @@ interface RepositoryBindsModule {
 
     @Binds
     fun SideLocalDataSourceImpl.bindSideLocalDataSource(): SideLocalDataSource
+
+    @Binds
+    fun PersonalAnimeLocalDataSourceImpl.bindPersonalAnimeLocalDataSource(): PersonalAnimeLocalDataSource
 }

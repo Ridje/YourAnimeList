@@ -15,10 +15,10 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface AnimeDAO {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun addAnime(animePersistence: AnimePersistence)
+    suspend fun addAnime(animePersistence: AnimePersistence)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun addAnime(animePersistence: List<AnimePersistence>)
+    suspend fun addAnime(animePersistence: List<AnimePersistence>)
 
     @Query("SELECT * FROM anime")
     fun getAllAnime(): List<AnimePersistence>

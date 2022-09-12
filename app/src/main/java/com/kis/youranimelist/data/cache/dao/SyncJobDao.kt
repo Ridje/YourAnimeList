@@ -16,7 +16,7 @@ interface SyncJobDao {
     fun getPersonalAnimeListSyncJob(animeId: Int): DeferredPersonalAnimeListChange
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun addPersonalAnimeListSyncJob(job: DeferredPersonalAnimeListChange)
+    suspend fun addPersonalAnimeListSyncJob(job: DeferredPersonalAnimeListChange)
 
     @Query("DELETE FROM deferred_personal_anime_list_change WHERE deferred_personal_anime_list_change.anime_id = :animeId")
     fun deletePersonalAnimeListSyncJob(animeId: Int)
