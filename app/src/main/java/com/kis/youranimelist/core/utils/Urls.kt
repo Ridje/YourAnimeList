@@ -7,4 +7,5 @@ object Urls {
     const val malProfile = "https://myanimelist.net/profile"
     const val telegramDeveloperLink = "https://t.me/myprivateboard"
     const val malLink = "https://myanimelist.net"
+    const val signUpUrl = "https://myanimelist.net/register.php"
 }

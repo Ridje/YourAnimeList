@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Your Anime List</string>
     <string name="login">Login</string>
+    <string name="sign_up">Sign up</string>
     <string name="watching_items">Watching (%1$s)</string>
     <string name="completed_item">Completed (%1$s)</string>
     <string name="on_hold_items">On hold (%1$s)</string>
@@ -50,6 +51,7 @@
     <string name="sync_notification_title">Personal anime list synchronization</string>
     <string name="sync_notification_channel_name">Sync</string>
     <string name="sync_notification_channel_description">Background tasks for Your Anime List</string>
+    <string name="no_account_question">Don\'t have an account?</string>
 
     <string-array name="personal_list_statuses">
         <item>all</item>
