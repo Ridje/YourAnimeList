@@ -15,5 +15,6 @@ object LoginScreenContract {
     interface LoginScreenEventsConsumer {
         fun onLoginClick()
         fun onLoginSucceed(token: String, codeVerifier: String)
+        fun onBackOnWebView()
     }
 }

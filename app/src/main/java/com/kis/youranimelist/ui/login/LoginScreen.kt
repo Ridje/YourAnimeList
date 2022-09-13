@@ -1,6 +1,7 @@
 package com.kis.youranimelist.ui.login
 
 import android.annotation.SuppressLint
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -54,6 +55,7 @@ fun LoginScreenRoute(
             navController.popBackStack()
             navController.navigate(NavigationKeys.Route.EXPLORE)
         },
+        onBackOnWebView = eventsConsumer::onBackOnWebView
     )
 }
 
@@ -67,7 +69,12 @@ fun LoginScreen(
     onLoginClick: () -> Unit,
     onLoginSucceed: (String, String) -> Unit,
     onAuthDataSaved: () -> Unit,
+    onBackOnWebView: () -> Unit,
 ) {
+
+    if (isWebViewVisible) {
+        BackHandler(onBack = onBackOnWebView)
+    }
     LaunchedEffect(effectFlow) {
         effectFlow.collectLatest { effect ->
             when (effect) {
@@ -133,6 +140,6 @@ fun LoginScreen(
 )
 @Composable
 fun LoginScreenPreview() {
-    LoginScreen(false, false, false, MutableSharedFlow(), {}, { _, _ -> }, {})
+    LoginScreen(false, false, false, MutableSharedFlow(), {}, { _, _ -> }, {}, {})
 }
 
