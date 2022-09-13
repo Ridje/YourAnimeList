@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+private const val LOADING_START_DELAY = 500L
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val authUsecase: AuthUseCase,
@@ -37,7 +38,7 @@ class LoginViewModel @Inject constructor(
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            delay(500L)
+            delay(LOADING_START_DELAY)
             if (authUsecase.isAuthDataValid()) {
                 workManager.enqueueUniqueWork(
                     SyncWorker.SyncWorkName,
@@ -80,5 +81,10 @@ class LoginViewModel @Inject constructor(
                 _effectStream.emit(LoginScreenContract.Effect.NetworkError)
             }
         }
+    }
+
+    override fun onBackOnWebView() {
+        _screenState.value =
+            LoginScreenContract.ScreenState(webViewVisible = false, isLoading = false)
     }
 }

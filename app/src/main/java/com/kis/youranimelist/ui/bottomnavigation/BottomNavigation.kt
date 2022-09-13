@@ -19,6 +19,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.kis.youranimelist.R
 import com.kis.youranimelist.ui.Theme
+import com.kis.youranimelist.ui.navigation.NavigationKeys
 
 
 @Composable
@@ -48,8 +49,13 @@ fun MainScreenBottomNavigation(
                     alwaysShowLabel = true,
                     selected = currentRoute == item.screenRoute,
                     onClick = {
-                        navController.popBackStack()
-                        navController.navigate(item.screenRoute)
+                        navController.navigate(item.screenRoute) {
+                            popUpTo(NavigationKeys.Route.EXPLORE) {
+                                saveState = true
+                            }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
                     }
                 )
             }
