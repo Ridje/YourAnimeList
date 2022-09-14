@@ -20,7 +20,7 @@ class SettingsViewModel @Inject constructor(
     private val _screenState = MutableStateFlow(
         SettingsScreenContract.ScreenState(
             nsfw = false,
-            true
+            useAppAuth = false
         )
     )
 
@@ -28,9 +28,10 @@ class SettingsViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
+            val appSettings = settingsUseCase.getAppSettings()
             _screenState.value = SettingsScreenContract.ScreenState(
-                nsfw = settingsUseCase.getAppSettings()[Setting.NSFW] ?: false,
-                true,
+                nsfw = appSettings[Setting.NSFW] ?: false,
+                useAppAuth = appSettings[Setting.UseAppAuth] ?: false,
             )
         }
     }
@@ -39,7 +40,7 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             settingsUseCase.updateNSFVSetting(newValue)
             _screenState.value = _screenState.value.copy(
-                nsfw = newValue
+                nsfw = newValue,
             )
         }
     }

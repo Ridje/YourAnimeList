@@ -17,5 +17,6 @@ object LoginScreenContract {
         fun onLoginClick()
         fun onLoginSucceed(token: String, codeVerifier: String)
         fun onBackOnWebView()
+        fun onAuthorizationSkipped()
     }
 }

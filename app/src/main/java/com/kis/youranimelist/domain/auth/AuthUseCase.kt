@@ -3,6 +3,7 @@ package com.kis.youranimelist.domain.auth
 import com.kis.youranimelist.core.utils.AppPreferencesWrapper
 import com.kis.youranimelist.core.utils.Setting
 import com.kis.youranimelist.data.network.AuthInterceptor
+import com.kis.youranimelist.data.network.AuthMode
 import com.kis.youranimelist.data.network.model.TokenResponse
 import com.kis.youranimelist.data.repository.RemoteDataSource
 import com.kis.youranimelist.domain.model.ResultWrapper
@@ -28,9 +29,11 @@ class AuthUseCase(
     }
 
     fun onFailedRefreshToken() {
-        clearAuthData()
-        CoroutineScope(context = (Dispatchers.IO)).launch {
-            errorHappenedFlow.emit(NavigationKeys.Route.LOGIN)
+        if (this.isClientAuth()) {
+            clearAuthData()
+            CoroutineScope(context = (Dispatchers.IO)).launch {
+                errorHappenedFlow.emit(NavigationKeys.Route.LOGIN)
+            }
         }
     }
 
@@ -44,10 +47,14 @@ class AuthUseCase(
         return authInterceptor.authorizationValid()
     }
 
+    fun isClientAuth(): Boolean {
+        return !appPreferences.readValue(Setting.UseAppAuth)
+    }
+
     fun onAuthError(errorCode: Int): Boolean {
-        if (errorCode == HTTP_UNAUTHORIZED && authInterceptor.refreshToken != null) {
+        if (errorCode == HTTP_UNAUTHORIZED && authInterceptor.isAuthTokenRefreshable()) {
             val requestTokenResult = runBlocking {
-                remoteDataSource.get().refreshAccessToken(authInterceptor.refreshToken
+                remoteDataSource.get().refreshAccessToken(authInterceptor.refreshToken()
                     ?: throw NullPointerException("Refresh token was nullified by another Thread")
                 )
             }
@@ -69,6 +76,8 @@ class AuthUseCase(
         appPreferences.removeSetting(Setting.ExpiresInToken)
         appPreferences.removeSetting(Setting.TypeToken)
 
+        appPreferences.removeSetting(Setting.UseAppAuth)
+
         authInterceptor.clearAuthorization()
     }
 
@@ -78,21 +87,38 @@ class AuthUseCase(
         expiresIn: Int? = null,
         tokenType: String? = null,
     ) {
+        clearAuthData()
         accessToken?.let {
             appPreferences.writeValue(Setting.AccessToken, accessToken)
-            authInterceptor.setAuthorization(accessToken = accessToken)
         }
         refreshToken?.let {
             appPreferences.writeValue(Setting.RefreshToken, refreshToken)
-            authInterceptor.setAuthorization(refreshToken = refreshToken)
         }
         expiresIn?.let {
             appPreferences.writeValue(Setting.ExpiresInToken, expiresIn)
         }
         tokenType?.let {
             appPreferences.writeValue(Setting.TypeToken, tokenType)
-            authInterceptor.setAuthorization(tokenType = tokenType)
         }
+        authInterceptor.setAuthorization(
+            AuthMode.UserToken(
+                accessToken = accessToken,
+                refreshToken = refreshToken,
+                tokenType = tokenType,
+            )
+        )
+    }
+
+    fun setAuthData(
+        clientId: String,
+    ) {
+        clearAuthData()
+        appPreferences.writeValue(Setting.UseAppAuth, true)
+        authInterceptor.setAuthorization(
+            AuthMode.AppToken(
+                token = clientId
+            )
+        )
     }
 
     suspend fun getAccessToken(

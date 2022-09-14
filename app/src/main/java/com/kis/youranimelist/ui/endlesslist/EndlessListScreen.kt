@@ -209,7 +209,7 @@ fun EndlessListScreenBodyContent(
                         onLongClick = { item?.id?.let(onItemLongPress) }
                     )
             ) {
-                Row {
+                Row(modifier = Modifier.fillMaxWidth()) {
                     Box {
                         AsyncImage(
                             model = item?.imageUrl,
@@ -228,7 +228,7 @@ fun EndlessListScreenBodyContent(
                                     .align(
                                         Alignment.BottomEnd)
                                     .clip(RoundedCornerShape(topStartPercent = 40))
-                                    .background(MaterialTheme.colors.background)
+                                    .background(MaterialTheme.colors.surface)
                                     .padding(horizontal = 6.dp)
                             )
                         }

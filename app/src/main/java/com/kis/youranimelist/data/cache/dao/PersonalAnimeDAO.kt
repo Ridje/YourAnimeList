@@ -33,7 +33,7 @@ interface PersonalAnimeDAO {
     suspend fun deletePersonalAnimeStatus(animeId: Int)
 
     @Query("DELETE FROM anime_personal_status")
-    fun deleteAllPersonalStatuses()
+    suspend fun deleteAllPersonalStatuses()
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun addAnimeStatus(status: AnimeStatusPersistence)

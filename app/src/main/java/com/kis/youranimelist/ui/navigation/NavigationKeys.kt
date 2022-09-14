@@ -16,5 +16,6 @@ object NavigationKeys {
     object Argument {
         const val RANK = "rank-type"
         const val ANIME_ID = "anime"
+        const val FORCE_AUTH = "force-auth"
     }
 }

@@ -1,6 +1,5 @@
 package com.kis.youranimelist.ui.onboarding
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.ContentAlpha
+import androidx.compose.material.Icon
 import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -20,7 +20,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -66,14 +65,13 @@ fun OnboardingScreen(
                     .padding(horizontal = 40.dp),
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally) {
-                    Image(
+                    Icon(
                         painter = painterResource(id = cards[index].icon),
                         contentDescription = stringResource(id = R.string.default_content_description),
                         modifier = Modifier
                             .size(180.dp)
                             .padding(horizontal = 40.dp)
                             .aspectRatio(1f),
-                        colorFilter = ColorFilter.tint(Color.White.copy(alpha = 0.8f)),
                     )
                     Text(
                         text = stringResource(id = cards[index].sign),

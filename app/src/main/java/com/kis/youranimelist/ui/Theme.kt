@@ -6,7 +6,7 @@ object Theme {
     object Colors {
         val background = Color(0xFF0e1a2a)
         val onPrimary = Color.White
-        val surface = Color(0xFF001129)
+        val surface = Color(0xFF132235)
         val onSurface = Color(229, 236, 245, 255)
         val primary = Color(0xFFCF0C11)
         val secondary = Color(0xFF97090C)
