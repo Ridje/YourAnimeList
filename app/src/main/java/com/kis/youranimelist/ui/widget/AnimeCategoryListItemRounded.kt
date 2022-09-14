@@ -40,7 +40,7 @@ fun AnimeCategoryListItemRounded(
     maxLines: Int = 1,
     showPlaceholder: Boolean = false,
     showError: Boolean = false,
-    onClick: () -> Unit,
+    onClick: () -> Unit = {},
 ) {
     Column(horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier

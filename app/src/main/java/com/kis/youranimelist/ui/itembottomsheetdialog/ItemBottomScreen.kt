@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.CircularProgressIndicator
@@ -32,7 +31,6 @@ import androidx.compose.material.OutlinedButton
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Slider
 import androidx.compose.material.Text
-import androidx.compose.material.TextButton
 import androidx.compose.material.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -54,6 +52,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.kis.youranimelist.R
+import com.kis.youranimelist.ui.Theme
+import com.kis.youranimelist.ui.widget.DefaultAlertDialog
 import com.kis.youranimelist.ui.widget.PostfixTransformation
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
@@ -102,15 +102,15 @@ fun ItemBottomScreen(
     applyLoading: Boolean,
     deleteLoading: Boolean,
     effectFlow: Flow<ItemBottomScreenContract.Effect>,
-    onScoreSliderValueChanged: (Float) -> Unit,
-    onEpisodesWatchedValueChanged: (Int?) -> Unit,
-    onCancelClick: () -> Unit,
-    onPlusOneClicked: () -> Unit,
-    onMinusOneClicked: () -> Unit,
-    onStatusChanged: (String) -> Unit,
-    onApplyChanges: () -> Unit,
-    onDataSaved: () -> Unit,
-    onDeleteEntryClick: () -> Unit,
+    onScoreSliderValueChanged: (Float) -> Unit = {},
+    onEpisodesWatchedValueChanged: (Int?) -> Unit = {},
+    onCancelClick: () -> Unit = {},
+    onPlusOneClicked: () -> Unit = {},
+    onMinusOneClicked: () -> Unit = {},
+    onStatusChanged: (String) -> Unit = {},
+    onApplyChanges: () -> Unit = {},
+    onDataSaved: () -> Unit = {},
+    onDeleteEntryClick: () -> Unit = {},
 ) {
     LaunchedEffect(effectFlow) {
         effectFlow.collectLatest { effect ->
@@ -123,7 +123,11 @@ fun ItemBottomScreen(
     val scrollState = rememberScrollState()
     val scope = rememberCoroutineScope()
     val animation: TweenSpec<Float> = remember {
-        tween(4000, 200, easing = LinearEasing)
+        tween(
+            Theme.NumberValues.scrollableTitleAnimeDuration,
+            Theme.NumberValues.scrollableTitleAnimeStartDelay,
+            easing = LinearEasing
+        )
     }
     val showDialog = remember { mutableStateOf(false) }
     LaunchedEffect(title) {
@@ -141,28 +145,13 @@ fun ItemBottomScreen(
         }
     }
     if (showDialog.value) {
-        AlertDialog(
-            title = {
-                Text(stringResource(R.string.delete_anime_question))
-            },
-            text = {
-                Text(text = stringResource(R.string.delete_anime_question_description))
-            },
+        DefaultAlertDialog(
+            title = stringResource(R.string.delete_anime_question),
+            description = stringResource(R.string.delete_anime_question_description),
             onDismissRequest = { showDialog.value = false },
-            confirmButton = {
-                TextButton(onClick = {
-                    showDialog.value = false
-                    onDeleteEntryClick.invoke()
-                }) {
-                    Text(stringResource(R.string.ok))
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = {
-                    showDialog.value = false
-                }) {
-                    Text(stringResource(R.string.cancel))
-                }
+            onClickOk = {
+                showDialog.value = false
+                onDeleteEntryClick.invoke()
             }
         )
     }
@@ -317,3 +306,9 @@ fun ItemBottomScreen(
         }
     }
 }
+
+private val Theme.NumberValues.scrollableTitleAnimeDuration: Int
+    get() = 4000
+
+private val Theme.NumberValues.scrollableTitleAnimeStartDelay: Int
+    get() = 200

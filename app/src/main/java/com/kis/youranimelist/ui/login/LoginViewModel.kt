@@ -1,5 +1,6 @@
 package com.kis.youranimelist.ui.login
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.work.ExistingWorkPolicy
@@ -10,6 +11,7 @@ import com.kis.youranimelist.domain.auth.AuthUseCase
 import com.kis.youranimelist.domain.model.ResultWrapper
 import com.kis.youranimelist.domain.personalanimelist.PersonalAnimeListUseCase
 import com.kis.youranimelist.domain.settings.SettingsUseCase
+import com.kis.youranimelist.ui.navigation.NavigationKeys
 import dagger.Lazy
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -22,12 +24,14 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 private const val LOADING_START_DELAY = 500L
+
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val authUsecase: AuthUseCase,
     private val settingsUseCase: Lazy<SettingsUseCase>,
     private val personalAnimeList: PersonalAnimeListUseCase,
     private val workManager: WorkManager,
+    savedStateHandle: SavedStateHandle,
 ) : ViewModel(),
     LoginScreenContract.LoginScreenEventsConsumer {
 
@@ -39,15 +43,18 @@ class LoginViewModel @Inject constructor(
     private val _effectStream: MutableSharedFlow<LoginScreenContract.Effect> = MutableSharedFlow()
     val effectStream = _effectStream as SharedFlow<LoginScreenContract.Effect>
 
+    private val forceAuth = savedStateHandle.get<Boolean>(NavigationKeys.Argument.FORCE_AUTH) ?: false
     init {
         viewModelScope.launch(Dispatchers.IO) {
             delay(LOADING_START_DELAY)
-            if (authUsecase.isAuthDataValid()) {
-                workManager.enqueueUniqueWork(
-                    SyncWorker.SyncWorkName,
-                    ExistingWorkPolicy.REPLACE,
-                    SyncWorker.startSyncJob()
-                )
+            if (!forceAuth && authUsecase.isAuthDataValid()) {
+                if (authUsecase.isClientAuth()) {
+                    workManager.enqueueUniqueWork(
+                        SyncWorker.SyncWorkName,
+                        ExistingWorkPolicy.REPLACE,
+                        SyncWorker.startSyncJob()
+                    )
+                }
                 proceedToNextScreen()
             } else {
                 _screenState.value = screenState.value.copy(isLoading = false)
@@ -98,5 +105,14 @@ class LoginViewModel @Inject constructor(
     override fun onBackOnWebView() {
         _screenState.value =
             LoginScreenContract.ScreenState(webViewVisible = false, isLoading = false)
+    }
+
+    override fun onAuthorizationSkipped() {
+        _screenState.value =
+            LoginScreenContract.ScreenState(webViewVisible = false, isLoading = true)
+        viewModelScope.launch(Dispatchers.IO) {
+            authUsecase.setAuthData(BuildConfig.CLIENT_ID)
+            proceedToNextScreen()
+        }
     }
 }

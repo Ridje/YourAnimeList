@@ -10,7 +10,8 @@ class SettingsUseCase @Inject constructor(
 
     fun getAppSettings(): Map<Setting<*>, Boolean> {
         return mapOf(
-            Setting.NSFW to appPreferences.readValue(Setting.NSFW)
+            Setting.NSFW to appPreferences.readValue(Setting.NSFW),
+            Setting.UseAppAuth to appPreferences.readValue(Setting.UseAppAuth)
         )
     }
 

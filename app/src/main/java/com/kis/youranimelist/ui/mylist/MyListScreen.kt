@@ -189,11 +189,13 @@ fun MyListScreen(
                             modifier = Modifier.align(Center))
                     }
                 } else {
-                    LazyColumn(contentPadding = PaddingValues(start = 8.dp,
+                    LazyColumn(contentPadding = PaddingValues(
+                        start = 8.dp,
                         end = 8.dp,
                         top = 8.dp,
                         bottom = Theme.NumberValues.bottomBarPaddingValueForLazyList.dp),
-                        modifier = Modifier.fillMaxHeight()) {
+                        modifier = Modifier.fillMaxHeight()
+                    ) {
                         items(
                             items = listItems,
                             key = { it.id }

@@ -2,10 +2,12 @@ package com.kis.youranimelist.di
 
 import com.haroldadmin.cnradapter.NetworkResponseAdapterFactory
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
+import com.kis.youranimelist.BuildConfig
 import com.kis.youranimelist.core.utils.AppPreferencesWrapper
 import com.kis.youranimelist.core.utils.Setting
 import com.kis.youranimelist.core.utils.Urls
 import com.kis.youranimelist.data.network.AuthInterceptor
+import com.kis.youranimelist.data.network.AuthMode
 import com.kis.youranimelist.data.network.MALTokenAuthenticator
 import com.kis.youranimelist.data.network.NSFWInterceptor
 import com.kis.youranimelist.data.network.api.MyAnimeListAPI
@@ -67,9 +69,15 @@ object NetworkModule {
     fun provideAuthInterceptor(appPreferences: AppPreferencesWrapper): AuthInterceptor {
         return AuthInterceptor().apply {
             setAuthorization(
-                appPreferences.readValue(Setting.TypeToken),
-                appPreferences.readValue(Setting.AccessToken),
-                appPreferences.readValue(Setting.RefreshToken)
+                if (appPreferences.readValue(Setting.UseAppAuth)) {
+                    AuthMode.AppToken(BuildConfig.CLIENT_ID)
+                } else {
+                    AuthMode.UserToken(
+                        appPreferences.readValue(Setting.TypeToken),
+                        appPreferences.readValue(Setting.AccessToken),
+                        appPreferences.readValue(Setting.RefreshToken)
+                    )
+                }
             )
         }
     }
