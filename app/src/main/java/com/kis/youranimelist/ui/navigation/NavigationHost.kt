@@ -31,6 +31,7 @@ import com.kis.youranimelist.ui.item.ItemScreenRoute
 import com.kis.youranimelist.ui.itembottomsheetdialog.ItemBottomScreenRoute
 import com.kis.youranimelist.ui.login.LoginScreenRoute
 import com.kis.youranimelist.ui.mylist.MyListScreenRoute
+import com.kis.youranimelist.ui.onboarding.OnboardingScreenRoute
 import com.kis.youranimelist.ui.profile.ProfileScreenRoute
 import com.kis.youranimelist.ui.search.SearchScreenRoute
 import com.kis.youranimelist.ui.settings.SettingsScreenRoute
@@ -154,6 +155,11 @@ fun YourAnimeListNavHost(
             ) {
                 EndlessListScreenSuggestionsRoute(navController = navController,
                     scaffoldState = scaffoldState)
+            }
+            composable(
+                route = NavigationKeys.Route.ONBOARDING,
+            ) {
+                OnboardingScreenRoute(navController)
             }
         }
     }

@@ -9,7 +9,7 @@ object Theme {
         val surface = Color(0xFF001129)
         val onSurface = Color(229, 236, 245, 255)
         val primary = Color(0xFFCF0C11)
-        val secondary = Color(0xFFCF0C11)
+        val secondary = Color(0xFF97090C)
         val secondaryVariant = Color(0xFFF30F15)
         val completedItemColor = Color(0xFF0D47A1)
         val watchingItemColor = Color(0xFF1B5E20)

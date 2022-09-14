@@ -14,8 +14,15 @@ class SettingsUseCase @Inject constructor(
         )
     }
 
+    fun settingOnboardingShown(): Boolean {
+        return appPreferences.readValue(Setting.OnboardingShown)
+    }
+
+    fun updateOnboardingShownSetting(value: Boolean) {
+        appPreferences.writeValue(Setting.OnboardingShown, value)
+    }
+
     fun updateNSFVSetting(value: Boolean) {
         appPreferences.writeValue(Setting.NSFW, value)
-
     }
 }

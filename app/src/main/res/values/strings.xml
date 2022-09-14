@@ -53,6 +53,15 @@
     <string name="sync_notification_channel_description">Background tasks for Your Anime List</string>
     <string name="no_account_question">Don\'t have an account?</string>
 
+    <string name="onboarding_welcome">Welcome!\nSwipe right to know more about the app</string>
+    <string name="onboarding_explore">Explore new anime</string>
+    <string name="onboarding_personal_list">Track your favorite titles</string>
+    <string name="onboarding_profile">Collect your anime detailed stat</string>
+    <string name="onboarding_settings">Customize your app settings</string>
+    <string name="finish">Finish</string>
+    <string name="skip">Skip</string>
+
+
     <string-array name="personal_list_statuses">
         <item>all</item>
         <item>watching</item>

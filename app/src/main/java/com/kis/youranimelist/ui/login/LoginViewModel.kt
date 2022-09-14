@@ -9,6 +9,8 @@ import com.kis.youranimelist.data.SyncWorker
 import com.kis.youranimelist.domain.auth.AuthUseCase
 import com.kis.youranimelist.domain.model.ResultWrapper
 import com.kis.youranimelist.domain.personalanimelist.PersonalAnimeListUseCase
+import com.kis.youranimelist.domain.settings.SettingsUseCase
+import dagger.Lazy
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -23,6 +25,7 @@ private const val LOADING_START_DELAY = 500L
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val authUsecase: AuthUseCase,
+    private val settingsUseCase: Lazy<SettingsUseCase>,
     private val personalAnimeList: PersonalAnimeListUseCase,
     private val workManager: WorkManager,
 ) : ViewModel(),
@@ -45,7 +48,7 @@ class LoginViewModel @Inject constructor(
                     ExistingWorkPolicy.REPLACE,
                     SyncWorker.startSyncJob()
                 )
-                _effectStream.emit(LoginScreenContract.Effect.AuthDataSaved)
+                proceedToNextScreen()
             } else {
                 _screenState.value = screenState.value.copy(isLoading = false)
             }
@@ -76,10 +79,19 @@ class LoginViewModel @Inject constructor(
                 personalAnimeList.refreshPersonalAnimeStatuses()
                 _screenState.value = screenState.value.copy(isLoadingUserDatabase = false)
 
-                _effectStream.emit(LoginScreenContract.Effect.AuthDataSaved)
+                proceedToNextScreen()
             } else {
                 _effectStream.emit(LoginScreenContract.Effect.NetworkError)
             }
+        }
+    }
+
+    private suspend fun proceedToNextScreen() {
+        if (settingsUseCase.get().settingOnboardingShown()) {
+            _effectStream.emit(LoginScreenContract.Effect.AuthDataSaved)
+        } else {
+            settingsUseCase.get().updateOnboardingShownSetting(true)
+            _effectStream.emit(LoginScreenContract.Effect.AuthDataSavedShowOnboarding)
         }
     }
 

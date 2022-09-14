@@ -58,8 +58,15 @@ fun LoginScreenRoute(
         },
         eventsConsumer::onLoginSucceed,
         {
-            navController.popBackStack()
-            navController.navigate(NavigationKeys.Route.EXPLORE)
+            navController.navigate(NavigationKeys.Route.EXPLORE) {
+                popUpTo(0)
+            }
+        },
+        {
+            navController.navigate(NavigationKeys.Route.EXPLORE) {
+                popUpTo(0)
+            }
+            navController.navigate(NavigationKeys.Route.ONBOARDING)
         },
         onBackOnWebView = eventsConsumer::onBackOnWebView
     )
@@ -75,6 +82,7 @@ fun LoginScreen(
     onLoginClick: () -> Unit,
     onLoginSucceed: (String, String) -> Unit,
     onAuthDataSaved: () -> Unit,
+    onAuthDataSavedBoardingNowShownYet: () -> Unit,
     onBackOnWebView: () -> Unit,
 ) {
 
@@ -86,6 +94,7 @@ fun LoginScreen(
             when (effect) {
                 is LoginScreenContract.Effect.AuthDataSaved -> onAuthDataSaved.invoke()
                 LoginScreenContract.Effect.NetworkError -> TODO()
+                LoginScreenContract.Effect.AuthDataSavedShowOnboarding -> onAuthDataSavedBoardingNowShownYet.invoke()
             }
         }
     }
@@ -161,6 +170,6 @@ fun LoginScreen(
 )
 @Composable
 fun LoginScreenPreview() {
-    LoginScreen(false, false, false, MutableSharedFlow(), {}, { _, _ -> }, {}, {})
+    LoginScreen(false, false, false, MutableSharedFlow(), {}, { _, _ -> }, {}, {}, {})
 }
 

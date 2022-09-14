@@ -10,6 +10,7 @@ object LoginScreenContract {
     sealed class Effect {
         object AuthDataSaved: Effect()
         object NetworkError: Effect()
+        object AuthDataSavedShowOnboarding: Effect()
     }
 
     interface LoginScreenEventsConsumer {

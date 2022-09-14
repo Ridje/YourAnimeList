@@ -50,11 +50,8 @@ fun MainScreenBottomNavigation(
                     selected = currentRoute == item.screenRoute,
                     onClick = {
                         navController.navigate(item.screenRoute) {
-                            popUpTo(NavigationKeys.Route.EXPLORE) {
-                                saveState = true
-                            }
+                            popUpTo(NavigationKeys.Route.EXPLORE)
                             launchSingleTop = true
-                            restoreState = true
                         }
                     }
                 )

@@ -10,6 +10,7 @@ object NavigationKeys {
         const val RANKING_LIST = "ranking"
         const val SEARCH = "search"
         const val SUGGESTIONS = "suggestions"
+        const val ONBOARDING = "onboarding"
     }
 
     object Argument {
