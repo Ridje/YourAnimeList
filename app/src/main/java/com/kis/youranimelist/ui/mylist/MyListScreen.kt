@@ -1,5 +1,6 @@
 package com.kis.youranimelist.ui.mylist
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -159,11 +160,13 @@ fun MyListScreen(
             }
         }
 
-        Surface(modifier = Modifier
-            .fillMaxWidth(),
-            color = Color.Transparent
-        ) {
-            DebouncedSearch(searchValue = searchValue, onSearchValueChanged = onSearchValueChanged)
+        AnimatedVisibility(visible = listItems.isNotEmpty() || searchValue.isNotEmpty()) {
+            Surface(modifier = Modifier
+                .fillMaxWidth(),
+                color = Color.Transparent
+            ) {
+                DebouncedSearch(searchValue = searchValue, onSearchValueChanged = onSearchValueChanged)
+            }
         }
         if (isError) {
             val scope = rememberCoroutineScope()
