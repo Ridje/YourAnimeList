@@ -14,6 +14,7 @@ import com.kis.youranimelist.domain.personalanimelist.mapper.AnimeStatusMapper
 import com.kis.youranimelist.domain.personalanimelist.model.AnimeStatus
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import java.util.Collections
 import javax.inject.Inject
 
 private const val MAX_ITEMS_PER_REQUEST = 1000
@@ -98,7 +99,8 @@ class PersonalAnimeRepositoryImpl @Inject constructor(
     override suspend fun synchronize(): Boolean {
 
         val syncJobs =
-            localDataSource.getPersonalAnimeListSyncJobs().associateWith { false }.toMutableMap()
+            Collections.synchronizedMap(localDataSource.getPersonalAnimeListSyncJobs()
+                .associateWith { false })
 
         val remoteList = fetchAllData().map { animeStatusMapper.map(it) }
 
