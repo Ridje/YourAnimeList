@@ -28,12 +28,12 @@ import com.kis.youranimelist.data.repository.pagingsource.AnimeListPagingReposit
 import com.kis.youranimelist.data.repository.pagingsource.AnimeListPagingRepositoryImpl
 import com.kis.youranimelist.data.repository.personalanime.PersonalAnimeRepository
 import com.kis.youranimelist.data.repository.personalanime.PersonalAnimeRepositoryImpl
+import com.kis.youranimelist.data.repository.synchronization.SynchronizationManager
 import com.kis.youranimelist.data.repository.user.UserRepository
 import com.kis.youranimelist.data.repository.user.UserRepositoryImpl
 import com.kis.youranimelist.domain.personalanimelist.mapper.AnimeStatusMapper
 import com.kis.youranimelist.domain.rankinglist.mapper.AnimeMapper
 import com.kis.youranimelist.domain.user.mapper.UserMapper
-import dagger.Lazy
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -172,13 +172,13 @@ object RepositoryModule {
         remoteDataSource: RemoteDataSource,
         localDataSource: LocalDataSource,
         animeStatusMapper: AnimeStatusMapper,
-        workManager: Lazy<WorkManager>,
+        synchronizationManager: SynchronizationManager,
     ): PersonalAnimeRepository {
         return PersonalAnimeRepositoryImpl(
             remoteDataSource,
             localDataSource,
             animeStatusMapper,
-            workManager
+            synchronizationManager,
         )
     }
 
