@@ -10,9 +10,6 @@ on:
 jobs: 
   run-instrumented-tests:
     runs-on: macos-latest
-    env:
-      RELEASE_VERSION: ${{ inputs.release_version }}
-    
     
     steps:
       - name: setup java11
@@ -31,7 +28,7 @@ jobs:
         run: echo CLIENT_ID="$CLIENT_ID" > ./local.properties
         
       - name: replace version
-        run: sed -i -e 's/yal_application_version_name = ".*"/yal_application_version_name = "$RELEASE_VERSION"/' ./app/build.gradle 
+        run: sed -i -e 's/yal_application_version_name = ".*"/yal_application_version_name = "${{ inputs.release_version }}"/' ./app/build.gradle 
       
       - name: run tests
         uses: reactivecircus/android-emulator-runner@v2
@@ -41,9 +38,9 @@ jobs:
       
       - name: make pre-release branch
         run: |
-          git branch -b rc_$RELEASE_VERSION
+          git branch -b rc_${{ inputs.release_version }}
           git commit -m 'created release'
-          git push rc_$RELEASE_VERSION
+          git push rc_${{ inputs.release_version }}
           
       
 
