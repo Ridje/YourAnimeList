@@ -32,6 +32,7 @@ jobs:
       - name: make pre-release branch
         run: |
           git checkout -b rc_${{ inputs.release_version }}
+          git add .
           git commit -m 'Uppdated code name to ${{ inputs.release_version }}'
           git push rc_${{ inputs.release_version }}
           
