@@ -7,9 +7,38 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:495336405406:android:091724f5926560d4f7fe8f",
+        "android_client_info": {
+          "package_name": "com.kis.youranimelist.debug"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "495336405406-gjima1908h7bf3f7mbf3a77pqpsj48e8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC25VtARk9fzLVRZN6XkNu24oRAY-GeYKk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "495336405406-gjima1908h7bf3f7mbf3a77pqpsj48e8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:495336405406:android:5c714ccde5f04404f7fe8f",
         "android_client_info": {
-          "package_name": "com.kis.youranimelist"
+          "package_name": "com.kist.youranimelist"
         }
       },
       "oauth_client": [
