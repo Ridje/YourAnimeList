@@ -40,8 +40,10 @@ jobs:
           script: ./gradlew connectedCheck
       
       - name: make pre-release branch
-        
-        run: git branch -b rc_$RELEASE_VERSION
+        run: |
+          git branch -b rc_$RELEASE_VERSION
+          git commit -m 'created release'
+          git push rc_$RELEASE_VERSION
           
       
 
