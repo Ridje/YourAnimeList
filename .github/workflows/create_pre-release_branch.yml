@@ -10,9 +10,11 @@ jobs:
     
     steps:
       - name: setup java11
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
         with:
           java-version: '11'
+          distribution: 'temurin'
+          
     
       - name: checkout
         uses: actions/checkout@v3
