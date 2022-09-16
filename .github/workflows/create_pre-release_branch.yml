@@ -22,7 +22,7 @@ jobs:
       - name: create secrets
         env:
           CLIENT_ID: ${{ secrets.CLIENT_ID }}
-          run: echo CLIENT_ID="$CLIENT_ID" > ./local.properties
+        run: echo CLIENT_ID="$CLIENT_ID" > ./local.properties
       
       - name: run tests
         uses: reactivecircus/android-emulator-runner@v2
