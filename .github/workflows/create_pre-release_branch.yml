@@ -8,7 +8,7 @@ on:
         required: true
         type: String
 jobs: 
-  run-instrumented-tests:
+  create_pre-release_branch:
     runs-on: macos-latest
     
     steps:
@@ -25,6 +25,12 @@ jobs:
         env:
           CLIENT_ID: ${{ secrets.CLIENT_ID }}
         run: echo CLIENT_ID="$CLIENT_ID" > ./local.properties
+        
+      - name: run tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 29
+          script: ./gradlew connectedCheck
         
       - name: replace version
         run: sed -i '' -e 's/yal_application_version_name = ".*"/yal_application_version_name = "${{ inputs.release_version }}"/' ./app/build.gradle 
