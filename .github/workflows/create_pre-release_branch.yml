@@ -27,14 +27,14 @@ jobs:
         run: echo CLIENT_ID="$CLIENT_ID" > ./local.properties
         
       - name: replace version
-        run: sed -i -e 's/yal_application_version_name = ".*"/yal_application_version_name = "${{ inputs.release_version }}"/' ./app/build.gradle 
+        run: sed -i '' -e 's/yal_application_version_name = ".*"/yal_application_version_name = "${{ inputs.release_version }}"/' ./app/build.gradle 
       
       - name: make pre-release branch
         run: |
           git checkout -b rc_${{ inputs.release_version }}
           git add .
           git commit -m 'Uppdated code name to ${{ inputs.release_version }}'
-          git push rc_${{ inputs.release_version }}
+          git push origin rc_${{ inputs.release_version }}
           
       
 
