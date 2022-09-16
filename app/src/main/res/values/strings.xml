@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Your Anime List</string>
     <string name="login">Login</string>
+    <string name="sign_up">Sign up</string>
     <string name="watching_items">Watching (%1$s)</string>
     <string name="completed_item">Completed (%1$s)</string>
     <string name="on_hold_items">On hold (%1$s)</string>
@@ -32,24 +33,44 @@
     <string name="recommendations">Recommended by users</string>
     <string name="recommended_times">%1$d users</string>
     <string name="searching_in_list">Search in list</string>
-    <string name="logout">Logout</string>
-    <string name="logout_dialog_description">Are you sure you want to logout? All not synced data will be deleted and you will be forwarded to login screen.</string>
-    <string name="nsfw">nsfw</string>
-    <string name="nsfw_setting_description">Load etti, hentai and other mature content</string>
-    <string name="api">API</string>
     <string name="other">Other</string>
-    <string name="github">Github</string>
-    <string name="github_description">Visit project\'s github</string>
-    <string name="contact_developer">Contact devs</string>
-    <string name="contact_developer_description">We\'re open to talk</string>
-    <string name="mal_abb">MAL</string>
-    <string name="mal_abb_description">Visit myanimelist.net</string>
-    <string name="profile">Profile</string>
-    <string name="logout_description">Logout and go to login screen</string>
     <string name="error">Error</string>
     <string name="sync_notification_title">Personal anime list synchronization</string>
     <string name="sync_notification_channel_name">Sync</string>
     <string name="sync_notification_channel_description">Background tasks for Your Anime List</string>
+    <string name="no_account_question">Don\'t have an account?</string>
+    <string name="finish">Finish</string>
+    <string name="skip">Skip</string>
+
+    <string name="onboarding_welcome">Welcome!\nSwipe right to know more about the app</string>
+    <string name="onboarding_explore">Explore new anime</string>
+    <string name="onboarding_personal_list">Track your favorite titles</string>
+    <string name="onboarding_profile">Collect your anime detailed stat</string>
+    <string name="onboarding_settings">Customize your app settings</string>
+
+    <string name="login_use_without_an_account">Use without an account</string>
+
+    <string name="settings_nsfw">nsfw</string>
+    <string name="settings_nsfw_setting_description">Load etti, hentai and other mature content</string>
+    <string name="settings_logout">Logout</string>
+    <string name="settings_clear_data">Clear local data</string>
+    <string name="settings_clear_data_description">Attention! You will loose all your progress</string>
+    <string name="settings_clear_data_dialog_description">Are you sure you want to clear data? All not synced data will be deleted and you will be forwarded to login screen.</string>
+    <string name="settings_logout_description">Logout and go to login screen</string>
+    <string name="settings_logout_dialog_description">Are you sure you want to logout? All not synced data will be deleted and you will be forwarded to login screen.</string>
+    <string name="settings_connect_mal_account">Connect MAL</string>
+    <string name="settings_connect_mal_account_description">Save your anime progress in clouds</string>
+    <string name="settings_category_profile">Profile</string>
+    <string name="settings_category_api">API</string>
+    <string name="settings_mal_abb">MAL</string>
+    <string name="settings_mal_abb_description">Visit myanimelist.net</string>
+    <string name="settings_contact_developer">Contact devs</string>
+    <string name="settings_contact_developer_description">We\'re open to talk</string>
+    <string name="settings_github">Github</string>
+    <string name="settings_github_description">Visit project\'s github</string>
+
+    <string name="profile_connect_mal_account">Connect MAL</string>
+    <string name="profile_connect_mal_account_description">Click here to connect your MAL account and get access to anime statistics</string>
 
     <string-array name="personal_list_statuses">
         <item>all</item>

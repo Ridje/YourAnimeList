@@ -1,12 +1,7 @@
 package com.kis.youranimelist.data.repository.personalanime
 
-import android.util.Log
-import androidx.work.ExistingWorkPolicy
-import androidx.work.WorkManager
 import com.haroldadmin.cnradapter.NetworkResponse
 import com.kis.youranimelist.core.utils.returnCatchingWithCancellation
-import com.kis.youranimelist.data.SyncWorker
-import com.kis.youranimelist.data.SyncWorker.Companion.SyncWorkName
 import com.kis.youranimelist.data.cache.model.personalanime.AnimePersonalStatusPersistence
 import com.kis.youranimelist.data.network.model.ErrorResponse
 import com.kis.youranimelist.data.network.model.personallist.PersonalAnimeItemResponse
@@ -14,41 +9,29 @@ import com.kis.youranimelist.data.network.model.personallist.PersonalAnimeListRe
 import com.kis.youranimelist.data.network.model.personallist.asAnimePersonalStatusPersistence
 import com.kis.youranimelist.data.repository.LocalDataSource
 import com.kis.youranimelist.data.repository.RemoteDataSource
+import com.kis.youranimelist.data.repository.synchronization.SynchronizationManager
 import com.kis.youranimelist.domain.personalanimelist.mapper.AnimeStatusMapper
 import com.kis.youranimelist.domain.personalanimelist.model.AnimeStatus
-import dagger.Lazy
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-private const val TAG = "PersonalAnimeRepositoryImpl"
 private const val MAX_ITEMS_PER_REQUEST = 1000
 
 class PersonalAnimeRepositoryImpl @Inject constructor(
     private val remoteDataSource: RemoteDataSource,
     private val localDataSource: LocalDataSource,
     private val animeStatusMapper: AnimeStatusMapper,
-    workManager: Lazy<WorkManager>,
+    private val synchronizationManager: SynchronizationManager,
 ) : PersonalAnimeRepository {
-
-    private val workManager by lazy { workManager.get() }
 
     override fun getPersonalAnimeStatusesProducer(): Flow<List<AnimeStatus>> {
         return localDataSource.getAnimeWithStatusProducer()
             .map { entities -> entities.map { entity -> animeStatusMapper.map(entity) } }
     }
 
-    override suspend fun refreshPersonalAnimeStatuses() {
-        val dataList = fetchAllData().map { animeStatusMapper.map(it) }
-        try {
-            localDataSource.saveAnimeWithPersonalStatus(dataList)
-        } catch (e: Exception) {
-            Log.d(TAG, "Error during cache invalidation, error message: ${e.message}")
-        }
-    }
-
     override suspend fun deleteSyncPersonalData(): Boolean {
-        workManager.cancelUniqueWork(SyncWorkName)
+        synchronizationManager.cancelPlannedSynchronizations()
         return localDataSource.deleteSyncData()
     }
 
@@ -57,11 +40,7 @@ class PersonalAnimeRepositoryImpl @Inject constructor(
         val remoteResult = remoteDataSource.deletePersonalAnimeStatus(animeId)
 
         if (remoteResult is NetworkResponse.Error) {
-            workManager.enqueueUniqueWork(
-                SyncWorkName,
-                ExistingWorkPolicy.REPLACE,
-                SyncWorker.startSyncJob()
-            )
+            synchronizationManager.planSynchronization()
         } else {
             localDataSource.removePersonalAnimeListSyncJob(
                 animeId,
@@ -106,11 +85,7 @@ class PersonalAnimeRepositoryImpl @Inject constructor(
         )
 
         if (remoteResult is NetworkResponse.Error) {
-            workManager.enqueueUniqueWork(
-                SyncWorkName,
-                ExistingWorkPolicy.REPLACE,
-                SyncWorker.startSyncJob()
-            )
+            synchronizationManager.planSynchronization()
         } else {
             localDataSource.removePersonalAnimeListSyncJob(
                 animeStatus.anime.id,

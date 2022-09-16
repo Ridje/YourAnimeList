@@ -7,14 +7,15 @@ import androidx.security.crypto.MasterKeys
 import com.kis.youranimelist.core.utils.AppPreferences.Companion.ACCESS_TOKEN_SETTING_KEY
 import com.kis.youranimelist.core.utils.AppPreferences.Companion.EXPIRES_IN_TOKEN_SETTING_KEY
 import com.kis.youranimelist.core.utils.AppPreferences.Companion.NSFW_SETTING_KEY
+import com.kis.youranimelist.core.utils.AppPreferences.Companion.ONBOARDING_SHOWN_PREF_KEY
 import com.kis.youranimelist.core.utils.AppPreferences.Companion.REFRESH_TOKEN_SETTING_KEY
 import com.kis.youranimelist.core.utils.AppPreferences.Companion.TYPE_TOKEN_SETTING_KEY
+import com.kis.youranimelist.core.utils.AppPreferences.Companion.USE_APP_AUTH
 
 class AppPreferencesWrapper constructor(private val appPreferences: AppPreferences) {
 
     fun writeValue(key: Setting<String>, value: String) {
         appPreferences.writeString(key.key, value)
-
     }
 
     fun writeValue(key: Setting<Int>, value: Int) {
@@ -122,6 +123,8 @@ class AppPreferences(val context: Context) {
             TYPE_TOKEN_SETTING_KEY)
 
         const val NSFW_SETTING_KEY = "nsfw"
+        const val ONBOARDING_SHOWN_PREF_KEY = "onboarding_shown"
+        const val USE_APP_AUTH = "use_app_auth"
 
         private val masterKeys = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
     }
@@ -138,5 +141,7 @@ sealed class Setting<T>(val key: String) {
     object TypeToken : Setting<String>(TYPE_TOKEN_SETTING_KEY)
 
     object NSFW : Setting<Boolean>(NSFW_SETTING_KEY)
+    object OnboardingShown: Setting<Boolean>(ONBOARDING_SHOWN_PREF_KEY)
+    object UseAppAuth: Setting<Boolean>(USE_APP_AUTH)
 }
 

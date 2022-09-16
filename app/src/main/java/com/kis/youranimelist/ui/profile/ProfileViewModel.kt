@@ -10,7 +10,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.text.DateFormat
 import javax.inject.Inject
@@ -35,37 +34,47 @@ class ProfileViewModel @Inject constructor(
 
     private fun startObserveProfileChanges() {
         viewModelScope.launch(Dispatchers.IO) {
-            userUseCase.getUserData().collect { resultUser ->
-                val newValue = when (resultUser) {
-                    is ResultWrapper.Success -> {
-                        resultUser.data.asProfileScreenState(
-                            userMapper = {
-                                resultUser.data.asProfileScreenUser(
-                                    birthDateFormatter = {
-                                        resultUser.data.birthday.format(shortDateFormat)
-                                    },
-                                    joinedAtDateFormatter = {
-                                        resultUser.data.joinedAt.format(shortDateFormat)
-                                    },
-                                )
-                            },
-                            userStatisticToProfilePieChartMapper = { resultUser.data.userAnimeStatistic.asProfilePieChartData() },
-                            userStatisticToProfileLegend = { resultUser.data.userAnimeStatistic.asProfileLegend(resourceProvider) },
-                            userStatisticToBottomStatisticData = { resultUser.data.userAnimeStatistic.asBottomStatisticsData() }
-                        )
-
+            if (userUseCase.isAppAuthorization()) {
+                _screenState.value = screenState.value.copy(
+                    isLoading = false,
+                    isError = false,
+                    isProfileAvailable = false
+                )
+            } else {
+                userUseCase.getUserData().collect { resultUser ->
+                    val newValue = when (resultUser) {
+                        is ResultWrapper.Success -> {
+                            resultUser.data.asProfileScreenState(
+                                userMapper = {
+                                    resultUser.data.asProfileScreenUser(
+                                        birthDateFormatter = {
+                                            resultUser.data.birthday.format(shortDateFormat)
+                                        },
+                                        joinedAtDateFormatter = {
+                                            resultUser.data.joinedAt.format(shortDateFormat)
+                                        },
+                                    )
+                                },
+                                userStatisticToProfilePieChartMapper = { resultUser.data.userAnimeStatistic.asProfilePieChartData() },
+                                userStatisticToProfileLegend = {
+                                    resultUser.data.userAnimeStatistic.asProfileLegend(
+                                        resourceProvider)
+                                },
+                                userStatisticToBottomStatisticData = { resultUser.data.userAnimeStatistic.asBottomStatisticsData() }
+                            )
+                        }
+                        is ResultWrapper.Loading -> {
+                            ProfileScreenContract.ScreeState(isLoading = true)
+                        }
+                        is ResultWrapper.Error -> {
+                            _screenState.value.copy(
+                                isLoading = false,
+                                isError = true,
+                            )
+                        }
                     }
-                    is ResultWrapper.Loading -> {
-                        ProfileScreenContract.ScreeState(isLoading = true)
-                    }
-                    is ResultWrapper.Error -> {
-                        _screenState.value.copy(
-                            isLoading = false,
-                            isError = true,
-                        )
-                    }
+                    _screenState.value = newValue
                 }
-                _screenState.value = newValue
             }
         }
     }

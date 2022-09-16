@@ -10,10 +10,12 @@ object NavigationKeys {
         const val RANKING_LIST = "ranking"
         const val SEARCH = "search"
         const val SUGGESTIONS = "suggestions"
+        const val ONBOARDING = "onboarding"
     }
 
     object Argument {
         const val RANK = "rank-type"
         const val ANIME_ID = "anime"
+        const val FORCE_AUTH = "force-auth"
     }
 }

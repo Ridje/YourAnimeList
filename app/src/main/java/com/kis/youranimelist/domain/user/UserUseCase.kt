@@ -37,6 +37,10 @@ class UserUseCase @Inject constructor(
         }
     }
 
+    fun isAppAuthorization(): Boolean {
+        return !loginUseCase.isClientAuth()
+    }
+
     suspend fun logOut() {
         loginUseCase.clearAuthData()
         userRepository.clearUserProfile()

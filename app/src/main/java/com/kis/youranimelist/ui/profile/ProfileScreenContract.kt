@@ -14,6 +14,7 @@ object ProfileScreenContract {
     data class ScreeState(
         val isLoading: Boolean = true,
         val isError: Boolean = false,
+        val isProfileAvailable: Boolean = true,
         val user: User? = null,
         val statisticsPieData: PieChartData? = null,
         val legend: List<Pair<String, Color?>>? = null,
@@ -53,6 +54,7 @@ fun User.asProfileScreenState(
     return ProfileScreenContract.ScreeState(
         isLoading = false,
         isError = false,
+        isProfileAvailable = true,
         user = userMapper.invoke(this),
         statisticsPieData = userStatisticToProfilePieChartMapper.invoke(this.userAnimeStatistic),
         legend = userStatisticToProfileLegend.invoke(this.userAnimeStatistic),

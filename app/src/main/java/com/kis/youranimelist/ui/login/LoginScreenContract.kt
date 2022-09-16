@@ -10,10 +10,13 @@ object LoginScreenContract {
     sealed class Effect {
         object AuthDataSaved: Effect()
         object NetworkError: Effect()
+        object AuthDataSavedShowOnboarding: Effect()
     }
 
     interface LoginScreenEventsConsumer {
         fun onLoginClick()
         fun onLoginSucceed(token: String, codeVerifier: String)
+        fun onBackOnWebView()
+        fun onAuthorizationSkipped()
     }
 }

@@ -10,6 +10,8 @@ import com.kis.youranimelist.data.cache.localdatasource.SyncJobLocalDataSource
 import com.kis.youranimelist.data.cache.localdatasource.SyncJobLocalDataSourceImpl
 import com.kis.youranimelist.data.cache.localdatasource.UserLocalDataSource
 import com.kis.youranimelist.data.cache.localdatasource.UserLocalDataSourceImpl
+import com.kis.youranimelist.data.repository.synchronization.SynchronizationManager
+import com.kis.youranimelist.data.repository.synchronization.SynchronizationManagerImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.migration.DisableInstallInCheck
@@ -32,4 +34,7 @@ interface RepositoryBindsModule {
 
     @Binds
     fun PersonalAnimeLocalDataSourceImpl.bindPersonalAnimeLocalDataSource(): PersonalAnimeLocalDataSource
+
+    @Binds
+    fun SynchronizationManagerImpl.bindSynchronizationManager(): SynchronizationManager
 }

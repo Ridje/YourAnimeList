@@ -12,7 +12,6 @@ interface PersonalAnimeRepository : SyncRepository {
     fun getPersonalAnimeStatusesProducer(): Flow<List<AnimeStatus>>
     fun getPersonalAnimeStatusProducer(id: Int): Flow<AnimeStatus?>
 
-    suspend fun refreshPersonalAnimeStatuses()
     suspend fun deleteSyncPersonalData(): Boolean
     suspend fun deletePersonalAnimeStatus(animeId: Int): Boolean
     suspend fun refreshPersonalAnimeStatus(animeId: Int)

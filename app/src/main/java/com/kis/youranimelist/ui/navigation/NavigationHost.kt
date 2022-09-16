@@ -31,6 +31,7 @@ import com.kis.youranimelist.ui.item.ItemScreenRoute
 import com.kis.youranimelist.ui.itembottomsheetdialog.ItemBottomScreenRoute
 import com.kis.youranimelist.ui.login.LoginScreenRoute
 import com.kis.youranimelist.ui.mylist.MyListScreenRoute
+import com.kis.youranimelist.ui.onboarding.OnboardingScreenRoute
 import com.kis.youranimelist.ui.profile.ProfileScreenRoute
 import com.kis.youranimelist.ui.search.SearchScreenRoute
 import com.kis.youranimelist.ui.settings.SettingsScreenRoute
@@ -48,7 +49,7 @@ fun YourAnimeListNavHost(
         viewModel
             .navigateEffects
             .collectLatest {
-                navController.navigate(NavigationKeys.Route.LOGIN) {
+                navController.navigate("${NavigationKeys.Route.LOGIN}/false") {
                     popUpTo(0)
                 }
             }
@@ -58,10 +59,16 @@ fun YourAnimeListNavHost(
     ) {
         AnimatedNavHost(
             navController = navController,
-            startDestination = NavigationKeys.Route.LOGIN,
+            startDestination = "${NavigationKeys.Route.LOGIN}/{${NavigationKeys.Argument.FORCE_AUTH}}",
         ) {
             composable(
-                route = NavigationKeys.Route.LOGIN
+                route = "${NavigationKeys.Route.LOGIN}/{${NavigationKeys.Argument.FORCE_AUTH}}",
+                arguments = listOf(
+                    navArgument(NavigationKeys.Argument.FORCE_AUTH) {
+                        defaultValue = false
+                        type = NavType.BoolType
+                    }
+                )
             ) {
                 LoginScreenRoute(navController)
             }
@@ -139,7 +146,7 @@ fun YourAnimeListNavHost(
                 ProfileScreenRoute(navController = navController, scaffoldState = scaffoldState)
             }
             composable(route = NavigationKeys.Route.SETTINGS) {
-                SettingsScreenRoute(scaffoldState = scaffoldState)
+                SettingsScreenRoute(navController = navController, scaffoldState = scaffoldState)
             }
             composable(
                 route = "${NavigationKeys.Route.RANKING_LIST}/{${NavigationKeys.Argument.RANK}}",
@@ -154,6 +161,11 @@ fun YourAnimeListNavHost(
             ) {
                 EndlessListScreenSuggestionsRoute(navController = navController,
                     scaffoldState = scaffoldState)
+            }
+            composable(
+                route = NavigationKeys.Route.ONBOARDING,
+            ) {
+                OnboardingScreenRoute(navController)
             }
         }
     }
