@@ -2,18 +2,45 @@ name: create pre-relase branch
 
 on:
   workflow_dispatch:
-  
+    inputs:
+      release_version:
+        description: 'Specify release version name'
+        required: true
+        type: String
 jobs: 
-  run-instrumented-tests:
+  create_pre-release_branch:
     runs-on: macos-latest
     
     steps:
+      - name: setup java11
+        uses: actions/setup-java@v3
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+    
       - name: checkout
         uses: actions/checkout@v3
-      
+        
+      - name: create secrets
+        env:
+          CLIENT_ID: ${{ secrets.CLIENT_ID }}
+        run: echo CLIENT_ID="$CLIENT_ID" > ./local.properties
+        
       - name: run tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 30
+          api-level: 29
           script: ./gradlew connectedCheck
+        
+      - name: replace version
+        run: sed -i '' -e 's/yal_application_version_name = ".*"/yal_application_version_name = "${{ inputs.release_version }}"/' ./app/build.gradle 
+      
+      - name: make pre-release branch
+        run: |
+          git checkout -b rc_${{ inputs.release_version }}
+          git add .
+          git commit -m 'Uppdated code name to ${{ inputs.release_version }}'
+          git push origin rc_${{ inputs.release_version }}
+          
+      
 
