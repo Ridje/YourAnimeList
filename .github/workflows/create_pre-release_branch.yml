@@ -17,7 +17,6 @@ jobs:
         with:
           java-version: '11'
           distribution: 'temurin'
-          
     
       - name: checkout
         uses: actions/checkout@v3
@@ -30,16 +29,10 @@ jobs:
       - name: replace version
         run: sed -i -e 's/yal_application_version_name = ".*"/yal_application_version_name = "${{ inputs.release_version }}"/' ./app/build.gradle 
       
-      - name: run tests
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: 29
-          script: ./gradlew connectedCheck
-      
       - name: make pre-release branch
         run: |
-          git branch -b rc_${{ inputs.release_version }}
-          git commit -m 'created release'
+          git checkout -b rc_${{ inputs.release_version }}
+          git commit -m 'Uppdated code name to ${{ inputs.release_version }}'
           git push rc_${{ inputs.release_version }}
           
       
