@@ -18,16 +18,7 @@ android {
 
     signingConfigs {
         release {
-
-            def tmpFilePath = System.getProperty("user.home") + "/yal_release/keystore/"
-            def allFilesFromDir = new File(tmpFilePath).listFiles()
-
-            if (allFilesFromDir != null) {
-                def keystoreFile = allFilesFromDir.first()
-                keystoreFile.renameTo("keystore/android_keystore.jks")
-            }
-
-            storeFile file(tmpFilePath + '/android-keystore.jks')
+            storeFile file('./../android-keystore.jks')
             storePassword System.getenv('YAL_SIGNING_STORE_PASSWORD')
             keyAlias System.getenv('YAL_SIGNING_KEY_ALIAS')
             keyPassword System.getenv('YAL_SIGNING_KEY_PASSWORD')
