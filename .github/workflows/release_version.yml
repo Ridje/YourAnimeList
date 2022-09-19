@@ -13,22 +13,28 @@ jobs:
         with:
           java-version: '11'
           distribution: 'temurin'
+          
+      - name: remember branch name
+        shell: bash
+        run: echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/} | tr / -)" >> $BRANCH_NAME
     
       - name: checkout
         uses: actions/checkout@v3
-        
-      - name: create secrets
-        env:
-          CLIENT_ID: ${{ secrets.CLIENT_ID }}
-        run: echo CLIENT_ID="$CLIENT_ID" > ./local.properties
-       
-      - name: replace version code
-        run: sed -i '' -e 's/yal_application_version_code = ".*"/yal_application_version_code = "${{ inputs.release_version }}"/' ./app/build.gradle 
-        
-      
-      - name: make pre-release branch
+        with:
+          ref: master
+          
+      - name: merge changes
+        shell: bash
         run: |
-          git checkout -b rc_${{ inputs.release_version }}
+          git merge ${{ env.BRANCH_NAME }} -ff
+          
+      - name: replace version code
+        run: newLine=$(awk -v FS="yal_application_version_code = " 'NF>1{print $2 + 1}' ./app/build.gradle); sed -E -i '' -e "s/yal_application_version_code = [[:digit:]]+/yal_application_version_code = $newLine/" ./app/build.gradle
+        
+      - name: commit update version code
+        shell: bash
+        run: |
           git add .
-          git commit -m 'Uppdated code name to ${{ inputs.release_version }}'
-          git push origin rc_${{ inputs.release_version }}
+          git commit -m 'Updated version code'
+      
+    
