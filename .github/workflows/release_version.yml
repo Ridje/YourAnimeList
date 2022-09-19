@@ -1,0 +1,40 @@
+name: release version
+
+on:
+  workflow_dispatch:
+  
+jobs: 
+  release_version:
+    runs-on: macos-latest
+    
+    steps:
+      - name: setup java11
+        uses: actions/setup-java@v3
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+          
+      - name: remember branch name
+        shell: bash
+        run: echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/} | tr / -)" >> $BRANCH_NAME
+    
+      - name: checkout
+        uses: actions/checkout@v3
+        with:
+          ref: master
+          
+      - name: merge changes
+        shell: bash
+        run: |
+          git merge ${{ env.BRANCH_NAME }} -ff
+          
+      - name: replace version code
+        run: newLine=$(awk -v FS="yal_application_version_code = " 'NF>1{print $2 + 1}' ./app/build.gradle); sed -E -i '' -e "s/yal_application_version_code = [[:digit:]]+/yal_application_version_code = $newLine/" ./app/build.gradle
+        
+      - name: commit update version code
+        shell: bash
+        run: |
+          git add .
+          git commit -m 'Updated version code'
+      
+    
