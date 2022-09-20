@@ -12,8 +12,8 @@ plugins {
 
 android {
     ext {
-        yal_application_version_code = 2
-        yal_application_version_name = "0.1.1"
+        yal_application_version_code = 3
+        yal_application_version_name = "0.1.2"
     }
 
     signingConfigs {
