@@ -37,4 +37,3 @@ jobs:
           git add .
           git commit -m 'Updated version code'
       
-    
