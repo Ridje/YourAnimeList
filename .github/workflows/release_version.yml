@@ -28,7 +28,7 @@ jobs:
         uses: timheuer/base64-to-file@v1
         with:
           fileName: './app/android-keystore.jks'
-          encodedString: ${{ secrets.KEYSTORE }}
+          encodedString: ${{ secrets.ANDROID_KEYSTORE }}
           
       - name: replace version code
         run: newLine=$(awk -v FS="yal_application_version_code = " 'NF>1{print $2 + 1}' ./app/build.gradle); sed -E -i '' -e "s/yal_application_version_code = [[:digit:]]+/yal_application_version_code = $newLine/" ./app/build.gradle
