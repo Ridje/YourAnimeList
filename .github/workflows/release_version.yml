@@ -63,6 +63,7 @@ jobs:
       - name: push back
         run: |
           git push origin master
+          git fetch -p
           git checkout dev
           git merge master
           git push origin dev
