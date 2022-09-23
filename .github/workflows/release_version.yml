@@ -66,5 +66,5 @@ jobs:
           git push origin --delete ${{ github.REF_NAME }}
           git fetch -p
           git checkout dev
-          git merge master
+          git merge master --allow-unrelated-histories
           git push origin dev
