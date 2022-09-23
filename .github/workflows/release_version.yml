@@ -63,6 +63,7 @@ jobs:
       - name: push back
         run: |
           git push origin master
+          git push origin --delete ${{ github.REF_NAME }}
           git fetch -p
           git checkout dev
           git merge master
