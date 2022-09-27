@@ -1,6 +1,10 @@
 # YourAnimeList
 Client for myanimelist.net
 
+### Load
+
+[![name](https://user-images.githubusercontent.com/4568712/192491048-a7fef60c-873d-4070-b022-55d06069554b.png)](https://appgallery.huawei.com/app/C107116369)
+
 ### Used technologies:
 - Language: Kotlin
 - Architecture: MVI
