@@ -1,9 +1,15 @@
 # YourAnimeList
 Client for myanimelist.net
 
-### Load
+### Download apk:
 
-[![name](https://user-images.githubusercontent.com/4568712/192491048-a7fef60c-873d-4070-b022-55d06069554b.png)](https://appgallery.huawei.com/app/C107116369)
+<a href ='https://github.com/Ridje/YourAnimeList/releases/latest'>
+<img src='https://user-images.githubusercontent.com/4568712/192493576-0045c0b6-cc94-4d89-b025-81492755870e.png' width = '200'/>
+</a>
+
+<a href ='https://appgallery.huawei.com/app/C107116369'>
+<img src='https://user-images.githubusercontent.com/4568712/192492799-65d2c66b-aa7d-453d-bb63-35b031fded88.png' width = '200'/>
+</a>
 
 ### Used technologies:
 - Language: Kotlin
