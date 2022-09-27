@@ -1,5 +1,6 @@
 # YourAnimeList
-Client for myanimelist.net
+Unofficial client for myanimelist.net
+It supports offline work without an account, synchronization, search and so on.
 
 ### Download apk:
 
