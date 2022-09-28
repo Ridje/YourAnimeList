@@ -4,7 +4,7 @@ It supports offline work without an account, synchronization, search and so on.
 
 ### Download apk:
 
-<a href ='https://play.google.com/store/apps/details?id=com.kis.youranimelist'>
+<a href ='https://play.google.com/store/apps/details?id=com.kis.youranimelist' target="_blank">
 <img src='https://user-images.githubusercontent.com/4568712/192727191-41843d46-7271-42a3-948b-d263bbf32543.png' width = '100'/>
 </a>
 
