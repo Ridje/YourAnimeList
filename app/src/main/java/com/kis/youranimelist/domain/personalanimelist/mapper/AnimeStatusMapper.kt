@@ -30,7 +30,7 @@ class AnimeStatusMapper @Inject constructor(
     }
 
     fun map(from: PersonalStatusOfAnimePersistence): AnimeStatus {
-        val anime = animeMapper.map(from.anime, from?.mainPicture)
+        val anime = animeMapper.map(from.anime, from.mainPicture)
         val status =
             AnimeStatusValue.Companion.Factory.getAnimeStatusByValue(from.animeStatusPersistence?.id)
         return AnimeStatus(

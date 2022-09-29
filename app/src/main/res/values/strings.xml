@@ -16,6 +16,7 @@
     <string name="episodes_watched">Episodes watched</string>
     <string name="link_to_user">"@"</string>
     <string name="data_not_loaded_error">Can\'t load data</string>
+    <string name="anime_added_plan_to_watch">Added to plan to watch</string>
     <string name="search_value_is_too_short_error">Search value is too short</string>
     <string name="reload_data">Reload</string>
     <string name="cancel">Cancel</string>
