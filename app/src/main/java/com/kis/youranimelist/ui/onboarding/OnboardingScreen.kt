@@ -55,6 +55,7 @@ fun OnboardingScreen(
             pageCount = cards.size,
             bubbleColors = cards.map { it.backgroundColor },
             modifier = Modifier.fillMaxSize(),
+            onEndClick = onSkipClick
         ) { index ->
             Box(
                 modifier = Modifier.fillMaxSize(),
