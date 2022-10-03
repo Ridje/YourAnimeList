@@ -76,24 +76,21 @@ dependencies {
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
-    implementation 'androidx.core:core-ktx:1.8.0'
-    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.5.1'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.6.0-alpha01'
-    implementation "androidx.lifecycle:lifecycle-runtime-compose:2.6.0-alpha01"
+    implementation 'androidx.core:core-ktx:1.9.0'
+    implementation "androidx.work:work-runtime-ktx:2.7.1"
+
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.6.0-alpha02'
+    implementation "androidx.lifecycle:lifecycle-runtime-compose:2.6.0-alpha02"
+
     implementation 'androidx.security:security-crypto:1.0.0'
 
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4'
 
-    implementation 'androidx.preference:preference-ktx:1.2.0'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1'
-
-    implementation "androidx.work:work-runtime-ktx:2.7.1"
-
     // Room
-    kapt 'androidx.room:room-compiler:2.5.0-alpha02'
-    implementation 'androidx.room:room-runtime:2.5.0-alpha02'
-    implementation 'androidx.room:room-ktx:2.5.0-alpha02'
+    kapt 'androidx.room:room-compiler:2.5.0-alpha03'
+    implementation 'androidx.room:room-runtime:2.5.0-alpha03'
+    implementation 'androidx.room:room-ktx:2.5.0-alpha03'
 
     // Retrofit
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
@@ -104,7 +101,7 @@ dependencies {
     implementation "com.github.haroldadmin:NetworkResponseAdapter:5.0.0"
 
     // Compose
-    implementation 'androidx.activity:activity-compose:1.5.1'
+    implementation 'androidx.activity:activity-compose:1.6.0'
     implementation 'androidx.compose.material:material:1.2.1'
     implementation 'androidx.compose.animation:animation:1.2.1'
     implementation 'androidx.compose.ui:ui:1.2.1'
@@ -113,34 +110,31 @@ dependencies {
     implementation 'androidx.compose.foundation:foundation:1.2.1'
     implementation 'androidx.compose.material:material-icons-core:1.2.1'
     implementation 'androidx.compose.material:material-icons-extended:1.2.1'
-    implementation 'androidx.navigation:navigation-compose:2.5.1'
-    implementation 'com.google.accompanist:accompanist-webview:0.26.1-alpha'
-    implementation 'com.google.accompanist:accompanist-pager:0.26.1-alpha'
-    implementation 'com.google.accompanist:accompanist-pager-indicators:0.26.1-alpha'
-    implementation 'io.coil-kt:coil-compose:2.1.0'
-    implementation 'androidx.constraintlayout:constraintlayout-compose:1.1.0-alpha03'
+    implementation 'io.coil-kt:coil-compose:2.2.2'
+    implementation 'androidx.constraintlayout:constraintlayout-compose:1.1.0-alpha04'
     implementation 'io.github.bytebeats:compose-charts:0.1.2'
     implementation 'androidx.paging:paging-compose:1.0.0-alpha16'
     implementation 'me.onebone:toolbar-compose:2.3.4'
-    implementation 'com.google.accompanist:accompanist-systemuicontroller:0.26.1-alpha'
-    implementation "com.google.accompanist:accompanist-swiperefresh:0.26.1-alpha"
+
+
+    // Compose - accompanist
+    implementation 'com.google.accompanist:accompanist-systemuicontroller:0.25.1'
+    implementation 'com.google.accompanist:accompanist-swiperefresh:0.25.1'
+    implementation 'com.google.accompanist:accompanist-webview:0.25.1'
+    implementation 'com.google.accompanist:accompanist-pager:0.25.1'
+    implementation 'com.google.accompanist:accompanist-pager-indicators:0.25.1'
+    implementation 'com.google.accompanist:accompanist-navigation-animation:0.25.1'
+    implementation 'com.google.accompanist:accompanist-navigation-material:0.25.1'
 
     // Hilt
-    implementation 'com.google.dagger:hilt-android:2.43'
-    kapt 'com.google.dagger:hilt-compiler:2.43'
-    api 'com.google.dagger:dagger-android:2.43'
-    api 'com.google.dagger:dagger-android-support:2.43'
-    kapt 'com.google.dagger:dagger-android-processor:2.43'
-    kapt 'com.google.dagger:hilt-android-compiler:2.43'
-    implementation 'androidx.hilt:hilt-common:1.0.0'
+    implementation 'com.google.dagger:hilt-android:2.44'
+    kapt 'com.google.dagger:hilt-android-compiler:2.44'
     implementation 'androidx.hilt:hilt-work:1.0.0'
     kapt 'androidx.hilt:hilt-compiler:1.0.0'
 
     // Navigation
-    implementation 'androidx.navigation:navigation-compose:2.5.1'
+    implementation 'androidx.navigation:navigation-compose:2.5.2'
     implementation 'androidx.hilt:hilt-navigation-compose:1.0.0'
-    implementation 'com.google.accompanist:accompanist-navigation-animation:0.26.1-alpha'
-    implementation 'com.google.accompanist:accompanist-navigation-material:0.26.1-alpha'
 
     // Firebase
     implementation platform('com.google.firebase:firebase-bom:30.4.1')
@@ -154,5 +148,5 @@ dependencies {
     androidTestImplementation 'com.google.truth:truth:1.1.3'
     androidTestImplementation 'androidx.arch.core:core-testing:2.1.0'
     androidTestImplementation 'com.google.dagger:hilt-android-testing:2.43'
-    kaptAndroidTest 'com.google.dagger:hilt-android-compiler:2.38.1'
+    kaptAndroidTest 'com.google.dagger:hilt-android-compiler:2.44'
 }
