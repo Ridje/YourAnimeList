@@ -70,7 +70,8 @@ class AnimeLocalDataSourceTest {
         mainPicture = null,
         startSeason = null,
         pictures = listOf(),
-        genres = listOf()
+        genres = listOf(),
+        status = null,
     )
 
     private val someAnimeUpdate = Anime(
