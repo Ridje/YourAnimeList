@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.kis.youranimelist.domain.model.ResultWrapper
 import com.kis.youranimelist.domain.personalanimelist.PersonalAnimeListUseCase
 import com.kis.youranimelist.domain.personalanimelist.model.AnimeStatus
+import com.kis.youranimelist.domain.user.UserUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -18,13 +19,16 @@ import javax.inject.Inject
 @HiltViewModel
 class MyListViewModel @Inject constructor(
     private val personalAnimeListUseCase: PersonalAnimeListUseCase,
+    userUseCase: UserUseCase,
 ) : ViewModel(), MyListScreenContract.ScreenEventsListener {
 
     private val animeStatusesSource: Flow<ResultWrapper<List<AnimeStatus>>> =
         personalAnimeListUseCase.getPersonalAnimeStatusesProducer()
 
     private val _screenState: MutableStateFlow<MyListScreenContract.ScreenState> = MutableStateFlow(
-        MyListScreenContract.ScreenState(isLoading = false, items = listOf()))
+        MyListScreenContract.ScreenState(isLoading = false,
+            isSwipeToRefreshTurnedOn = !userUseCase.isAppAuthorization(),
+            items = listOf()))
     val screenState: StateFlow<MyListScreenContract.ScreenState>
         get() = _screenState
 
@@ -44,7 +48,6 @@ class MyListViewModel @Inject constructor(
                     val newValue = when (result) {
                         is ResultWrapper.Success -> {
                             _screenState.value.copy(
-                                isLoading = false,
                                 isError = false,
                                 items = result.data
                                     .map { it.asMyListItem() }
@@ -73,6 +76,10 @@ class MyListViewModel @Inject constructor(
         _screenState.value = _screenState.value.copy(isLoading = true, isError = false)
         viewModelScope.launch {
             personalAnimeListUseCase.refreshPersonalAnimeStatuses()
+            _screenState.value = _screenState.value.copy(
+                isLoading = false,
+                isError = !personalAnimeListUseCase.refreshPersonalAnimeStatuses(),
+            )
         }
     }
 

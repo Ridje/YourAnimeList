@@ -7,6 +7,7 @@ import com.kis.youranimelist.domain.personalanimelist.model.AnimeStatusValue
 object MyListScreenContract {
     data class ScreenState(
         val isLoading: Boolean = false,
+        val isSwipeToRefreshTurnedOn: Boolean = false,
         val isError: Boolean = false,
         val errorText: String? = null,
         val items: List<Item>,
