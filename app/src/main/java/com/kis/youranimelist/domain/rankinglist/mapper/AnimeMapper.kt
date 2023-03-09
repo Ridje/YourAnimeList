@@ -116,6 +116,7 @@ class AnimeMapper @Inject constructor(
             },
             mediaType = from.anime.mediaType,
             numEpisodes = from.anime.numEpisodes,
+            hasPersonalStatus = from.status != null,
         )
     }
 }

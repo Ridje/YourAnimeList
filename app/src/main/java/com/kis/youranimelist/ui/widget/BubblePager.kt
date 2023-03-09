@@ -23,18 +23,32 @@
  */
 package com.kis.youranimelist.ui.widget
 
+import android.util.Log
 import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.Easing
+import androidx.compose.animation.core.TweenSpec
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.animateScrollBy
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsDraggedAsState
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -45,6 +59,8 @@ import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.VectorPainter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -58,6 +74,8 @@ import com.google.accompanist.pager.rememberPagerState
 import com.kis.youranimelist.R
 import com.kis.youranimelist.ui.Theme
 import dev.chrisbanes.snapper.ExperimentalSnapperApi
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlin.math.absoluteValue
 
 @OptIn(ExperimentalPagerApi::class)
@@ -72,19 +90,27 @@ fun BubblePager(
     bubbleColors: List<Color>,
     vector: ImageVector = ImageVector.vectorResource(id = R.drawable.ic_arrow_right_solid),
     endVector: ImageVector = ImageVector.vectorResource(id = R.drawable.ic_thumbs_up_regular),
+    onEndClick: () -> Unit = {},
     content: @Composable PagerScope.(Int) -> Unit,
 ) {
     val icon = rememberVectorPainter(vector)
     val endIcon = rememberVectorPainter(endVector)
     val isDragged by pagerState.interactionSource.collectIsDraggedAsState()
+    val iconInteractionSource = remember { MutableInteractionSource() }
+    var isNextClick by remember { mutableStateOf(false) }
     val arrowBubbleRadius by animateDpAsState(
-        targetValue = if (pagerState.shouldHideBubble(isDragged)) 0.dp else bubbleMinRadius,
+        targetValue = if (pagerState.shouldHideBubble(isDragged,
+                isNextClick)
+        ) 0.dp else bubbleMinRadius,
         animationSpec = tween(Theme.NumberValues.animationBubbleMs)
     )
     val arrowIconSize by animateDpAsState(
-        targetValue = if (pagerState.shouldHideBubble(isDragged)) 0.dp else vector.defaultHeight,
+        targetValue = if (pagerState.shouldHideBubble(isDragged,
+                isNextClick)
+        ) 0.dp else vector.defaultHeight,
         animationSpec = tween(Theme.NumberValues.animationBubbleMs)
     )
+    val coroutineScope = rememberCoroutineScope()
     val iconColorFilter = remember { ColorFilter.tint(Color.White) }
     Box(modifier = modifier) {
         HorizontalPager(
@@ -127,6 +153,42 @@ fun BubblePager(
                     }
                 }
         ) { page ->
+            if (!isDragged) {
+                val configuration = LocalConfiguration.current
+                val density = LocalDensity.current
+                val animateScrollNextSpec = remember<TweenSpec<Float>> {
+                    tween(durationMillis = Theme.NumberValues.animationScrollMs)
+                }
+                Box(modifier = Modifier
+                    .padding(bottom = bubbleBottomPadding - bubbleMinRadius)
+                    .clip(shape = CircleShape)
+                    .background(Color.Transparent)
+                    .clickable(
+                        interactionSource = iconInteractionSource,
+                        indication = null
+                    ) {
+                        coroutineScope.launch {
+                            if (pagerState.currentPage == pageCount - 1) {
+                                launch {
+                                    delay(Theme.NumberValues.animationScrollMs.div(2L))
+                                    onEndClick.invoke()
+                                }
+                            }
+                            isNextClick = true
+                            launch {
+                                delay(Theme.NumberValues.animationScrollMs.div(2L))
+                                isNextClick = false
+                            }
+                            pagerState.animateScrollBy(
+                                value = with(density) { configuration.screenWidthDp.dp.toPx() },
+                                animationSpec = animateScrollNextSpec
+                            )
+                        }
+                    }
+                    .size(bubbleMinRadius.times(2))
+                    .align(Alignment.BottomCenter)
+                )
+            }
             content(page)
         }
     }
@@ -219,12 +281,13 @@ fun PagerState.getNextBubbleColor(bubbleColors: List<Color>): Color {
 }
 
 @OptIn(ExperimentalPagerApi::class)
-fun PagerState.shouldHideBubble(isDragged: Boolean): Boolean = derivedStateOf {
+fun PagerState.shouldHideBubble(isDragged: Boolean, isPressed: Boolean): Boolean = derivedStateOf {
+    Log.d("COMPOSE: ", isPressed.toString())
     var b = false
-    if (isDragged) {
+    if (isDragged || isPressed) {
         b = true
     }
-    if (currentPageOffset.absoluteValue > Theme.NumberValues.hideBubbleThreshold) {
+    if (currentPageOffset.absoluteValue > Theme.NumberValues.hideBubbleThreshold || isPressed) {
         b = true
     }
     b
@@ -243,5 +306,8 @@ private val Theme.NumberValues.animationBubbleMs: Int
 
 private val Theme.NumberValues.hideBubbleThreshold: Double
     get() = 0.1
+
+private val Theme.NumberValues.animationScrollMs: Int
+    get() = 700
 
 

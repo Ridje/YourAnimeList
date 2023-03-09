@@ -26,8 +26,8 @@ class PersonalAnimeListUseCase @Inject constructor(
             }
     }
 
-    suspend fun refreshPersonalAnimeStatuses() {
-        personalAnimeRepository.synchronize()
+    suspend fun refreshPersonalAnimeStatuses(): Boolean {
+        return personalAnimeRepository.synchronize()
     }
 
     suspend fun deletePersonalAnimeStatus(animeId: Int): Boolean {

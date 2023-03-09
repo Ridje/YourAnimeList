@@ -1,5 +1,7 @@
 package com.kis.youranimelist.ui.item
 
+import com.kis.youranimelist.domain.personalanimelist.model.AnimeStatus
+import com.kis.youranimelist.domain.personalanimelist.model.AnimeStatusValue
 import com.kis.youranimelist.domain.rankinglist.model.Anime
 import com.kis.youranimelist.domain.rankinglist.model.RecommendedAnime
 import com.kis.youranimelist.domain.rankinglist.model.RelatedAnime
@@ -38,6 +40,7 @@ object ItemScreenContract {
         val mediaType: String,
         val numEpisodes: Int,
         val airingStatus: String,
+        val hasPersonalStatus: Boolean,
     )
 
     val defaultAnimeItem = AnimeItem(
@@ -51,7 +54,16 @@ object ItemScreenContract {
         mediaType = "",
         numEpisodes = 0,
         airingStatus = "",
+        hasPersonalStatus = false,
     )
+
+    interface ScreenEventsListener {
+        fun onAddToBookmarksButtonPressed()
+    }
+
+    sealed class Effect {
+        object ItemAddedToList : Effect()
+    }
 }
 
 fun Anime?.asAnimeItemScreen(
@@ -71,6 +83,7 @@ fun Anime?.asAnimeItemScreen(
             mediaType = this.mediaType ?: "",
             numEpisodes = this.numEpisodes ?: 0,
             airingStatus = this.airingStatus?.replace("_", " ") ?: "",
+            hasPersonalStatus = this.hasPersonalStatus,
         )
     }
 }
@@ -90,5 +103,18 @@ fun RelatedAnime.asRelatedAnimeItemScreen(): ItemScreenContract.RelatedAnimeItem
         this.anime.title,
         this.relatedTypeFormatted,
         this.anime.picture?.large
+    )
+}
+
+fun ItemScreenContract.AnimeItem.asAnimeStatus(): AnimeStatus {
+    return AnimeStatus(
+        anime = Anime(
+            id = this.id,
+            title = this.title,
+        ),
+        status = AnimeStatusValue.PlanToWatch,
+        score = 0,
+        numWatchedEpisodes = 0,
+        updatedAt = System.currentTimeMillis(),
     )
 }

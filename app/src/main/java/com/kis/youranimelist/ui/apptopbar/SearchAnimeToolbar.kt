@@ -27,7 +27,7 @@ fun SearchAnimeToolbar(
 
     TopAppBar(
         title = {
-            Text(text = "Search in MAL", style = MaterialTheme.typography.subtitle1)
+            Text(text = stringResource(R.string.search_in_MAL), style = MaterialTheme.typography.subtitle1)
         },
         backgroundColor = Color.Transparent,
         elevation = 0.dp,

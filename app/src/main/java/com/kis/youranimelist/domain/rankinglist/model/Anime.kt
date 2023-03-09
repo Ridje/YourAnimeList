@@ -19,6 +19,7 @@ data class Anime(
     val mediaType: String? = null,
     val numEpisodes: Int? = null,
     val airingStatus: String? = null,
+    val hasPersonalStatus: Boolean = false,
 ) {
     constructor(animeRanked: AnimeRankingItem) : this(
         animeRanked.id,

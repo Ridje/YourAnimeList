@@ -4,6 +4,7 @@ import androidx.paging.Pager
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
+import com.kis.youranimelist.core.ResourceProvider
 import com.kis.youranimelist.domain.rankinglist.model.Anime
 import com.kis.youranimelist.ui.model.ExploreCategory
 import kotlinx.coroutines.CoroutineScope
@@ -36,14 +37,19 @@ object ExploreScreenContract {
     )
 
     sealed class EndlessListNavType {
-        object SuggestionsList: EndlessListNavType()
-        object RankedList: EndlessListNavType()
+        object SuggestionsList : EndlessListNavType()
+        object RankedList : EndlessListNavType()
     }
 }
 
 fun List<Pair<ExploreCategory, Pager<Int, Anime>>>.asExploreScreenContractScreenState(
     cachedScope: CoroutineScope,
-    animeCategoryMapper: (ExploreCategory) -> ExploreScreenContract.AnimeCategoryDescription = ExploreCategory::asAnimeCategoryDescription,
+    resourceProvider: ResourceProvider,
+    animeCategoryMapper: (ExploreCategory) -> ExploreScreenContract.AnimeCategoryDescription = {
+        it.asAnimeCategoryDescription(
+            resourceProvider
+        )
+    },
     animeCategoryItemMapper: (Anime) -> ExploreScreenContract.AnimeCategoryItem = Anime::asAnimeCategoryItem,
 ): ExploreScreenContract.ScreenState {
 
@@ -74,11 +80,11 @@ fun Anime.asAnimeCategoryItem(): ExploreScreenContract.AnimeCategoryItem {
     )
 }
 
-fun ExploreCategory.asAnimeCategoryDescription(): ExploreScreenContract.AnimeCategoryDescription {
+fun ExploreCategory.asAnimeCategoryDescription(resourceProvider: ResourceProvider): ExploreScreenContract.AnimeCategoryDescription {
     return when (this) {
         is ExploreCategory.Ranked -> ExploreScreenContract.AnimeCategoryDescription(
             tag = this.tag,
-            title = this.presentName,
+            title = resourceProvider.getString(this.stringId),
             navigationScreen = ExploreScreenContract.EndlessListNavType.RankedList,
         )
         is ExploreCategory.Suggestions -> ExploreScreenContract.AnimeCategoryDescription(

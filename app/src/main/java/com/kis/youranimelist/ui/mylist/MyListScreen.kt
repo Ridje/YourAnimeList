@@ -69,6 +69,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.SwipeRefreshState
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.kis.youranimelist.R
 import com.kis.youranimelist.core.utils.uppercaseMediaType
@@ -108,6 +109,7 @@ fun MyListScreenRoute(
         tabs = screenState.value.tabs,
         currentTab = screenState.value.currentTab,
         onSwipeRefresh = screenEventsListener::onSwipeRefresh,
+        isSwipeToRefreshTurnedOn = screenState.value.isSwipeToRefreshTurnedOn,
         onTabClicked = screenEventsListener::onTabClicked,
         onItemClicked = { itemId: Int -> navController.navigate(NavigationKeys.Route.EXPLORE + "/$itemId") },
         onItemLongPress = { itemId: Int -> navController.navigate(NavigationKeys.Route.MY_LIST + "/$itemId") },
@@ -123,6 +125,7 @@ fun MyListScreen(
     scaffoldState: ScaffoldState,
     searchValue: String,
     isLoading: Boolean,
+    isSwipeToRefreshTurnedOn: Boolean,
     isError: Boolean,
     listItems: List<MyListScreenContract.Item>,
     tabs: List<String>,
@@ -159,31 +162,37 @@ fun MyListScreen(
                 }
             }
         }
-
         AnimatedVisibility(visible = listItems.isNotEmpty() || searchValue.isNotEmpty()) {
             Surface(modifier = Modifier
                 .fillMaxWidth(),
                 color = Color.Transparent
             ) {
-                DebouncedSearch(searchValue = searchValue, onSearchValueChanged = onSearchValueChanged)
+                DebouncedSearch(searchValue = searchValue,
+                    onSearchValueChanged = onSearchValueChanged)
             }
         }
         if (isError) {
             val scope = rememberCoroutineScope()
             val context = LocalContext.current
-            scope.launch {
-                val snackResult = scaffoldState.snackbarHostState.showSnackbar(
-                    message = context.resources.getString(R.string.data_not_loaded_error),
-                    actionLabel = context.resources.getString(R.string.reload_data),
-                    duration = SnackbarDuration.Long
-                )
-                when (snackResult) {
-                    SnackbarResult.Dismissed -> onSnackbarDismissedAction.invoke()
-                    SnackbarResult.ActionPerformed -> onSnackbarPerformedAction.invoke()
+            LaunchedEffect(key1 = Unit) {
+                scope.launch {
+                    val snackResult = scaffoldState.snackbarHostState.showSnackbar(
+                        message = context.resources.getString(R.string.data_not_loaded_error),
+                        actionLabel = context.resources.getString(R.string.reload_data),
+                        duration = SnackbarDuration.Long
+                    )
+                    when (snackResult) {
+                        SnackbarResult.Dismissed -> onSnackbarDismissedAction.invoke()
+                        SnackbarResult.ActionPerformed -> onSnackbarPerformedAction.invoke()
+                    }
                 }
             }
         } else {
-            SwipeRefresh(state = swipeRefreshState, onRefresh = { onSwipeRefresh.invoke() }) {
+            PersonalListBody(
+                isSwipeToRefreshTurnedOn = isSwipeToRefreshTurnedOn,
+                swipeRefreshState = swipeRefreshState,
+                onSwipeRefresh = onSwipeRefresh,
+            ) {
                 if (listItems.isEmpty()) {
                     Box(modifier = Modifier
                         .fillMaxSize()
@@ -305,7 +314,24 @@ fun MyListScreen(
                     }
                 }
             }
+
         }
+    }
+}
+
+@Composable
+private fun PersonalListBody(
+    isSwipeToRefreshTurnedOn: Boolean,
+    swipeRefreshState: SwipeRefreshState,
+    onSwipeRefresh: () -> Unit,
+    content: @Composable () -> Unit,
+) {
+    if (isSwipeToRefreshTurnedOn) {
+        SwipeRefresh(state = swipeRefreshState, onRefresh = onSwipeRefresh) {
+            content()
+        }
+    } else {
+        content()
     }
 }
 

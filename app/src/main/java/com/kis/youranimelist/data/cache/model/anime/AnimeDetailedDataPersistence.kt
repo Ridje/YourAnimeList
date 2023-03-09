@@ -6,6 +6,7 @@ import androidx.room.Relation
 import com.kis.youranimelist.data.cache.model.GenrePersistence
 import com.kis.youranimelist.data.cache.model.PicturePersistence
 import com.kis.youranimelist.data.cache.model.SeasonPersistence
+import com.kis.youranimelist.data.cache.model.personalanime.AnimePersonalStatusPersistence
 
 data class AnimeDetailedDataPersistence(
     @Embedded
@@ -73,4 +74,10 @@ data class AnimeDetailedDataPersistence(
         )
     )
     val genres: List<GenrePersistence>,
+
+    @Relation(
+        parentColumn = "id",
+        entityColumn = "anime_id"
+    )
+    val status: AnimePersonalStatusPersistence?,
 )

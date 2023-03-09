@@ -16,6 +16,7 @@
     <string name="episodes_watched">Episodes watched</string>
     <string name="link_to_user">"@"</string>
     <string name="data_not_loaded_error">Can\'t load data</string>
+    <string name="anime_added_plan_to_watch">Added to plan to watch</string>
     <string name="search_value_is_too_short_error">Search value is too short</string>
     <string name="reload_data">Reload</string>
     <string name="cancel">Cancel</string>
@@ -71,6 +72,16 @@
 
     <string name="profile_connect_mal_account">Connect MAL</string>
     <string name="profile_connect_mal_account_description">Click here to connect your MAL account and get access to anime statistics</string>
+    <string name="search_in_MAL">Search in MAL</string>
+    <string name="see_all">See all</string>
+    <string name="suggestions">Suggestions</string>
+
+    <string name="explore_category_top_ranked">Top ranked</string>
+    <string name="explore_category_airing">Airing</string>
+    <string name="explore_category_popular">Popular</string>
+    <string name="explore_category_upcoming">Upcoming</string>
+    <string name="explore_category_movies">Movies</string>
+    <string name="explore_category_favorite">Favorite</string>
 
     <string-array name="personal_list_statuses">
         <item>all</item>
