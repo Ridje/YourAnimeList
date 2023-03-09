@@ -25,7 +25,7 @@ private const val LOADING_START_DELAY = 500L
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val authUsecase: AuthUseCase,
+    private val authUseCase: AuthUseCase,
     private val settingsUseCase: Lazy<SettingsUseCase>,
     private val personalAnimeList: PersonalAnimeListUseCase,
     private val synchronizationUseCase: SynchronizationUseCase,
@@ -47,7 +47,7 @@ class LoginViewModel @Inject constructor(
     init {
         viewModelScope.launch(Dispatchers.IO) {
             delay(LOADING_START_DELAY)
-            if (!forceAuth && authUsecase.isAuthDataValid()) {
+            if (!forceAuth && authUseCase.isAuthDataValid()) {
                 synchronizationUseCase.planSynchronization()
                 proceedToNextScreen()
             } else {
@@ -58,7 +58,7 @@ class LoginViewModel @Inject constructor(
 
     override fun onLoginClick() {
         _screenState.value =
-            LoginScreenContract.ScreenState(webViewVisible = true, isLoading = true)
+            LoginScreenContract.ScreenState(webViewVisible = true, isLoading = false)
     }
 
     override fun onLoginSucceed(
@@ -68,14 +68,15 @@ class LoginViewModel @Inject constructor(
         _screenState.value =
             LoginScreenContract.ScreenState(webViewVisible = false, isLoading = true)
         viewModelScope.launch(Dispatchers.IO) {
-            val result = authUsecase.getAccessToken(
+            val result = authUseCase.getAccessToken(
                 BuildConfig.CLIENT_ID,
                 token,
-                codeVerifier)
+                codeVerifier
+            )
             if (result is ResultWrapper.Success) {
                 val (accessToken, refreshToken, expiresIn, tokenType) = result.data
 
-                authUsecase.setAuthData(accessToken, refreshToken, expiresIn, tokenType)
+                authUseCase.setAuthData(accessToken, refreshToken, expiresIn, tokenType)
                 _screenState.value = screenState.value.copy(isLoadingUserDatabase = true)
                 personalAnimeList.refreshPersonalAnimeStatuses()
                 _screenState.value = screenState.value.copy(isLoadingUserDatabase = false)
@@ -105,7 +106,7 @@ class LoginViewModel @Inject constructor(
         _screenState.value =
             LoginScreenContract.ScreenState(webViewVisible = false, isLoading = true)
         viewModelScope.launch(Dispatchers.IO) {
-            authUsecase.setAuthData(BuildConfig.CLIENT_ID)
+            authUseCase.setAuthData(BuildConfig.CLIENT_ID)
             proceedToNextScreen()
         }
     }

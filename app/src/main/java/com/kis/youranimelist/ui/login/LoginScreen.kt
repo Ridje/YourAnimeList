@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ContentAlpha
+import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -19,6 +20,8 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
@@ -28,6 +31,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.google.accompanist.web.LoadingState
 import com.google.accompanist.web.WebView
 import com.google.accompanist.web.rememberWebViewState
 import com.kis.youranimelist.BuildConfig
@@ -71,11 +75,9 @@ fun LoginScreenRoute(
             }
             navController.navigate(NavigationKeys.Route.ONBOARDING)
         },
-        onBackOnWebView = eventsConsumer::onBackOnWebView
+        onBackOnWebView = eventsConsumer::onBackOnWebView,
     )
 }
-
-@SuppressLint("SetJavaScriptEnabled")
 @Composable
 fun LoginScreen(
     isWebViewVisible: Boolean,
@@ -89,7 +91,6 @@ fun LoginScreen(
     onAuthDataSavedBoardingNowShownYet: () -> Unit = {},
     onBackOnWebView: () -> Unit = {},
 ) {
-
     if (isWebViewVisible) {
         BackHandler(onBack = onBackOnWebView)
     }
@@ -102,30 +103,11 @@ fun LoginScreen(
             }
         }
     }
-    if (isWebViewVisible) {
-        val codeVerifier = Pkce.generateCodeVerifier()
 
-        val webViewState =
-            rememberWebViewState(url = Urls.oauthBaseUrl +
-                    "authorize?response_type=code&client_id=" +
-                    BuildConfig.CLIENT_ID +
-                    "&code_challenge=" +
-                    codeVerifier
-            )
-        WebView(
-            state = webViewState,
-            client = LoginWebViewClient(
-                onLoginSucceed,
-                codeVerifier,
-            ),
-            onCreated = {
-                it.settings.javaScriptEnabled = true
-                android.webkit.WebView.setWebContentsDebuggingEnabled(false)
-            }
-        )
+    if (isWebViewVisible) {
+        LoginWebView(onLoginSucceed = onLoginSucceed)
     } else {
-        Box(modifier = Modifier
-            .fillMaxSize()) {
+        Box(modifier = Modifier.fillMaxSize()) {
             Column(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -141,25 +123,31 @@ fun LoginScreen(
                     onLoginClick()
                 }) {
                     if (isLoading) {
-                        Column(modifier = Modifier.fillMaxWidth(),
-                            horizontalAlignment = Alignment.CenterHorizontally) {
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
                             CircularProgressIndicator()
                             if (isLoadingUserDatabase) {
                                 TextProgressIndicator(stringResource(R.string.loading_user_database))
                             }
                         }
                     } else {
-                        Text(text = stringResource(id = R.string.login),
+                        Text(
+                            text = stringResource(id = R.string.login),
                             fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold)
+                            fontWeight = FontWeight.Bold
+                        )
                     }
                 }
                 val uriHandler = LocalUriHandler.current
                 if (!isLoading) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.disabled) {
-                            Text(text = stringResource(R.string.no_account_question),
-                                fontSize = 12.sp)
+                            Text(
+                                text = stringResource(R.string.no_account_question),
+                                fontSize = 12.sp
+                            )
                         }
                         TextButton(onClick = { uriHandler.openUri(Urls.signUpUrl) }) {
                             Text(
@@ -171,8 +159,10 @@ fun LoginScreen(
                 }
             }
             if (!isLoading) {
-                TextButton(modifier = Modifier.align(Alignment.BottomCenter),
-                    onClick = onAuthorizationSkipped) {
+                TextButton(
+                    modifier = Modifier.align(Alignment.BottomCenter),
+                    onClick = onAuthorizationSkipped,
+                ) {
                     Text(
                         text = stringResource(R.string.login_use_without_an_account),
                         fontSize = 12.sp,
@@ -183,10 +173,64 @@ fun LoginScreen(
         }
     }
 }
+@SuppressLint("SetJavaScriptEnabled")
+@Composable
+fun LoginWebView(
+    onLoginSucceed: (String, String) -> Unit,
+    onPageStarted: () -> Unit = {},
+    onPageFinished: () -> Unit = {},
+) {
+    val codeVerifier by remember { mutableStateOf(Pkce.generateCodeVerifier()) }
+    val url by remember {
+        mutableStateOf(
+            Urls.oauthBaseUrl +
+                    "authorize?response_type=code&client_id=" +
+                    BuildConfig.CLIENT_ID +
+                    "&code_challenge=" +
+                    codeVerifier
+        )
+    }
+    val state = rememberWebViewState(
+        url = url,
+    )
+    val client = remember {
+        LoginWebViewClient(
+            redirectCallback = onLoginSucceed,
+            codeVerifier = codeVerifier,
+            onPageStarted = onPageStarted,
+            onPageFinished = onPageFinished,
+        )
+    }
+    Box(modifier = Modifier.fillMaxSize()) {
+        WebView(
+            modifier = Modifier.fillMaxSize(),
+            state = state,
+            client = client,
+            onCreated = {
+                it.settings.javaScriptEnabled = true
+                android.webkit.WebView.setWebContentsDebuggingEnabled(false)
+            }
+        )
+
+        val loadingState = state.loadingState
+        if (loadingState is LoadingState.Loading) {
+            LinearProgressIndicator(
+                progress = loadingState.progress,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+    }
+
+}
 
 @Preview(showSystemUi = true)
 @Composable
 fun LoginScreenPreview() {
-    LoginScreen(false, false, false, MutableSharedFlow())
+    LoginScreen(
+        true,
+        false,
+        false,
+        MutableSharedFlow(),
+    )
 }
 
