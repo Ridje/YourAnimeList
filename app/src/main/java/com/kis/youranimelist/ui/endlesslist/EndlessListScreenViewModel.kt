@@ -9,6 +9,7 @@ import androidx.paging.PagingSource
 import androidx.paging.cachedIn
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.map
+import com.kis.youranimelist.core.ResourceProvider
 import com.kis.youranimelist.domain.rankinglist.RankingListUseCase
 import com.kis.youranimelist.domain.rankinglist.model.Anime
 import com.kis.youranimelist.ui.model.ExploreCategory
@@ -24,14 +25,14 @@ import javax.inject.Inject
 class EndlessListScreenViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     rankingListUseCase: RankingListUseCase,
+    resourceProvider: ResourceProvider,
 ) : ViewModel(), EndlessListScreenContract.ScreenEventsListener {
 
     private val rankingPageSource: PagingSource<Int, Anime>
     private val rankingType =
         ExploreCategory.Ranked.Factory.getByTag(savedStateHandle.get<String>(NavigationKeys.Argument.RANK)
             ?: throw InvalidNavArgumentException(NavigationKeys.Argument.RANK))
-    private val title =
-        rankingType.presentName
+    private val title = resourceProvider.getString(rankingType.stringId)
 
     init {
         rankingPageSource =

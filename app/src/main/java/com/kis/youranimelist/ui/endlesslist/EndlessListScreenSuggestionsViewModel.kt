@@ -8,6 +8,8 @@ import androidx.paging.PagingSource
 import androidx.paging.cachedIn
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.map
+import com.kis.youranimelist.R
+import com.kis.youranimelist.core.ResourceProvider
 import com.kis.youranimelist.domain.rankinglist.model.Anime
 import com.kis.youranimelist.domain.suggestions.SuggestionsListUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,6 +21,7 @@ import javax.inject.Inject
 @HiltViewModel
 class EndlessListScreenSuggestionsViewModel @Inject constructor(
     suggestionsListUseCase: SuggestionsListUseCase,
+    resourceProvider: ResourceProvider,
 ) : ViewModel(), EndlessListScreenContract.ScreenEventsListener {
 
     private val suggestionsPageSource: PagingSource<Int, Anime>
@@ -36,7 +39,7 @@ class EndlessListScreenSuggestionsViewModel @Inject constructor(
                 }.flow.map { pagingData ->
                     pagingData.map { it.asEndlessListItem() }
                 }.cachedIn(viewModelScope),
-                "Suggestions",
+                resourceProvider.getString(R.string.suggestions),
             )
         )
     val screenState: StateFlow<EndlessListScreenContract.ScreenState>

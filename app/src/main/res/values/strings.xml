@@ -72,6 +72,16 @@
 
     <string name="profile_connect_mal_account">Connect MAL</string>
     <string name="profile_connect_mal_account_description">Click here to connect your MAL account and get access to anime statistics</string>
+    <string name="search_in_MAL">Search in MAL</string>
+    <string name="see_all">See all</string>
+    <string name="suggestions">Suggestions</string>
+
+    <string name="explore_category_top_ranked">Top ranked</string>
+    <string name="explore_category_airing">Airing</string>
+    <string name="explore_category_popular">Popular</string>
+    <string name="explore_category_upcoming">Upcoming</string>
+    <string name="explore_category_movies">Movies</string>
+    <string name="explore_category_favorite">Favorite</string>
 
     <string-array name="personal_list_statuses">
         <item>all</item>
