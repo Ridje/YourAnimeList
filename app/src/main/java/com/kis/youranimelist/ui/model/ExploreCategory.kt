@@ -1,5 +1,8 @@
 package com.kis.youranimelist.ui.model
 
+import androidx.annotation.StringRes
+import com.kis.youranimelist.R
+
 interface CachingKey {
     fun toRequest(): String
 }
@@ -7,13 +10,13 @@ interface CachingKey {
 sealed class ExploreCategory(
     val tag: String,
 ) : CachingKey {
-    sealed class Ranked(val presentName: String, tag: String) : ExploreCategory(tag) {
-        object TopRanked : Ranked("Top ranked", "all")
-        object Airing : Ranked("Airing", "airing")
-        object Popular : Ranked("Popular", "bypopularity")
-        object Upcoming : Ranked("Upcoming", "upcoming")
-        object Movies : Ranked("Movies", "movie")
-        object Favorite : Ranked("Favorite", "favorite")
+    sealed class Ranked(@StringRes val stringId: Int, tag: String) : ExploreCategory(tag) {
+        object TopRanked : Ranked(R.string.explore_category_top_ranked, "all")
+        object Airing : Ranked(R.string.explore_category_airing, "airing")
+        object Popular : Ranked(R.string.explore_category_popular, "bypopularity")
+        object Upcoming : Ranked(R.string.explore_category_upcoming, "upcoming")
+        object Movies : Ranked(R.string.explore_category_movies, "movie")
+        object Favorite : Ranked(R.string.explore_category_favorite, "favorite")
 
         object Factory {
             fun getByTag(tag: String): Ranked {

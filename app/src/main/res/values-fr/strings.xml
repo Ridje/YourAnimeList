@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Your Anime List</string>
+    <string name="login">Le login</string>
+    <string name="sign_up">S\'inscrire</string>
+    <string name="watching_items">En cours (%1$s)</string>
+    <string name="completed_item">Complété (%1$s)</string>
+    <string name="on_hold_items">En attente (%1$s)</string>
+    <string name="dropped_items">Terminé (%1$s)</string>
+    <string name="plan_to_watch_items">Prévoyez de regarder (%1$s)</string>
+    <string name="total_items">Total (%1$s)</string>
+    <string name="not_rated">NA</string>
+    <string name="default_content_description">contenu pas encore décrit</string>
+    <string name="anime">Anime</string>
+    <string name="days_spent">Jours passés</string>
+    <string name="mean_score">Score moyen</string>
+    <string name="episodes_watched">Épisodes regardés</string>
+    <string name="link_to_user">"@"</string>
+    <string name="data_not_loaded_error">Impossible de charger les données</string>
+    <string name="anime_added_plan_to_watch">Ajouté au plan pour regarder</string>
+    <string name="search_value_is_too_short_error">La valeur de recherche est trop courte</string>
+    <string name="reload_data">Recharger</string>
+    <string name="cancel">Annuler</string>
+    <string name="apply">Appliquer</string>
+    <string name="minus_one">-1</string>
+    <string name="plus_one">+1</string>
+    <string name="score">Score</string>
+    <string name="status">Statut</string>
+    <string name="ok">OK</string>
+    <string name="delete_anime_question">Supprimer l\'anime?</string>
+    <string name="delete_anime_question_description">Êtes-vous sûr de vouloir supprimer cet anime de votre liste?</string>
+    <string name="loading_user_database">Chargement de la base de données utilisateur</string>
+    <string name="list_empty">Aucun élément dans la liste</string>
+    <string name="related">En rapport</string>
+    <string name="recommendations">Recommandé par les utilisateurs</string>
+    <string name="recommended_times">%1$d utilisateurs</string>
+    <string name="searching_in_list">Rechercher dans la liste</string>
+    <string name="other">Autre</string>
+    <string name="error">Erreur</string>
+    <string name="sync_notification_title">Synchronisation de la liste d\'anime personnelle</string>
+    <string name="sync_notification_channel_name">Synchroniser</string>
+    <string name="sync_notification_channel_description">Tâches d\'arrière-plan pour votre liste d\'anime</string>
+    <string name="no_account_question">Vous n\'avez pas de compte?</string>
+    <string name="finish">Finir</string>
+    <string name="skip">Sauter</string>
+
+    <string name="onboarding_welcome">Bienvenue !\nBalayer vers la droite pour en savoir plus sur l\'application</string>
+    <string name="onboarding_explore">Découvrez de nouveaux animés</string>
+    <string name="onboarding_personal_list">Suivez vos titres préférés</string>
+    <string name="onboarding_profile">Collectez vos statistiques détaillées d\'anime</string>
+    <string name="onboarding_settings">Personnalisez les paramètres de votre application</string>
+
+    <string name="login_use_without_an_account">Utiliser sans compte</string>
+
+    <string name="settings_nsfw">nsfw</string>
+    <string name="settings_nsfw_setting_description">Charger etti, hentai et autres contenus matures</string>
+    <string name="settings_logout">Se déconnecter</string>
+    <string name="settings_clear_data">Effacer les données locales</string>
+    <string name="settings_clear_data_description">Attention! Vous perdrez toute votre progression</string>
+    <string name="settings_clear_data_dialog_description">Voulez-vous vraiment effacer les données? Toutes les données non synchronisées seront supprimées et vous serez redirigé vers l\'écran de connexion.</string>
+    <string name="settings_logout_description">Déconnectez-vous et accédez à l\'écran de connexion</string>
+    <string name="settings_logout_dialog_description">Êtes-vous sûr de vouloir vous déconnecter? Toutes les données non synchronisées seront supprimées et vous serez redirigé vers l\'écran de connexion.</string>
+    <string name="settings_connect_mal_account">Connecter MAL</string>
+    <string name="settings_connect_mal_account_description">Enregistrez votre progression d\'anime dans les nuages</string>
+    <string name="settings_category_profile">Profil</string>
+    <string name="settings_category_api">API</string>
+    <string name="settings_mal_abb">MAL</string>
+    <string name="settings_mal_abb_description">Visitez myanimelist.net</string>
+    <string name="settings_contact_developer">Contacter les développeurs (english)</string>
+    <string name="settings_contact_developer_description">Nous sommes ouverts à parler</string>
+    <string name="settings_github">Github</string>
+    <string name="settings_github_description">Visitez le github du projet</string>
+
+    <string name="profile_connect_mal_account">Connecter MAL</string>
+    <string name="profile_connect_mal_account_description">Cliquez ici pour connecter votre compte MAL et accéder aux statistiques d\'anime</string>
+    <string name="search_in_MAL">Rechercher dans MAL</string>
+    <string name="see_all">Voir tout</string>
+    <string name="suggestions">Suggestions</string>
+
+    <string name="explore_category_top_ranked">Classé au premier rang</string>
+    <string name="explore_category_airing">Aération</string>
+    <string name="explore_category_popular">Populaire</string>
+    <string name="explore_category_upcoming">A venir</string>
+    <string name="explore_category_movies">Films</string>
+    <string name="explore_category_favorite">Préféré</string>
+
+    <string-array name="personal_list_statuses">
+        <item>tout</item>
+        <item>en cours</item>
+        <item>complété</item>
+        <item>en attente</item>
+        <item>terminé</item>
+        <item>prévoyez de regarder</item>
+    </string-array>
+</resources>

@@ -20,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -27,6 +28,7 @@ import androidx.navigation.NavController
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
+import com.kis.youranimelist.R
 import com.kis.youranimelist.ui.Theme
 import com.kis.youranimelist.ui.apptopbar.SearchAnimeToolbar
 import com.kis.youranimelist.ui.navigation.NavigationKeys
@@ -79,7 +81,7 @@ fun ExploreScreen(
                             category.category.navigationScreen)
                     }) {
                         Text(
-                            text = "See all",
+                            text = stringResource(R.string.see_all),
                             color = MaterialTheme.colors.onBackground,
                             style = MaterialTheme.typography.body1,
                             textDecoration = TextDecoration.Underline,
