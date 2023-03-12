@@ -7,6 +7,7 @@ import com.kis.youranimelist.core.utils.AppPreferencesWrapper
 import com.kis.youranimelist.data.network.AuthInterceptor
 import com.kis.youranimelist.data.repository.RemoteDataSource
 import com.kis.youranimelist.domain.auth.AuthUseCase
+import com.kis.youranimelist.domain.cache.RefreshCacheUseCaseImpl
 import dagger.Lazy
 import dagger.Module
 import dagger.Provides
@@ -19,7 +20,11 @@ import javax.inject.Qualifier
 import javax.inject.Singleton
 
 @Module(
-    includes = [UtilsModule::class, NetworkModule::class]
+    includes = [
+        UtilsModule::class,
+        NetworkModule::class,
+        AppBindsModule::class,
+    ]
 )
 @InstallIn(SingletonComponent::class)
 object AppModule {
@@ -42,6 +47,10 @@ object AppModule {
     ): AuthUseCase {
         return AuthUseCase(remoteDataSource, appPreferences, authInterceptor)
     }
+
+    @Provides
+    @Singleton
+    fun provideRefreshCacheUseCase() = RefreshCacheUseCaseImpl()
 
     @Provides
     @Medium

@@ -40,6 +40,10 @@ object ExploreScreenContract {
         object SuggestionsList : EndlessListNavType()
         object RankedList : EndlessListNavType()
     }
+
+    sealed class Effect {
+        object RefreshLists : Effect()
+    }
 }
 
 fun List<Pair<ExploreCategory, Pager<Int, Anime>>>.asExploreScreenContractScreenState(

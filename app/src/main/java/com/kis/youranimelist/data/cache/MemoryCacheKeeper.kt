@@ -4,6 +4,7 @@ import com.kis.youranimelist.domain.rankinglist.model.Anime
 import com.kis.youranimelist.ui.model.CachingKey
 
 private const val CACHE_INVALIDATION_TIME: Long = 86400 / 2
+private const val MS_IN_SEC: Int = 1000
 
 interface MemoryCacheKeeper<T, S> {
     val updatedAt: Long
@@ -39,7 +40,7 @@ class AnimeRankingMemoryCache(
     }
 
     override fun invalidateCache() {
-        if (System.currentTimeMillis() - lifeTime * 1000 > updatedAt) {
+        if (System.currentTimeMillis() - lifeTime * MS_IN_SEC > updatedAt) {
             _cache.clear()
         }
     }
@@ -50,6 +51,10 @@ class AnimeRankingMemoryCache(
             key: CachingKey,
         ): AnimeRankingMemoryCache {
             return cachedRanks.getOrPut(key) { AnimeRankingMemoryCache(CACHE_INVALIDATION_TIME) }
+        }
+
+        fun clearCaches() {
+            cachedRanks.clear()
         }
     }
 }
