@@ -2,10 +2,12 @@ package com.kis.youranimelist.domain.settings
 
 import com.kis.youranimelist.core.utils.AppPreferencesWrapper
 import com.kis.youranimelist.core.utils.Setting
+import com.kis.youranimelist.domain.cache.ClearCacheUseCase
 import javax.inject.Inject
 
 class SettingsUseCase @Inject constructor(
     private val appPreferences: AppPreferencesWrapper,
+    private val clearCacheUseCase: ClearCacheUseCase,
 ) {
 
     fun getAppSettings(): Map<Setting<*>, Boolean> {
@@ -25,5 +27,6 @@ class SettingsUseCase @Inject constructor(
 
     fun updateNSFVSetting(value: Boolean) {
         appPreferences.writeValue(Setting.NSFW, value)
+        clearCacheUseCase()
     }
 }

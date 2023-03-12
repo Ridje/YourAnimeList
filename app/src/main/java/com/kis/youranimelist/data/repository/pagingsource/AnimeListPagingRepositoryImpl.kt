@@ -43,8 +43,9 @@ class AnimeListPagingRepositoryImpl<T>(
                                 )
                             }
                         }
-                        is NetworkResponse.Error -> LoadResult.Error(fetchedData.error
-                            ?: NetworkErrorException(fetchedData.body?.message))
+                        is NetworkResponse.Error -> LoadResult.Error(
+                            fetchedData.error ?: NetworkErrorException(fetchedData.body?.message)
+                        )
                     }
                 }
             }

@@ -3,6 +3,7 @@ package com.kis.youranimelist.domain.explore
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import com.kis.youranimelist.domain.auth.AuthUseCase
+import com.kis.youranimelist.domain.cache.RefreshCacheUseCase
 import com.kis.youranimelist.domain.rankinglist.RankingListUseCase
 import com.kis.youranimelist.domain.rankinglist.model.Anime
 import com.kis.youranimelist.domain.suggestions.SuggestionsListUseCase
@@ -13,6 +14,7 @@ class ExploreUseCase @Inject constructor(
     private val rankingListUseCase: RankingListUseCase,
     private val suggestionsListUseCase: SuggestionsListUseCase,
     private val authUseCase: AuthUseCase,
+    private val refreshCacheUseCase: RefreshCacheUseCase,
 ) {
     fun getExploreScreenPagerSources(): List<Pair<ExploreCategory, Pager<Int, Anime>>> {
         return if (authUseCase.isClientAuth()) {
@@ -32,6 +34,8 @@ class ExploreUseCase @Inject constructor(
             )
         }
     }
+
+    fun getRefreshListsSource() = refreshCacheUseCase.observeRefreshEvents()
 
     private fun rankedCategory(rankedCategory: ExploreCategory.Ranked): Pair<ExploreCategory, Pager<Int, Anime>> {
         return rankedCategory to Pager(defaultPagingConfig()) {

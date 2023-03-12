@@ -1,5 +1,6 @@
 package com.kis.youranimelist.ui.login
 
+import android.graphics.Bitmap
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import com.google.accompanist.web.AccompanistWebViewClient
@@ -10,6 +11,8 @@ private const val CODE_FIELD = "code"
 class LoginWebViewClient(
     private val redirectCallback: (String, String) -> Unit,
     private val codeVerifier: String,
+    private val onPageStarted: () -> Unit,
+    private val onPageFinished: () -> Unit,
 ) : AccompanistWebViewClient() {
 
     override fun shouldOverrideUrlLoading(
@@ -23,10 +26,20 @@ class LoginWebViewClient(
                         token,
                         codeVerifier,
                     )
+                    return true;
                 }
-                return true;
             }
         }
         return super.shouldOverrideUrlLoading(view, request)
+    }
+
+    override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
+        super.onPageStarted(view, url, favicon)
+        onPageStarted()
+    }
+
+    override fun onPageFinished(view: WebView?, url: String?) {
+        super.onPageFinished(view, url)
+        onPageFinished()
     }
 }

@@ -53,7 +53,7 @@ fun ExploreScreenRoute(
             }
             navController.navigate(navigateTo)
         },
-        onSearchClick = { navController.navigate(NavigationKeys.Route.SEARCH) }
+        onSearchClick = { navController.navigate(NavigationKeys.Route.SEARCH) },
     )
 }
 
@@ -68,17 +68,24 @@ fun ExploreScreen(
         state = rememberCollapsingToolbarScaffoldState(),
         toolbar = { SearchAnimeToolbar(onSearchClick = onSearchClick) },
         modifier = Modifier,
-        scrollStrategy = ScrollStrategy.EnterAlwaysCollapsed) {
+        scrollStrategy = ScrollStrategy.EnterAlwaysCollapsed
+    ) {
         LazyColumn(contentPadding = PaddingValues(bottom = Theme.NumberValues.bottomBarPaddingValueForLazyList.dp)) {
             itemsIndexed(animeCategories) { index, category ->
-                Row(horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier.fillMaxWidth()) {
-                    Text(text = category.category.title,
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = category.category.title,
                         modifier = Modifier.padding(6.dp),
-                        style = MaterialTheme.typography.h6)
+                        style = MaterialTheme.typography.h6
+                    )
                     TextButton(onClick = {
-                        onRankingListClick.invoke(category.category.tag,
-                            category.category.navigationScreen)
+                        onRankingListClick.invoke(
+                            category.category.tag,
+                            category.category.navigationScreen
+                        )
                     }) {
                         Text(
                             text = stringResource(R.string.see_all),
@@ -92,10 +99,12 @@ fun ExploreScreen(
                 val lazyItems = category.pagingDataFlow.collectAsLazyPagingItems()
                 when (lazyItems.loadState.refresh) {
                     is LoadState.Loading -> {
-                        LazyRow(modifier = Modifier
-                            .wrapContentHeight()
-                            .height(280.dp),
-                            contentPadding = PaddingValues(horizontal = 6.dp, vertical = 0.dp)) {
+                        LazyRow(
+                            modifier = Modifier
+                                .wrapContentHeight()
+                                .height(280.dp),
+                            contentPadding = PaddingValues(horizontal = 6.dp, vertical = 0.dp)
+                        ) {
                             items(Theme.NumberValues.previewItemsInCarousel) {
                                 AnimeCategoryListItemRounded(
                                     cover = null,
@@ -113,10 +122,12 @@ fun ExploreScreen(
                         }
                     }
                     is LoadState.Error -> {
-                        LazyRow(modifier = Modifier
-                            .wrapContentHeight()
-                            .height(280.dp),
-                            contentPadding = PaddingValues(horizontal = 6.dp, vertical = 0.dp)) {
+                        LazyRow(
+                            modifier = Modifier
+                                .wrapContentHeight()
+                                .height(280.dp),
+                            contentPadding = PaddingValues(horizontal = 6.dp, vertical = 0.dp)
+                        ) {
                             items(Theme.NumberValues.previewItemsInCarousel) {
                                 AnimeCategoryListItemRounded(
                                     cover = null,
@@ -149,9 +160,7 @@ fun ExploreScreen(
                                     showPlaceholder = false,
                                     showError = false,
                                 ) {
-                                    animeItem?.let { clickedAnime ->
-                                        onItemClick.invoke(clickedAnime.id)
-                                    }
+                                    animeItem?.let { clickedAnime -> onItemClick(clickedAnime.id) }
                                 }
                                 Divider(
                                     color = Color.Transparent,
