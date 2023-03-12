@@ -1,10 +1,8 @@
 package com.kis.youranimelist.data.network.model.personallist
 
 import com.kis.youranimelist.data.cache.model.personalanime.AnimePersonalStatusPersistence
-import com.kis.youranimelist.data.cache.model.personalanime.AnimeStatusPersistence
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import java.util.Date
 
 @Serializable
 data class AnimeStatusResponse(
@@ -12,6 +10,8 @@ data class AnimeStatusResponse(
     @SerialName("score") val score: Int,
     @SerialName("num_episodes_watched") val numEpisodesWatched: Int,
     @SerialName("updated_at") val updatedAt: String,
+    @SerialName("tags") val tags: List<String>,
+    @SerialName("comments") val comments: String,
 )
 
 fun AnimeStatusResponse.asAnimePersonalStatusPersistence(
@@ -23,6 +23,7 @@ fun AnimeStatusResponse.asAnimePersonalStatusPersistence(
         episodesWatched = this.numEpisodesWatched,
         statusId = this.status,
         animeId = animeId,
-        updatedAt = updatedAtFormatter.invoke(this.updatedAt)
+        updatedAt = updatedAtFormatter(this.updatedAt),
+        comments = comments,
     )
 }

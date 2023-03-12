@@ -4,22 +4,22 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
-import androidx.room.TypeConverters
 import com.kis.youranimelist.data.cache.model.anime.AnimePersistence
-import com.kis.youranimelist.domain.personalanimelist.model.AnimeStatus
 
-@Entity(tableName = "anime_personal_status",
-    foreignKeys = arrayOf(
+@Entity(
+    tableName = "anime_personal_status",
+    foreignKeys = [
         ForeignKey(
             entity = AnimeStatusPersistence::class,
             parentColumns = ["id"],
-            childColumns = ["status_id"]),
+            childColumns = ["status_id"]
+        ),
         ForeignKey(
             entity = AnimePersistence::class,
             parentColumns = ["id"],
             childColumns = ["anime_id"]
         )
-    )
+    ]
 )
 data class AnimePersonalStatusPersistence(
     val score: Int?,
@@ -32,4 +32,6 @@ data class AnimePersonalStatusPersistence(
     val animeId: Int,
     @ColumnInfo("updated_at")
     val updatedAt: Long,
+    @ColumnInfo("comments")
+    val comments: String?,
 )

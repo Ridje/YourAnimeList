@@ -33,7 +33,7 @@
     <string name="related">Related</string>
     <string name="recommendations">Recommended by users</string>
     <string name="recommended_times">%1$d users</string>
-    <string name="searching_in_list">Search in list</string>
+    <string name="searching_in_list">Search in list by name, score or tag</string>
     <string name="other">Other</string>
     <string name="error">Error</string>
     <string name="sync_notification_title">Personal anime list synchronization</string>

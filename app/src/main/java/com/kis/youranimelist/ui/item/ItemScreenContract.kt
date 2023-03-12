@@ -116,5 +116,6 @@ fun ItemScreenContract.AnimeItem.asAnimeStatus(): AnimeStatus {
         score = 0,
         numWatchedEpisodes = 0,
         updatedAt = System.currentTimeMillis(),
+        tags = null,
     )
 }

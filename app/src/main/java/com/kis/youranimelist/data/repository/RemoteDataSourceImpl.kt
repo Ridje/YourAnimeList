@@ -27,7 +27,7 @@ class RemoteDataSourceImpl(
         private const val USER_FIELDS =
             "id, name, picture, gender, birthday, location, joined_at, anime_statistics"
         private const val USER_ANIME_FIELDS =
-            "id, title, main_picture, list_status, media_type, num_episodes, mean"
+            "list_status{tags,comments},media_type,num_episodes,mean,id,title,main_picture"
         private const val ANIME_FIELDS =
             "id, title, mean, main_picture, start_season, synopsis, genres, " +
                     "pictures, related_anime, media_type, num_episodes, recommendations, status"

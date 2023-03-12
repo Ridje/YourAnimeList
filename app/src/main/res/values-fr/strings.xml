@@ -34,7 +34,7 @@
     <string name="related">En rapport</string>
     <string name="recommendations">Recommandé par les utilisateurs</string>
     <string name="recommended_times">%1$d utilisateurs</string>
-    <string name="searching_in_list">Rechercher dans la liste</string>
+    <string name="searching_in_list">Rechercher dans la liste par nom, score ou tag</string>
     <string name="other">Autre</string>
     <string name="error">Erreur</string>
     <string name="sync_notification_title">Synchronisation de la liste d\'anime personnelle</string>

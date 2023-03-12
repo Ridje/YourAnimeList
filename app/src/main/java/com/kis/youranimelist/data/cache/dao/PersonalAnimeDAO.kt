@@ -7,6 +7,8 @@ import androidx.room.Query
 import androidx.room.Transaction
 import com.kis.youranimelist.data.cache.model.personalanime.AnimePersonalStatusPersistence
 import com.kis.youranimelist.data.cache.model.personalanime.AnimeStatusPersistence
+import com.kis.youranimelist.data.cache.model.personalanime.AnimeTagPersistence
+import com.kis.youranimelist.data.cache.model.personalanime.PersonalAnimeTagsCrossRef
 import com.kis.youranimelist.data.cache.model.personalanime.PersonalStatusOfAnimePersistence
 import kotlinx.coroutines.flow.Flow
 
@@ -37,6 +39,15 @@ interface PersonalAnimeDAO {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun addAnimeStatus(status: AnimeStatusPersistence)
+
+    @Query("DELETE FROM personal_anime_tag WHERE anime_id = :animeId")
+    suspend fun deletePersonalAnimeTags(animeId: Int)
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun addAnimeTags(tags: List<AnimeTagPersistence>)
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun addAnimePersonalAnimeTags(personalTags: PersonalAnimeTagsCrossRef)
 
     @Query("SELECT * FROM anime_personal_status INNER JOIN anime ON anime_personal_status.anime_id = anime.id")
     @Transaction

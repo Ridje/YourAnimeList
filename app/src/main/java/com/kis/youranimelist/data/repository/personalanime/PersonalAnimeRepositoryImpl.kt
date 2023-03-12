@@ -75,6 +75,7 @@ class PersonalAnimeRepositoryImpl @Inject constructor(
                 statusId = animeStatus.status.presentIndex,
                 animeId = animeStatus.anime.id,
                 updatedAt = animeStatus.updatedAt,
+                comments = animeStatus.comments,
             )
         )
         val remoteResult = remoteDataSource.savePersonalAnimeStatus(
@@ -118,6 +119,7 @@ class PersonalAnimeRepositoryImpl @Inject constructor(
                             statusId = foundRemoteStatus.status.presentIndex,
                             animeId = foundRemoteStatus.anime.id,
                             updatedAt = foundRemoteStatus.updatedAt,
+                            comments = foundRemoteStatus.comments,
                         )
                     )
                     syncJobs[job.key] = true

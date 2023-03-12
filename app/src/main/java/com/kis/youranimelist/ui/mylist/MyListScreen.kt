@@ -5,6 +5,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -52,8 +53,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.Bottom
 import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -65,6 +68,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
@@ -100,10 +104,12 @@ fun MyListScreenRoute(
         listItems = screenState.value.items.filter {
             val fitTab =
                 screenState.value.currentTab == 0 || it.status == screenState.value.tabs[screenState.value.currentTab]
-            val fitSearch =
-                screenState.value.searchValue.isBlank() || it.title?.contains(
-                    screenState.value.searchValue,
-                    true) ?: false
+            val fitSearch = screenState.value.searchValue.isBlank()
+                    || it.title?.contains(screenState.value.searchValue, true) ?: false
+                    || it.score.toString().contains(screenState.value.searchValue, true)
+                    || it.tags?.joinToString()
+                ?.contains(screenState.value.searchValue, true) ?: false
+                    || it.comments?.contains(screenState.value.searchValue, true) ?: false
             return@filter fitTab && fitSearch
         },
         tabs = screenState.value.tabs,
@@ -119,7 +125,6 @@ fun MyListScreenRoute(
     )
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MyListScreen(
     scaffoldState: ScaffoldState,
@@ -163,12 +168,15 @@ fun MyListScreen(
             }
         }
         AnimatedVisibility(visible = listItems.isNotEmpty() || searchValue.isNotEmpty()) {
-            Surface(modifier = Modifier
-                .fillMaxWidth(),
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth(),
                 color = Color.Transparent
             ) {
-                DebouncedSearch(searchValue = searchValue,
-                    onSearchValueChanged = onSearchValueChanged)
+                DebouncedSearch(
+                    searchValue = searchValue,
+                    onSearchValueChanged = onSearchValueChanged
+                )
             }
         }
         if (isError) {
@@ -194,128 +202,241 @@ fun MyListScreen(
                 onSwipeRefresh = onSwipeRefresh,
             ) {
                 if (listItems.isEmpty()) {
-                    Box(modifier = Modifier
-                        .fillMaxSize()
-                        .verticalScroll(rememberScrollState()), contentAlignment = Center) {
-                        Text(text = stringResource(R.string.list_empty),
-                            modifier = Modifier.align(Center))
-                    }
+                    EmptyListText()
                 } else {
-                    LazyColumn(contentPadding = PaddingValues(
-                        start = 8.dp,
-                        end = 8.dp,
-                        top = 8.dp,
-                        bottom = Theme.NumberValues.bottomBarPaddingValueForLazyList.dp),
-                        modifier = Modifier.fillMaxHeight()
+                    PersonalListScrollable(
+                        listItems = listItems,
+                        tabs = tabs,
+                        onItemClicked = onItemClicked,
+                        onItemLongPress = onItemLongPress,
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+@OptIn(ExperimentalFoundationApi::class)
+private fun PersonalListScrollable(
+    listItems: List<MyListScreenContract.Item>,
+    tabs: List<String>,
+    onItemClicked: (Int) -> Unit,
+    onItemLongPress: (Int) -> Unit,
+) {
+    LazyColumn(
+        contentPadding = PaddingValues(
+            start = 8.dp,
+            end = 8.dp,
+            top = 8.dp,
+            bottom = Theme.NumberValues.bottomBarPaddingValueForLazyList.dp
+        ),
+        modifier = Modifier.fillMaxHeight()
+    ) {
+        items(
+            items = listItems,
+            key = { it.id }
+        ) { item ->
+            Card(
+                shape = RoundedCornerShape(Theme.NumberValues.roundedCardPercents),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(140.dp)
+                    .clip(RoundedCornerShape(Theme.NumberValues.roundedCardPercents))
+                    .combinedClickable(
+                        onClick = { onItemClicked.invoke(item.id) },
+                        onLongClick = { onItemLongPress.invoke(item.id) }
+                    ),
+                backgroundColor = Color.White.copy(alpha = 0.1f),
+                elevation = 0.dp,
+            ) {
+                Row {
+                    Spacer(
+                        modifier = Modifier
+                            .width(10.dp)
+                            .fillMaxHeight()
+                            .background(color = item.color)
+                    )
+                    AsyncImage(
+                        model = item.imageUrl,
+                        contentDescription = stringResource(id = R.string.default_content_description),
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .aspectRatio(defaultImageRatio),
+                        contentScale = ContentScale.Crop,
+                    )
+                    Column(
+                        modifier = Modifier.fillMaxHeight(),
+                        verticalArrangement = Arrangement.SpaceBetween
                     ) {
-                        items(
-                            items = listItems,
-                            key = { it.id }
-                        ) { item ->
-                            Card(
-                                shape = RoundedCornerShape(Theme.NumberValues.roundedCardPercents),
+                        Column(
+                            modifier = Modifier.padding(
+                                horizontal = 8.dp,
+                                vertical = 4.dp
+                            )
+                        ) {
+                            ItemTitleInfo(itemTitle = item.title)
+                            ItemSpecialInfo(
+                                mediaType = item.mediaType,
+                                itemStatus = item.status,
+                                tabs = tabs,
+                                tags = item.tags,
+                            )
+                            ItemScoreInfo(
+                                itemScore = item.score,
+                                itemMean = item.mean,
+                            )
+                        }
+                        Column {
+                            Text(
                                 modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(140.dp)
-                                    .combinedClickable(onClick = { onItemClicked.invoke(item.id) },
-                                        onLongClick = { onItemLongPress.invoke(item.id) }),
-                                backgroundColor = Color.White.copy(alpha = 0.1f),
-                                elevation = 0.dp
-                            ) {
-                                Row {
-                                    Spacer(modifier = Modifier
-                                        .width(10.dp)
-                                        .fillMaxHeight()
-                                        .background(color = item.color)
-                                    )
-                                    AsyncImage(
-                                        model = item.imageUrl,
-                                        contentDescription = stringResource(id = R.string.default_content_description),
-                                        modifier = Modifier
-                                            .fillMaxHeight()
-                                            .aspectRatio(defaultImageRatio),
-                                        contentScale = ContentScale.Crop,
-                                    )
-                                    Column(modifier = Modifier.fillMaxHeight(),
-                                        verticalArrangement = Arrangement.SpaceBetween) {
-                                        Column(
-                                            modifier = Modifier.padding(horizontal = 8.dp,
-                                                vertical = 4.dp)
-                                        ) {
-                                            Text(text = item.title ?: "",
-                                                style = MaterialTheme.typography.body1,
-                                                maxLines = 2,
-                                                overflow = TextOverflow.Ellipsis
-                                            )
-                                            Row {
-                                                item.mediaType?.let { mediaType ->
-                                                    Text(text = mediaType.uppercaseMediaType(),
-                                                        style = MaterialTheme.typography.body2)
-                                                }
-                                                Text(text = separator,
-                                                    style = MaterialTheme.typography.body2)
-                                                Text(
-                                                    text = stringArrayResource(id = R.array.personal_list_statuses)[tabs.indexOf(
-                                                        item.status)],
-                                                    style = MaterialTheme.typography.body2
-                                                )
-                                            }
-                                            Row(verticalAlignment = Alignment.CenterVertically,
-                                                modifier = Modifier.padding(top = 4.dp)) {
-                                                if (item.score != null && item.score > 0) {
-                                                    Box(
-                                                        modifier = Modifier
-                                                            .background(color = Theme.Colors.userScore,
-                                                                shape = CircleShape)
-                                                            .width(26.dp)
-                                                            .aspectRatio(1f),
-                                                        contentAlignment = Center,
-                                                    ) {
-                                                        Text(text = item.score.toString(),
-                                                            textAlign = TextAlign.Center,
-                                                            style = MaterialTheme.typography.subtitle1)
-                                                    }
-                                                    Spacer(modifier = Modifier.width(8.dp))
-                                                }
-                                                IconWithText(
-                                                    text = "${item.mean ?: stringResource(id = R.string.not_rated)}",
-                                                    textStyle = MaterialTheme.typography.subtitle1,
-                                                    icon = R.drawable.ic_star_solid,
-                                                    tint = Color.Yellow,
-                                                    space = 4.dp,
-                                                )
-                                            }
-                                        }
-                                        Column {
-                                            Text(text = "${item.finishedEpisodes}/${item.totalNumOfEpisodes}",
-                                                style = MaterialTheme.typography.subtitle2,
-                                                modifier = Modifier.padding(horizontal = 8.dp,
-                                                    vertical = 4.dp))
-                                            LinearProgressIndicator(modifier = Modifier
-                                                .height(8.dp)
-                                                .fillMaxWidth(),
-                                                color = item.color,
-                                                backgroundColor = AnimeStatusValue.PlanToWatch.color,
-                                                progress = (item.finishedEpisodes?.toFloat()
-                                                    ?: 1f) / (item.totalNumOfEpisodes?.toFloat()
-                                                    ?: 1f)
-                                            )
-                                        }
-                                    }
-                                }
-                            }
-                            Divider(
-                                color = Color.Transparent,
-                                modifier = Modifier
-                                    .width(16.dp)
-                                    .height(8.dp)
+                                    .padding(horizontal = 8.dp)
+                                    .horizontalScroll(
+                                        rememberScrollState()
+                                    ),
+                                text = item.comments ?: "",
+                                style = MaterialTheme.typography.caption,
+                                fontWeight = FontWeight.Light,
+                                fontSize = 8.sp
+                            )
+                            Text(
+                                text = "${item.finishedEpisodes}/${item.totalNumOfEpisodes}",
+                                style = MaterialTheme.typography.subtitle2,
+                                modifier = Modifier.padding(
+                                    start = 8.dp,
+                                    bottom = 4.dp,
+                                    top = 2.dp,
+                                )
+                            )
+                            ItemProgressLine(
+                                color = item.color,
+                                finishedEpisodes = item.finishedEpisodes?.toFloat()
+                                    ?: 1f,
+                                totalNumOfEpisodes = item.totalNumOfEpisodes?.toFloat()
+                                    ?: 1f,
                             )
                         }
                     }
                 }
             }
-
+            Divider(
+                color = Color.Transparent,
+                modifier = Modifier
+                    .width(16.dp)
+                    .height(8.dp)
+            )
         }
+    }
+}
+
+@Composable
+private fun ItemTitleInfo(itemTitle: String?) {
+    Text(
+        text = itemTitle ?: "",
+        style = MaterialTheme.typography.body1,
+        maxLines = 2,
+        overflow = TextOverflow.Ellipsis
+    )
+}
+
+@Composable
+private fun ItemScoreInfo(
+    itemScore: Int?,
+    itemMean: Float?,
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.padding(top = 4.dp)
+    ) {
+        if (itemScore != null && itemScore > 0) {
+            Box(
+                modifier = Modifier
+                    .background(
+                        color = Theme.Colors.userScore,
+                        shape = CircleShape
+                    )
+                    .width(26.dp)
+                    .aspectRatio(1f),
+                contentAlignment = Center,
+            ) {
+                Text(
+                    text = itemScore.toString(),
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.subtitle1
+                )
+            }
+            Spacer(modifier = Modifier.width(8.dp))
+        }
+        IconWithText(
+            text = "${itemMean ?: stringResource(id = R.string.not_rated)}",
+            textStyle = MaterialTheme.typography.subtitle1,
+            icon = R.drawable.ic_star_solid,
+            tint = Color.Yellow,
+            space = 4.dp,
+        )
+    }
+}
+
+@Composable
+private fun ItemSpecialInfo(
+    mediaType: String?,
+    itemStatus: String?,
+    tabs: List<String>,
+    tags: List<String>?,
+) {
+    Row(
+        modifier = Modifier.horizontalScroll(
+            rememberScrollState()
+        )
+    ) {
+        mediaType?.let { mediaType ->
+            Text(
+                text = mediaType.uppercaseMediaType(),
+                style = MaterialTheme.typography.body2
+            )
+        }
+        Text(
+            text = separator,
+            style = MaterialTheme.typography.body2
+        )
+        Text(
+            text = stringArrayResource(
+                id = R.array.personal_list_statuses
+            )[tabs.indexOf(itemStatus)],
+            style = MaterialTheme.typography.body2
+        )
+        if (tags?.isNotEmpty() == true) {
+            Text(
+                text = separator,
+                style = MaterialTheme.typography.body2
+            )
+            Text(
+                modifier = Modifier
+                    .align(Bottom),
+                text = tags.joinToString(
+                    separator = ", ",
+                    prefix = "[ ",
+                    postfix = " ]"
+                ),
+                style = MaterialTheme.typography.caption,
+                fontWeight = FontWeight.Light,
+            )
+        }
+    }
+}
+
+@Composable
+private fun EmptyListText() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState()),
+        contentAlignment = Center,
+    ) {
+        Text(
+            text = stringResource(R.string.list_empty),
+            modifier = Modifier.align(Center)
+        )
     }
 }
 
@@ -333,6 +454,26 @@ private fun PersonalListBody(
     } else {
         content()
     }
+}
+
+@Composable
+private fun ItemProgressLine(
+    color: Color,
+    finishedEpisodes: Float,
+    totalNumOfEpisodes: Float,
+) {
+    LinearProgressIndicator(
+        modifier = Modifier
+            .height(6.dp)
+            .fillMaxWidth(),
+        color = color,
+        backgroundColor = AnimeStatusValue.PlanToWatch.color,
+        progress = if (totalNumOfEpisodes == 0F) {
+            0f
+        } else {
+            finishedEpisodes / totalNumOfEpisodes
+        }
+    )
 }
 
 @Composable
