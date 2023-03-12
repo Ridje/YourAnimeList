@@ -27,8 +27,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
+import coil.compose.SubcomposeAsyncImage
 import com.kis.youranimelist.R
+import com.kis.youranimelist.ui.Theme
 import com.kis.youranimelist.ui.Theme.NumberValues.defaultImageRatio
 
 @Composable
@@ -50,32 +51,37 @@ fun AnimeCategoryListItemRounded(
             .clickable { onClick.invoke() }
     ) {
         if (showPlaceholder) {
-            Box(modifier = Modifier
-                .width(size)
-                .aspectRatio(defaultImageRatio)
-                .clip(RoundedCornerShape(20.dp))
-                .background(color = Color.White.copy(alpha = 0.1f))
+            Box(
+                modifier = Modifier
+                    .width(size)
+                    .aspectRatio(defaultImageRatio)
+                    .clip(RoundedCornerShape(20.dp))
+                    .background(color = Color.White.copy(alpha = 0.1f))
             ) {
                 CircularProgressIndicator(
-                    modifier = Modifier.align(Alignment.Center),
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .width(size / Theme.NumberValues.widthLoaderRatioDivider),
                     color = Color.Red,
                 )
             }
 
         } else if (showError) {
-            Box(modifier = Modifier
-                .width(size)
-                .aspectRatio(defaultImageRatio)
-                .clip(RoundedCornerShape(20.dp))
-                .background(color = Color.White.copy(alpha = 0.1f))
+            Box(
+                modifier = Modifier
+                    .width(size)
+                    .aspectRatio(defaultImageRatio)
+                    .clip(RoundedCornerShape(20.dp))
+                    .background(color = Color.White.copy(alpha = 0.1f))
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_exclamation_triangle_solid),
                     contentDescription = stringResource(id = R.string.default_content_description),
-                    modifier = Modifier.align(Alignment.Center))
+                    modifier = Modifier.align(Alignment.Center)
+                )
             }
         } else {
-            AsyncImage(
+            SubcomposeAsyncImage(
                 model = cover,
                 contentDescription = null,
                 modifier = Modifier
@@ -83,6 +89,17 @@ fun AnimeCategoryListItemRounded(
                     .aspectRatio(defaultImageRatio)
                     .clip(RoundedCornerShape(20.dp)),
                 contentScale = ContentScale.Crop,
+                loading = {
+                    Box(
+                        modifier = Modifier.width(size / Theme.NumberValues.widthLoaderRatioDivider)
+                    ) {
+                        CircularProgressIndicator(
+                            modifier = Modifier
+                                .align(Alignment.Center),
+                            color = Color.Red,
+                        )
+                    }
+                }
             )
         }
         Spacer(modifier = Modifier.height(16.dp))
@@ -102,3 +119,6 @@ fun AnimeCategoryListItemRounded(
         )
     }
 }
+
+private val Theme.NumberValues.widthLoaderRatioDivider
+    get() = 4
