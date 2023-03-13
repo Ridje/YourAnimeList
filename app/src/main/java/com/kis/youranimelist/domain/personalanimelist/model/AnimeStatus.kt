@@ -8,4 +8,6 @@ data class AnimeStatus(
     val score: Int,
     val numWatchedEpisodes: Int,
     val updatedAt: Long,
+    val tags: List<String>?,
+    val comments: String?,
 )

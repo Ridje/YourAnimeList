@@ -27,6 +27,8 @@
     <string name="score">Score</string>
     <string name="status">Statut</string>
     <string name="ok">OK</string>
+    <string name="loading">Chargement</string>
+    <string name="not_written_yet">Pas encore écrit</string>
     <string name="delete_anime_question">Supprimer l\'anime?</string>
     <string name="delete_anime_question_description">Êtes-vous sûr de vouloir supprimer cet anime de votre liste?</string>
     <string name="loading_user_database">Chargement de la base de données utilisateur</string>
@@ -34,7 +36,7 @@
     <string name="related">En rapport</string>
     <string name="recommendations">Recommandé par les utilisateurs</string>
     <string name="recommended_times">%1$d utilisateurs</string>
-    <string name="searching_in_list">Rechercher dans la liste</string>
+    <string name="searching_in_list">Rechercher dans la liste par nom, score ou tag</string>
     <string name="other">Autre</string>
     <string name="error">Erreur</string>
     <string name="sync_notification_title">Synchronisation de la liste d\'anime personnelle</string>

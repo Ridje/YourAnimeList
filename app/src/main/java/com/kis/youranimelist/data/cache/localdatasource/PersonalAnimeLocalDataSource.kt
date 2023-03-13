@@ -7,6 +7,8 @@ import com.kis.youranimelist.data.cache.UserDatabase
 import com.kis.youranimelist.data.cache.dao.PersonalAnimeDAO
 import com.kis.youranimelist.data.cache.model.personalanime.AnimePersonalStatusPersistence
 import com.kis.youranimelist.data.cache.model.personalanime.AnimeStatusPersistence
+import com.kis.youranimelist.data.cache.model.personalanime.AnimeTagPersistence
+import com.kis.youranimelist.data.cache.model.personalanime.PersonalAnimeTagsCrossRef
 import com.kis.youranimelist.data.cache.model.personalanime.PersonalStatusOfAnimePersistence
 import com.kis.youranimelist.data.cache.model.syncjob.DeferredPersonalAnimeListChange
 import com.kis.youranimelist.di.Dispatcher
@@ -57,9 +59,24 @@ class PersonalAnimeLocalDataSourceImpl @Inject constructor(
                     statusId = status.status.presentIndex,
                     animeId = status.anime.id,
                     updatedAt = status.updatedAt,
+                    comments = status.comments,
                 )
                 personalAnimeDAO.addAnimeStatus(statusCache)
-                personalAnimeDAO.addPersonalAnimeStatus(personalAnimeStatus)
+                personalAnimeDAO.mergeAnimePersonalStatus(personalAnimeStatus)
+
+                val tags = status.tags?.map { AnimeTagPersistence(it) }
+                tags?.let {
+                    personalAnimeDAO.addAnimeTags(tags)
+                    personalAnimeDAO.deletePersonalAnimeTags(personalAnimeStatus.animeId)
+                }
+                tags?.forEach { tag ->
+                    personalAnimeDAO.addAnimePersonalAnimeTags(
+                        PersonalAnimeTagsCrossRef(
+                            animeId = status.anime.id,
+                            tagId = tag.id,
+                        )
+                    )
+                }
             }
         }
 
@@ -67,19 +84,7 @@ class PersonalAnimeLocalDataSourceImpl @Inject constructor(
         withContext(ioDispatcher) {
             returnFinishedCatchingWithCancellation {
                 for (status in statuses) {
-                    animeLocalDataSource.saveAnimeToCache(status.anime)
-                    val statusCache = AnimeStatusPersistence(status.status.presentIndex)
-
-                    val personalAnimeStatus = AnimePersonalStatusPersistence(
-                        score = status.score,
-                        episodesWatched = status.numWatchedEpisodes,
-                        statusId = status.status.presentIndex,
-                        animeId = status.anime.id,
-                        updatedAt = status.updatedAt,
-                    )
-
-                    personalAnimeDAO.addAnimeStatus(statusCache)
-                    personalAnimeDAO.mergeAnimePersonalStatus(personalAnimeStatus)
+                    saveAnimeWithPersonalStatus(status)
                 }
             }
             return@withContext true
@@ -91,7 +96,8 @@ class PersonalAnimeLocalDataSourceImpl @Inject constructor(
                 database.withTransaction {
                     status.statusId?.let { personalStatusValue ->
                         personalAnimeDAO.addAnimeStatus(
-                            AnimeStatusPersistence(personalStatusValue))
+                            AnimeStatusPersistence(personalStatusValue)
+                        )
                     }
                     personalAnimeDAO.addPersonalAnimeStatus(status)
                     syncJobLocalDataSource.addPersonalAnimeListSyncJob(
@@ -139,7 +145,9 @@ class PersonalAnimeLocalDataSourceImpl @Inject constructor(
     override suspend fun deleteAllPersonalStatuses() =
         withContext(ioDispatcher) {
             returnFinishedCatchingWithCancellation {
+                personalAnimeDAO.deletePersonalAnimeTags()
                 personalAnimeDAO.deleteAllPersonalStatuses()
+                personalAnimeDAO.deleteTags()
             }
         }
 }

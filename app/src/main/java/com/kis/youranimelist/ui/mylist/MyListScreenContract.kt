@@ -27,6 +27,8 @@ object MyListScreenContract {
         val totalNumOfEpisodes: Int?,
         val score: Int?,
         val mean: Float?,
+        val tags: List<String>?,
+        val comments: String?,
     )
 
 
@@ -51,5 +53,7 @@ fun AnimeStatus.asMyListItem(): MyListScreenContract.Item {
         this.anime.numEpisodes,
         this.score,
         this.anime.mean,
+        this.tags,
+        this.comments,
     )
 }

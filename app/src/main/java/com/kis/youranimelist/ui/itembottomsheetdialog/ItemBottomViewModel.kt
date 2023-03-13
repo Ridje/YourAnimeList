@@ -3,6 +3,8 @@ package com.kis.youranimelist.ui.itembottomsheetdialog
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.kis.youranimelist.R
+import com.kis.youranimelist.core.ResourceProvider
 import com.kis.youranimelist.domain.model.ResultWrapper
 import com.kis.youranimelist.domain.personalanimelist.PersonalAnimeListUseCase
 import com.kis.youranimelist.ui.navigation.InvalidNavArgumentException
@@ -20,6 +22,7 @@ import javax.inject.Inject
 class ItemBottomViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val personalAnimeListUseCase: PersonalAnimeListUseCase,
+    resourceProvider: ResourceProvider,
 ) : ViewModel(), ItemBottomScreenContract.ScreenEventsListener {
 
     private val _screenState: MutableStateFlow<ItemBottomScreenContract.ScreenState>
@@ -36,7 +39,13 @@ class ItemBottomViewModel @Inject constructor(
 
     init {
         _screenState =
-            MutableStateFlow(ItemBottomScreenContract.ScreenState(id = id, title = "Loading"))
+            MutableStateFlow(
+                ItemBottomScreenContract.ScreenState(
+                    id = id, title = resourceProvider.getString(
+                        R.string.loading
+                    ), comments = null,
+                )
+            )
     }
 
     init {

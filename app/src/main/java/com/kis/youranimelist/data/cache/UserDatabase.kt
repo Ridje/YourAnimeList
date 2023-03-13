@@ -15,14 +15,18 @@ import com.kis.youranimelist.data.cache.model.anime.AnimePersistence
 import com.kis.youranimelist.data.cache.model.anime.RecommendedAnimePersistence
 import com.kis.youranimelist.data.cache.model.anime.RelatedAnimePersistence
 import com.kis.youranimelist.data.cache.model.SeasonPersistence
+import com.kis.youranimelist.data.cache.model.personalanime.AnimeTagPersistence
 import com.kis.youranimelist.data.cache.model.personalanime.AnimePersonalStatusPersistence
 import com.kis.youranimelist.data.cache.model.personalanime.AnimeStatusPersistence
+import com.kis.youranimelist.data.cache.model.personalanime.PersonalAnimeTagsCrossRef
 import com.kis.youranimelist.data.cache.model.syncjob.DeferredPersonalAnimeListChange
 
 @Database(
     entities = [
         AnimePersistence::class,
         AnimePersonalStatusPersistence::class,
+        AnimeTagPersistence::class,
+        PersonalAnimeTagsCrossRef::class,
         AnimeStatusPersistence::class,
         UserPersistence::class,
         PicturePersistence::class,
@@ -33,8 +37,9 @@ import com.kis.youranimelist.data.cache.model.syncjob.DeferredPersonalAnimeListC
         DeferredPersonalAnimeListChange::class,
         RecommendedAnimePersistence::class,
     ],
-    version = 3,
-    exportSchema = true)
+    version = 4,
+    exportSchema = true
+)
 abstract class UserDatabase : RoomDatabase() {
     abstract fun animeDAO(): AnimeDAO
     abstract fun personalAnimeStatusesDAO(): PersonalAnimeDAO

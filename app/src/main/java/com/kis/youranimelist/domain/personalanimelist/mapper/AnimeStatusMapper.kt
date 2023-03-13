@@ -25,7 +25,9 @@ class AnimeStatusMapper @Inject constructor(
             status = status,
             score = from.status.score,
             numWatchedEpisodes = from.status.numEpisodesWatched,
-            updatedAt = formatter.parse(from.status.updatedAt).time
+            updatedAt = formatter.parse(from.status.updatedAt).time,
+            tags = from.status.tags,
+            comments = from.status.comments,
         )
     }
 
@@ -39,6 +41,8 @@ class AnimeStatusMapper @Inject constructor(
             score = from.status?.score ?: 0,
             numWatchedEpisodes = from.status?.episodesWatched ?: 0,
             updatedAt = from.status?.updatedAt ?: 0,
+            tags = from.tags.map { it.id },
+            comments = from.status?.comments ?: "",
         )
     }
 }

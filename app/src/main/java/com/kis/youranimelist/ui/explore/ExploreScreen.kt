@@ -108,7 +108,7 @@ fun ExploreScreen(
                             items(Theme.NumberValues.previewItemsInCarousel) {
                                 AnimeCategoryListItemRounded(
                                     cover = null,
-                                    firstLine = "Loading",
+                                    firstLine = stringResource(id = R.string.loading),
                                     secondLine = "",
                                     showPlaceholder = true,
                                     showError = false,

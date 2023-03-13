@@ -1,11 +1,12 @@
 package com.kis.youranimelist.ui.item
 
+import com.kis.youranimelist.R
+import com.kis.youranimelist.core.ResourceProvider
 import com.kis.youranimelist.domain.personalanimelist.model.AnimeStatus
 import com.kis.youranimelist.domain.personalanimelist.model.AnimeStatusValue
 import com.kis.youranimelist.domain.rankinglist.model.Anime
 import com.kis.youranimelist.domain.rankinglist.model.RecommendedAnime
 import com.kis.youranimelist.domain.rankinglist.model.RelatedAnime
-import com.kis.youranimelist.ui.item.ItemScreenContract.defaultAnimeItem
 import okhttp3.internal.toImmutableList
 
 object ItemScreenContract {
@@ -41,21 +42,24 @@ object ItemScreenContract {
         val numEpisodes: Int,
         val airingStatus: String,
         val hasPersonalStatus: Boolean,
-    )
+    ) {
+        class Factory(resourceProvider: ResourceProvider) {
+            val defaultAnimeItem = AnimeItem(
+                0,
+                title = resourceProvider.getString(R.string.loading),
+                synopsis = resourceProvider.getString(R.string.not_written_yet),
+                year = 0,
+                mean = 0.0f,
+                images = listOf(),
+                genres = listOf(),
+                mediaType = "",
+                numEpisodes = 0,
+                airingStatus = "",
+                hasPersonalStatus = false,
+            )
+        }
+    }
 
-    val defaultAnimeItem = AnimeItem(
-        0,
-        title = "Loading",
-        synopsis = "Not written yet",
-        year = 0,
-        mean = 0.0f,
-        images = listOf(),
-        genres = listOf(),
-        mediaType = "",
-        numEpisodes = 0,
-        airingStatus = "",
-        hasPersonalStatus = false,
-    )
 
     interface ScreenEventsListener {
         fun onAddToBookmarksButtonPressed()
@@ -67,16 +71,17 @@ object ItemScreenContract {
 }
 
 fun Anime?.asAnimeItemScreen(
+    resourceProvider: ResourceProvider,
 ): ItemScreenContract.AnimeItem {
     return if (this == null) {
-        defaultAnimeItem
+        ItemScreenContract.AnimeItem.Factory(resourceProvider).defaultAnimeItem
     } else {
         ItemScreenContract.AnimeItem(
             id = this.id,
             title = this.title,
             images = mutableListOf<String>().plus(this.picture?.large)
                 .plus(this.pictures.map { it.large }).filterNotNull().distinct().toImmutableList(),
-            synopsis = this.synopsis ?: "Not written yet",
+            synopsis = this.synopsis ?: resourceProvider.getString(R.string.not_written_yet),
             mean = this.mean ?: 0.0f,
             genres = this.genres.map { it.name },
             year = this.startSeason?.year ?: 0,
@@ -116,5 +121,7 @@ fun ItemScreenContract.AnimeItem.asAnimeStatus(): AnimeStatus {
         score = 0,
         numWatchedEpisodes = 0,
         updatedAt = System.currentTimeMillis(),
+        tags = null,
+        comments = null,
     )
 }

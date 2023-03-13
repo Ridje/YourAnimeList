@@ -59,11 +59,14 @@ class PersonalAnimeLocalDataSourceTest {
         score = 10,
         numWatchedEpisodes = 10,
         updatedAt = System.currentTimeMillis(),
+        tags = null,
+        comments = null,
     )
 
     private val animeStatusNewValues = animeStatus.copy(
         status = AnimeStatusValue.Dropped,
         score = 1,
+        updatedAt = animeStatus.updatedAt + 1,
     )
 
     private val anotherAnimeStatusNext = AnimeStatus(
@@ -74,7 +77,9 @@ class PersonalAnimeLocalDataSourceTest {
         status = AnimeStatusValue.Completed,
         score = 10,
         numWatchedEpisodes = 5,
-        updatedAt = System.currentTimeMillis()
+        updatedAt = System.currentTimeMillis() + 1,
+        tags = null,
+        comments = null,
     )
 
     @Before
@@ -123,10 +128,10 @@ class PersonalAnimeLocalDataSourceTest {
 
     @Test
     fun saveTwiceAnimePersonalStatusChangesFirstValue() = runTest {
-        val dataSource =
-            personalAnimeLocalDataSource.getAnimeWithStatusProducer(animeStatus.anime.id)
         personalAnimeLocalDataSource.saveAnimeWithPersonalStatus(animeStatus)
         personalAnimeLocalDataSource.saveAnimeWithPersonalStatus(animeStatusNewValues)
+        val dataSource =
+            personalAnimeLocalDataSource.getAnimeWithStatusProducer(animeStatus.anime.id)
         val result = dataSource.first()
         assertThat(result).isNotNull()
         assertThat(result?.status?.score).isEqualTo(animeStatusNewValues.score)
@@ -159,7 +164,8 @@ class PersonalAnimeLocalDataSourceTest {
             5,
             personalStatus,
             1,
-            System.currentTimeMillis()
+            System.currentTimeMillis(),
+            null,
         )
         personalAnimeLocalDataSource.mergePersonalAnimeStatus(animeToInsert)
         val result = personalAnimeDAO.getAnimePersonalStatus(1)
@@ -192,7 +198,8 @@ class PersonalAnimeLocalDataSourceTest {
             5,
             personalStatus,
             1,
-            System.currentTimeMillis()
+            System.currentTimeMillis(),
+            null,
         )
         personalAnimeLocalDataSource.mergePersonalAnimeStatus(animeToInsert)
         personalAnimeLocalDataSource.mergePersonalAnimeStatus(
@@ -228,7 +235,8 @@ class PersonalAnimeLocalDataSourceTest {
             5,
             personalStatus,
             1,
-            System.currentTimeMillis()
+            System.currentTimeMillis(),
+            null,
         )
         personalAnimeLocalDataSource.mergePersonalAnimeStatus(animeToInsert)
         personalAnimeLocalDataSource.mergePersonalAnimeStatus(
@@ -264,7 +272,8 @@ class PersonalAnimeLocalDataSourceTest {
             5,
             personalStatus,
             1,
-            System.currentTimeMillis()
+            System.currentTimeMillis(),
+            null,
         )
         personalAnimeLocalDataSource.mergePersonalAnimeStatus(animeToInsert)
         personalAnimeLocalDataSource.mergePersonalAnimeStatus(
@@ -364,7 +373,8 @@ class PersonalAnimeLocalDataSourceTest {
             5,
             personalStatus,
             1,
-            System.currentTimeMillis()
+            System.currentTimeMillis(),
+            null,
         )
         personalAnimeLocalDataSource.savePersonalAnimeStatus(animeToInsert)
         val asyncJob = syncJobDAO.getPersonalAnimeListSyncJob(animeId = 1)
@@ -398,7 +408,8 @@ class PersonalAnimeLocalDataSourceTest {
             5,
             personalStatus,
             1,
-            System.currentTimeMillis()
+            System.currentTimeMillis(),
+            null,
         )
         personalAnimeLocalDataSource.savePersonalAnimeStatus(animeToInsert)
         personalAnimeLocalDataSource.deleteAnimePersonalStatus(animeToInsert.animeId)
