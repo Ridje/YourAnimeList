@@ -49,6 +49,12 @@ interface PersonalAnimeDAO {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun addAnimePersonalAnimeTags(personalTags: PersonalAnimeTagsCrossRef)
 
+    @Query("DELETE FROM personal_anime_tag")
+    suspend fun deletePersonalAnimeTags()
+
+    @Query("DELETE FROM tag")
+    suspend fun deleteTags()
+
     @Query("SELECT * FROM anime_personal_status INNER JOIN anime ON anime_personal_status.anime_id = anime.id")
     @Transaction
     fun getAllAnimeWithPersonalStatuses(): Flow<List<PersonalStatusOfAnimePersistence>>

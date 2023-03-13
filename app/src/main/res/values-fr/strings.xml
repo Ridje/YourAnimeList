@@ -27,6 +27,8 @@
     <string name="score">Score</string>
     <string name="status">Statut</string>
     <string name="ok">OK</string>
+    <string name="loading">Chargement</string>
+    <string name="not_written_yet">Pas encore écrit</string>
     <string name="delete_anime_question">Supprimer l\'anime?</string>
     <string name="delete_anime_question_description">Êtes-vous sûr de vouloir supprimer cet anime de votre liste?</string>
     <string name="loading_user_database">Chargement de la base de données utilisateur</string>

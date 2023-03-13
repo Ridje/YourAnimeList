@@ -18,6 +18,7 @@ object ItemBottomScreenContract {
         val statusModified: Boolean = false,
         val applyLoading: Boolean = false,
         val deleteLoading: Boolean = false,
+        val comments: String?,
     )
 
     sealed class Effect {
@@ -56,7 +57,8 @@ fun ItemBottomScreenContract.ScreenState.copyWithMapping(animeStatus: AnimeStatu
             this.score
         } else {
             animeStatus.score.toFloat()
-        }
+        },
+        comments = animeStatus.comments,
     )
 }
 
@@ -72,7 +74,7 @@ fun ItemBottomScreenContract.ScreenState.asAnimeStatus(): AnimeStatus {
         numWatchedEpisodes = this.episodesWatched ?: 0,
         updatedAt = System.currentTimeMillis(),
         tags = null,
-        comments = null,
+        comments = this.comments,
     )
 }
 

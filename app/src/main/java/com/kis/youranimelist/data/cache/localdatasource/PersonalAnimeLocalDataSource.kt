@@ -157,7 +157,9 @@ class PersonalAnimeLocalDataSourceImpl @Inject constructor(
     override suspend fun deleteAllPersonalStatuses() =
         withContext(ioDispatcher) {
             returnFinishedCatchingWithCancellation {
+                personalAnimeDAO.deletePersonalAnimeTags()
                 personalAnimeDAO.deleteAllPersonalStatuses()
+                personalAnimeDAO.deleteTags()
             }
         }
 }
