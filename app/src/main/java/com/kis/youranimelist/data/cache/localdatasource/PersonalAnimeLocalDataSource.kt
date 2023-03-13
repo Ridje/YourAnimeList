@@ -62,7 +62,21 @@ class PersonalAnimeLocalDataSourceImpl @Inject constructor(
                     comments = status.comments,
                 )
                 personalAnimeDAO.addAnimeStatus(statusCache)
-                personalAnimeDAO.addPersonalAnimeStatus(personalAnimeStatus)
+                personalAnimeDAO.mergeAnimePersonalStatus(personalAnimeStatus)
+
+                val tags = status.tags?.map { AnimeTagPersistence(it) }
+                tags?.let {
+                    personalAnimeDAO.addAnimeTags(tags)
+                    personalAnimeDAO.deletePersonalAnimeTags(personalAnimeStatus.animeId)
+                }
+                tags?.forEach { tag ->
+                    personalAnimeDAO.addAnimePersonalAnimeTags(
+                        PersonalAnimeTagsCrossRef(
+                            animeId = status.anime.id,
+                            tagId = tag.id,
+                        )
+                    )
+                }
             }
         }
 
@@ -70,33 +84,7 @@ class PersonalAnimeLocalDataSourceImpl @Inject constructor(
         withContext(ioDispatcher) {
             returnFinishedCatchingWithCancellation {
                 for (status in statuses) {
-                    animeLocalDataSource.saveAnimeToCache(status.anime)
-                    val statusCache = AnimeStatusPersistence(status.status.presentIndex)
-
-                    val personalAnimeStatus = AnimePersonalStatusPersistence(
-                        score = status.score,
-                        episodesWatched = status.numWatchedEpisodes,
-                        statusId = status.status.presentIndex,
-                        animeId = status.anime.id,
-                        updatedAt = status.updatedAt,
-                        comments = status.comments,
-                    )
-                    personalAnimeDAO.addAnimeStatus(statusCache)
-                    personalAnimeDAO.mergeAnimePersonalStatus(personalAnimeStatus)
-
-                    val tags = status.tags?.map { AnimeTagPersistence(it) }
-                    tags?.let {
-                        personalAnimeDAO.addAnimeTags(tags)
-                        personalAnimeDAO.deletePersonalAnimeTags(personalAnimeStatus.animeId)
-                    }
-                    tags?.forEach { tag ->
-                        personalAnimeDAO.addAnimePersonalAnimeTags(
-                            PersonalAnimeTagsCrossRef(
-                                animeId = status.anime.id,
-                                tagId = tag.id,
-                            )
-                        )
-                    }
+                    saveAnimeWithPersonalStatus(status)
                 }
             }
             return@withContext true

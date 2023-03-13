@@ -75,7 +75,6 @@ class MyListViewModel @Inject constructor(
     private fun getLatestData() {
         _screenState.value = _screenState.value.copy(isLoading = true, isError = false)
         viewModelScope.launch {
-            personalAnimeListUseCase.refreshPersonalAnimeStatuses()
             _screenState.value = _screenState.value.copy(
                 isLoading = false,
                 isError = !personalAnimeListUseCase.refreshPersonalAnimeStatuses(),
