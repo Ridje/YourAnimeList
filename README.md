@@ -38,13 +38,13 @@ It supports offline work without an account, synchronization, search and so on.
 8. Settings and additional info screen.
 9. Suggestions list.
 10. Edit personal anime status screen.
+11. Onboarding screen.
+12. Unauthorized work.
 
 ### Roadmap:
-1. Introdution screen.
-2. Animatable login screen.
-3. Register and help button on login screen.
-4. Share anime and images, save images to gallery.
-5. Unauthorized work.
-6. Navigation history.
-7. Ranking lists database caching.
-8. Drop ranking cache on NSFW change and synchronize local database in case of not loaded nsfw items (add delay to enqueing work manager work in case of frequent switcher clicking).
+1. Animatable login screen.
+2. Share anime and images, save images to gallery.
+3. Navigation history.
+4. Ranking lists database caching.
+5. Persistence sorting in personal anime list.
+6. Endless lists filtered by genre.
