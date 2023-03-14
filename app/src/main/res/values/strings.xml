@@ -84,6 +84,8 @@
     <string name="explore_category_upcoming">Upcoming</string>
     <string name="explore_category_movies">Movies</string>
     <string name="explore_category_favorite">Favorite</string>
+    <string name="share_image">Share an image</string>
+    <string name="сannot_share_image">Can\'t share image now, short error: </string>
 
     <string-array name="personal_list_statuses">
         <item>all</item>

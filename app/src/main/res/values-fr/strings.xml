@@ -85,6 +85,8 @@
     <string name="explore_category_upcoming">A venir</string>
     <string name="explore_category_movies">Films</string>
     <string name="explore_category_favorite">Préféré</string>
+    <string name="share_image">Partager une image</string>
+    <string name="сannot_share_image">Impossible de partager l\'image maintenant, courte erreur: </string>
 
     <string-array name="personal_list_statuses">
         <item>tout</item>
