@@ -29,6 +29,7 @@ object Theme {
         const val secondaryColorNotActiveAlpha = 0.3f
         const val maxTitleLines = 3
         const val debounceDefaultDelay = 300L
+        const val waitListRecomposeDelay = 200L
         const val fullUppercaseMediaTypeCharsThreshold = 3
         const val bottomBarHeightDp = 56
         const val bottomBarPaddingValueForLazyList = bottomBarHeightDp + 6
