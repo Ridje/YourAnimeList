@@ -212,8 +212,8 @@ sealed class Setting<T>(val key: String) {
 
 enum class SortType(val comparator: Comparator<MyListScreenContract.Item>) {
     Title(compareBy({ it.status }, { it.title })),
-    Score(compareBy({ it.status }, { it.score })),
-    Updated(compareBy({ it.status }, { it.updatedAt }));
+    Score(compareBy<MyListScreenContract.Item> { it.status }.thenByDescending { it.score }),
+    Updated(compareBy<MyListScreenContract.Item> { it.status }.thenByDescending { it.updatedAt });
 
     companion object Factory {
         fun getTitleResource(sortType: SortType): Int {

@@ -88,11 +88,13 @@ import com.kis.youranimelist.domain.personalanimelist.model.AnimeStatusValue
 import com.kis.youranimelist.ui.Theme
 import com.kis.youranimelist.ui.Theme.NumberValues.debounceDefaultDelay
 import com.kis.youranimelist.ui.Theme.NumberValues.defaultImageRatio
+import com.kis.youranimelist.ui.Theme.NumberValues.waitListRecomposeDelay
 import com.kis.youranimelist.ui.Theme.StringValues.separator
 import com.kis.youranimelist.ui.navigation.NavigationKeys
 import com.kis.youranimelist.ui.widget.IconWithText
 import com.kis.youranimelist.ui.widget.SimpleTextField
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
 
 @Composable
@@ -102,9 +104,11 @@ fun MyListScreenRoute(
     viewModel: MyListViewModel = hiltViewModel(),
 ) {
     val screenState = viewModel.screenState.collectAsState()
+    val effectFlow = viewModel.effectStream
     val screenEventsListener = viewModel as MyListScreenContract.ScreenEventsListener
     MyListScreen(
         scaffoldState = scaffoldState,
+        effectFlow = effectFlow,
         searchValue = screenState.value.searchValue,
         isLoading = screenState.value.isLoading,
         isError = screenState.value.isError,
@@ -133,6 +137,7 @@ fun MyListScreenRoute(
         onSnackbarDismissedAction = screenEventsListener::onResetStateClicked,
         onSearchValueChanged = screenEventsListener::onSearchValueChanged,
         onSortItemClicked = screenEventsListener::onSortTypeChanged,
+        onListFiltered = screenEventsListener::onListFiltered,
     )
 }
 
@@ -140,6 +145,7 @@ fun MyListScreenRoute(
 @Composable
 fun MyListScreen(
     scaffoldState: ScaffoldState,
+    effectFlow: SharedFlow<MyListScreenContract.Effect>,
     searchValue: String,
     isLoading: Boolean,
     isSwipeToRefreshTurnedOn: Boolean,
@@ -157,6 +163,7 @@ fun MyListScreen(
     onSnackbarDismissedAction: () -> Unit,
     onSearchValueChanged: (String) -> Unit,
     onSortItemClicked: (SortType) -> Unit,
+    onListFiltered: () -> Unit,
 ) {
     val swipeRefreshState = rememberSwipeRefreshState(isLoading)
     Column(modifier = Modifier.fillMaxSize()) {
@@ -221,6 +228,7 @@ fun MyListScreen(
                                     onClick = {
                                         dropdownOpen = false
                                         onSortItemClicked(sort)
+                                        onListFiltered()
                                     },
                                 ) {
                                     Box(
@@ -273,6 +281,7 @@ fun MyListScreen(
                 } else {
                     PersonalListScrollable(
                         listItems = listItems,
+                        effectFlow = effectFlow,
                         tabs = tabs,
                         onItemClicked = onItemClicked,
                         onItemLongPress = onItemLongPress,
@@ -287,13 +296,21 @@ fun MyListScreen(
 @OptIn(ExperimentalFoundationApi::class)
 private fun PersonalListScrollable(
     listItems: List<MyListScreenContract.Item>,
+    effectFlow: SharedFlow<MyListScreenContract.Effect>,
     tabs: List<String>,
     onItemClicked: (Int) -> Unit,
     onItemLongPress: (Int) -> Unit,
 ) {
     val listState: LazyListState = rememberLazyListState()
-    LaunchedEffect(listItems) {
-        listState.scrollToItem(0)
+    LaunchedEffect(effectFlow) {
+        effectFlow.collect { effect ->
+            when (effect) {
+                is MyListScreenContract.Effect.ListWasFiltered -> {
+                    delay(waitListRecomposeDelay)
+                    listState.scrollToItem(0)
+                }
+            }
+        }
     }
     LazyColumn(
         contentPadding = PaddingValues(
@@ -557,9 +574,7 @@ fun SearchBar(
     onSearchValueChanged: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var someInputText by remember {
-        mutableStateOf(searchValue)
-    }
+    var someInputText by remember { mutableStateOf(searchValue) }
     LaunchedEffect(someInputText) {
         if (someInputText.isNotBlank()) {
             delay(debounceDefaultDelay)
