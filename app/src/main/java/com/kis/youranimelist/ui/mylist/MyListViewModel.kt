@@ -2,9 +2,11 @@ package com.kis.youranimelist.ui.mylist
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.kis.youranimelist.core.utils.SortType
 import com.kis.youranimelist.domain.model.ResultWrapper
 import com.kis.youranimelist.domain.personalanimelist.PersonalAnimeListUseCase
 import com.kis.youranimelist.domain.personalanimelist.model.AnimeStatus
+import com.kis.youranimelist.domain.settings.SettingsUseCase
 import com.kis.youranimelist.domain.user.UserUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -13,12 +15,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class MyListViewModel @Inject constructor(
     private val personalAnimeListUseCase: PersonalAnimeListUseCase,
+    private val settingsUseCase: SettingsUseCase,
     userUseCase: UserUseCase,
 ) : ViewModel(), MyListScreenContract.ScreenEventsListener {
 
@@ -26,14 +30,28 @@ class MyListViewModel @Inject constructor(
         personalAnimeListUseCase.getPersonalAnimeStatusesProducer()
 
     private val _screenState: MutableStateFlow<MyListScreenContract.ScreenState> = MutableStateFlow(
-        MyListScreenContract.ScreenState(isLoading = false,
+        MyListScreenContract.ScreenState(
+            isLoading = false,
             isSwipeToRefreshTurnedOn = !userUseCase.isAppAuthorization(),
-            items = listOf()))
+            items = listOf(),
+        )
+    )
     val screenState: StateFlow<MyListScreenContract.ScreenState>
         get() = _screenState
 
     init {
         startObserveMyListChanges()
+        getCurrentSort()
+    }
+
+    private fun getCurrentSort() {
+        viewModelScope.launch {
+            _screenState.update {
+                it.copy(
+                    sortBy = settingsUseCase.settingPersonalListSort()
+                )
+            }
+        }
     }
 
     private fun startObserveMyListChanges() {
@@ -51,7 +69,6 @@ class MyListViewModel @Inject constructor(
                                 isError = false,
                                 items = result.data
                                     .map { it.asMyListItem() }
-                                    .sortedWith(compareBy({ it.status }, { it.title }))
                             )
                         }
                         is ResultWrapper.Error -> {
@@ -100,5 +117,14 @@ class MyListViewModel @Inject constructor(
 
     override fun onSearchValueChanged(searchValue: String) {
         _screenState.value = _screenState.value.copy(searchValue = searchValue)
+    }
+
+    override fun onSortTypeChanged(sortBy: SortType) {
+        _screenState.update {
+            it.copy(sortBy = sortBy)
+        }
+        viewModelScope.launch {
+            settingsUseCase.updatePersonalListSort(sortBy)
+        }
     }
 }

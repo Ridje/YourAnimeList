@@ -86,6 +86,9 @@
     <string name="explore_category_favorite">Favorite</string>
     <string name="share_image">Share an image</string>
     <string name="сannot_share_image">Can\'t share image now, short error: </string>
+    <string name="sort_score">Score</string>
+    <string name="sort_title">Title</string>
+    <string name="sort_updated">Updated</string>
 
     <string-array name="personal_list_statuses">
         <item>all</item>
