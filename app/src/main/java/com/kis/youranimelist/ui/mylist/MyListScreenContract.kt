@@ -43,6 +43,11 @@ object MyListScreenContract {
         fun onSwipeRefresh()
         fun onSearchValueChanged(searchValue: String)
         fun onSortTypeChanged(sortBy: SortType)
+        fun onListFiltered()
+    }
+
+    sealed class Effect {
+        object ListWasFiltered : Effect()
     }
 }
 

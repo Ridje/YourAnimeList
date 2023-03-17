@@ -11,7 +11,9 @@ import com.kis.youranimelist.domain.user.UserUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flowOn
@@ -28,6 +30,11 @@ class MyListViewModel @Inject constructor(
 
     private val animeStatusesSource: Flow<ResultWrapper<List<AnimeStatus>>> =
         personalAnimeListUseCase.getPersonalAnimeStatusesProducer()
+
+    private val _effectStream: MutableSharedFlow<MyListScreenContract.Effect> =
+        MutableSharedFlow()
+    val effectStream: SharedFlow<MyListScreenContract.Effect>
+        get() = _effectStream
 
     private val _screenState: MutableStateFlow<MyListScreenContract.ScreenState> = MutableStateFlow(
         MyListScreenContract.ScreenState(
@@ -116,7 +123,10 @@ class MyListViewModel @Inject constructor(
     }
 
     override fun onSearchValueChanged(searchValue: String) {
-        _screenState.value = _screenState.value.copy(searchValue = searchValue)
+        if (searchValue != screenState.value.searchValue) {
+            _screenState.value = _screenState.value.copy(searchValue = searchValue)
+            onListFiltered()
+        }
     }
 
     override fun onSortTypeChanged(sortBy: SortType) {
@@ -125,6 +135,12 @@ class MyListViewModel @Inject constructor(
         }
         viewModelScope.launch {
             settingsUseCase.updatePersonalListSort(sortBy)
+        }
+    }
+
+    override fun onListFiltered() {
+        viewModelScope.launch {
+            _effectStream.emit(MyListScreenContract.Effect.ListWasFiltered)
         }
     }
 }
