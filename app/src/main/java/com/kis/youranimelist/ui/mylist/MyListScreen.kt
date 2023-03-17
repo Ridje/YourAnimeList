@@ -20,7 +20,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -29,6 +31,10 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Card
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Divider
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.ExposedDropdownMenuBox
 import androidx.compose.material.Icon
 import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.MaterialTheme
@@ -52,9 +58,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.Bottom
 import androidx.compose.ui.Alignment.Companion.Center
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -76,6 +82,7 @@ import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.SwipeRefreshState
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.kis.youranimelist.R
+import com.kis.youranimelist.core.utils.SortType
 import com.kis.youranimelist.core.utils.uppercaseMediaType
 import com.kis.youranimelist.domain.personalanimelist.model.AnimeStatusValue
 import com.kis.youranimelist.ui.Theme
@@ -101,17 +108,20 @@ fun MyListScreenRoute(
         searchValue = screenState.value.searchValue,
         isLoading = screenState.value.isLoading,
         isError = screenState.value.isError,
-        listItems = screenState.value.items.filter {
-            val fitTab =
-                screenState.value.currentTab == 0 || it.status == screenState.value.tabs[screenState.value.currentTab]
-            val fitSearch = screenState.value.searchValue.isBlank()
-                    || it.title?.contains(screenState.value.searchValue, true) ?: false
-                    || it.score.toString().contains(screenState.value.searchValue, true)
-                    || it.tags?.joinToString()
-                ?.contains(screenState.value.searchValue, true) ?: false
-                    || it.comments?.contains(screenState.value.searchValue, true) ?: false
-            return@filter fitTab && fitSearch
-        },
+        listItems = screenState.value.items
+            .filter {
+                val fitTab =
+                    screenState.value.currentTab == 0 || it.status == screenState.value.tabs[screenState.value.currentTab]
+                val fitSearch = screenState.value.searchValue.isBlank()
+                        || it.title?.contains(screenState.value.searchValue, true) ?: false
+                        || it.score.toString().contains(screenState.value.searchValue, true)
+                        || it.tags?.joinToString()
+                    ?.contains(screenState.value.searchValue, true) ?: false
+                        || it.comments?.contains(screenState.value.searchValue, true) ?: false
+                return@filter fitTab && fitSearch
+            }.sortedWith(screenState.value.sortBy.comparator),
+        sorts = screenState.value.sorts,
+        currentSort = screenState.value.sortBy,
         tabs = screenState.value.tabs,
         currentTab = screenState.value.currentTab,
         onSwipeRefresh = screenEventsListener::onSwipeRefresh,
@@ -122,9 +132,11 @@ fun MyListScreenRoute(
         onSnackbarPerformedAction = screenEventsListener::onReloadClicked,
         onSnackbarDismissedAction = screenEventsListener::onResetStateClicked,
         onSearchValueChanged = screenEventsListener::onSearchValueChanged,
+        onSortItemClicked = screenEventsListener::onSortTypeChanged,
     )
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun MyListScreen(
     scaffoldState: ScaffoldState,
@@ -135,6 +147,8 @@ fun MyListScreen(
     listItems: List<MyListScreenContract.Item>,
     tabs: List<String>,
     currentTab: Int,
+    sorts: List<SortType>,
+    currentSort: SortType,
     onSwipeRefresh: () -> Unit,
     onTabClicked: (Int) -> Unit,
     onItemClicked: (Int) -> Unit,
@@ -142,6 +156,7 @@ fun MyListScreen(
     onSnackbarPerformedAction: () -> Unit,
     onSnackbarDismissedAction: () -> Unit,
     onSearchValueChanged: (String) -> Unit,
+    onSortItemClicked: (SortType) -> Unit,
 ) {
     val swipeRefreshState = rememberSwipeRefreshState(isLoading)
     Column(modifier = Modifier.fillMaxSize()) {
@@ -173,10 +188,62 @@ fun MyListScreen(
                     .fillMaxWidth(),
                 color = Color.Transparent
             ) {
-                DebouncedSearch(
-                    searchValue = searchValue,
-                    onSearchValueChanged = onSearchValueChanged
-                )
+                Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = CenterVertically) {
+                    SearchBar(
+                        searchValue = searchValue,
+                        onSearchValueChanged = onSearchValueChanged,
+                        modifier = Modifier.weight(2f, true)
+                    )
+                    var dropdownOpen by remember { mutableStateOf(false) }
+                    ExposedDropdownMenuBox(
+                        expanded = dropdownOpen,
+                        onExpandedChange = { dropdownOpen = !dropdownOpen },
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_sort_down),
+                            contentDescription = stringResource(id = R.string.default_content_description),
+                            modifier = Modifier
+                                .padding(end = 16.dp)
+                                .width(20.dp)
+                                .aspectRatio(1f)
+                        )
+                        DropdownMenu(
+                            expanded = dropdownOpen,
+                            onDismissRequest = {
+                                dropdownOpen = false
+                            },
+                            modifier = Modifier
+                                .align(CenterVertically)
+                                .padding(end = 16.dp)
+                        ) {
+                            sorts.forEach { sort ->
+                                DropdownMenuItem(
+                                    onClick = {
+                                        dropdownOpen = false
+                                        onSortItemClicked(sort)
+                                    },
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .padding(end = 12.dp)
+                                            .width(14.dp)
+                                    ) {
+                                        if (sort == currentSort) {
+                                            Icon(
+                                                painter = painterResource(id = R.drawable.ic_checkmark),
+                                                contentDescription = stringResource(id = R.string.default_content_description),
+                                            )
+                                        }
+                                    }
+                                    Text(
+                                        text = stringResource(SortType.getTitleResource(sort)),
+                                        maxLines = 1,
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
         if (isError) {
@@ -224,14 +291,18 @@ private fun PersonalListScrollable(
     onItemClicked: (Int) -> Unit,
     onItemLongPress: (Int) -> Unit,
 ) {
+    val listState: LazyListState = rememberLazyListState()
+    LaunchedEffect(listItems) {
+        listState.scrollToItem(0)
+    }
     LazyColumn(
         contentPadding = PaddingValues(
             start = 8.dp,
             end = 8.dp,
-            top = 8.dp,
             bottom = Theme.NumberValues.bottomBarPaddingValueForLazyList.dp
         ),
-        modifier = Modifier.fillMaxHeight()
+        modifier = Modifier.fillMaxHeight(),
+        state = listState,
     ) {
         items(
             items = listItems,
@@ -285,6 +356,7 @@ private fun PersonalListScrollable(
                             ItemScoreInfo(
                                 itemScore = item.score,
                                 itemMean = item.mean,
+                                itemScoreBoxColor = item.color,
                             )
                         }
                         Column {
@@ -343,30 +415,33 @@ private fun ItemTitleInfo(itemTitle: String?) {
 private fun ItemScoreInfo(
     itemScore: Int?,
     itemMean: Float?,
+    itemScoreBoxColor: Color = Theme.Colors.userScore,
 ) {
     Row(
-        verticalAlignment = Alignment.CenterVertically,
+        verticalAlignment = CenterVertically,
         modifier = Modifier.padding(top = 4.dp)
     ) {
-        if (itemScore != null && itemScore > 0) {
-            Box(
-                modifier = Modifier
-                    .background(
-                        color = Theme.Colors.userScore,
-                        shape = CircleShape
-                    )
-                    .width(26.dp)
-                    .aspectRatio(1f),
-                contentAlignment = Center,
-            ) {
-                Text(
-                    text = itemScore.toString(),
-                    textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.subtitle1
+        Box(
+            modifier = Modifier
+                .background(
+                    color = itemScoreBoxColor,
+                    shape = CircleShape
                 )
-            }
-            Spacer(modifier = Modifier.width(8.dp))
+                .width(26.dp)
+                .aspectRatio(1f),
+            contentAlignment = Center,
+        ) {
+            Text(
+                text = if (itemScore == null || itemScore == 0) {
+                    "-"
+                } else {
+                    itemScore.toString()
+                },
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.subtitle1
+            )
         }
+        Spacer(modifier = Modifier.width(8.dp))
         IconWithText(
             text = "${itemMean ?: stringResource(id = R.string.not_rated)}",
             textStyle = MaterialTheme.typography.subtitle1,
@@ -477,9 +552,10 @@ private fun ItemProgressLine(
 }
 
 @Composable
-fun DebouncedSearch(
+fun SearchBar(
     searchValue: String,
     onSearchValueChanged: (String) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     var someInputText by remember {
         mutableStateOf(searchValue)
@@ -488,13 +564,13 @@ fun DebouncedSearch(
         if (someInputText.isNotBlank()) {
             delay(debounceDefaultDelay)
         }
-        onSearchValueChanged.invoke(someInputText)
+        onSearchValueChanged(someInputText)
     }
 
     SimpleTextField(
         value = someInputText,
-        onValueChange = { someInputText = it },
-        modifier = Modifier
+        onValueChange = { value: String -> someInputText = value },
+        modifier = modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp),
         keyboardOptions = KeyboardOptions(
@@ -506,7 +582,7 @@ fun DebouncedSearch(
                 contentDescription = stringResource(id = R.string.default_content_description),
                 modifier = Modifier
                     .padding(horizontal = 16.dp)
-                    .width(12.dp)
+                    .width(14.dp)
                     .aspectRatio(1f)
             )
         },
@@ -521,23 +597,22 @@ fun DebouncedSearch(
         ),
         textStyle = MaterialTheme.typography.subtitle2,
         placeholderText = stringResource(R.string.searching_in_list),
-        trailingIcon = if (someInputText.isEmpty()) {
-            null
-        } else {
-            {
+        trailingIcon = {
+            if (someInputText.isNotEmpty()) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_cancel),
                     contentDescription = stringResource(id = R.string.default_content_description),
                     modifier = Modifier
                         .clickable { someInputText = "" }
                         .padding(horizontal = 16.dp)
-                        .width(12.dp)
+                        .width(18.dp)
                         .aspectRatio(1f)
                 )
             }
         }
     )
 }
+
 
 private val Theme.NumberValues.roundedCardPercents: Int
     get() = 10

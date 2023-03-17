@@ -2,40 +2,101 @@ package com.kis.youranimelist.core.utils
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.util.Log
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
+import com.kis.youranimelist.R
 import com.kis.youranimelist.core.utils.AppPreferences.Companion.ACCESS_TOKEN_SETTING_KEY
 import com.kis.youranimelist.core.utils.AppPreferences.Companion.EXPIRES_IN_TOKEN_SETTING_KEY
 import com.kis.youranimelist.core.utils.AppPreferences.Companion.NSFW_SETTING_KEY
 import com.kis.youranimelist.core.utils.AppPreferences.Companion.ONBOARDING_SHOWN_PREF_KEY
+import com.kis.youranimelist.core.utils.AppPreferences.Companion.PERSONAL_LIST_SORT
 import com.kis.youranimelist.core.utils.AppPreferences.Companion.REFRESH_TOKEN_SETTING_KEY
 import com.kis.youranimelist.core.utils.AppPreferences.Companion.TYPE_TOKEN_SETTING_KEY
 import com.kis.youranimelist.core.utils.AppPreferences.Companion.USE_APP_AUTH
+import com.kis.youranimelist.ui.mylist.MyListScreenContract
 
-class AppPreferencesWrapper constructor(private val appPreferences: AppPreferences) {
+private const val PREFERENCES_TAG = "AppPreferencesWrapper"
+class AppPreferencesWrapper constructor(
+    val appPreferences: AppPreferences,
+) {
+
+    fun logError(message: String) {
+        Log.e(PREFERENCES_TAG, message)
+    }
 
     fun writeValue(key: Setting<String>, value: String) {
-        appPreferences.writeString(key.key, value)
+        try {
+            appPreferences.writeString(key.key, value)
+        } catch (e: Exception) {
+            logError("Event.WriteStringValue:" +
+                    " Can't write key {$key} with value {$value}, error: ${e.message}")
+        }
     }
 
     fun writeValue(key: Setting<Int>, value: Int) {
-        appPreferences.writeInt(key.key, value)
+        try {
+            appPreferences.writeInt(key.key, value)
+        } catch (e: Exception) {
+            logError("Event.WriteIntValue:" +
+                    " Can't write key {$key} with value {$value}, error: ${e.message}")
+        }
     }
 
     fun writeValue(key: Setting<Boolean>, value: Boolean) {
-        appPreferences.writeBoolean(key.key, value)
+        try {
+            appPreferences.writeBoolean(key.key, value)
+        } catch (e: Exception) {
+            logError("Event.WriteBooleanValue:" +
+                    " Can't write key {$key} with value {$value}, error: ${e.message}")
+        }
+    }
+
+    fun <T: Enum<T>> writeValue(key: Setting<T>, value: T) {
+        try {
+            appPreferences.writeInt(key.key, value.ordinal)
+        } catch (e: Exception) {
+            logError("Event.WriteEnumValue:" +
+                    " Can't write key {$key} with value {$value}, error: ${e.message}")
+        }
     }
 
     fun readValue(key: Setting<String>, defaultValue: String? = null): String {
-        return appPreferences.readString(key.key, defaultValue)
+        return try {
+             appPreferences.readString(key.key, defaultValue)
+        } catch (e: Exception) {
+            logError("Event.ReadStringValue: Can't read key {$key}, error: ${e.message}")
+            defaultValue ?: ""
+        }
     }
 
     fun readValue(key: Setting<Int>, defaultValue: Int? = null): Int {
-        return appPreferences.readInt(key.key, defaultValue)
+        return try {
+            appPreferences.readInt(key.key, defaultValue)
+        } catch (e: Exception) {
+            logError("Event.ReadIntValue: Can't read key {$key}, error: ${e.message}")
+            defaultValue ?: 0
+        }
+    }
+
+    inline fun <reified T : Enum<T>> readValue(key: Setting<T>, defaultValue: T? = null): T {
+        return try {
+            val defaultIndexValue = enumValues<T>().indexOf(defaultValue)
+            val ordinal = appPreferences.readInt(key.key, defaultIndexValue)
+            enumValues<T>()[ordinal]
+        } catch (e: Exception) {
+            logError("Event.ReadEnumValue: Can't read key {$key}, error: ${e.message}")
+            defaultValue ?: enumValues<T>().first()
+        }
     }
 
     fun readValue(key: Setting<Boolean>, defaultValue: Boolean? = null): Boolean {
-        return appPreferences.readBoolean(key.key, defaultValue)
+        return try {
+            appPreferences.readBoolean(key.key, defaultValue)
+        } catch (e: Exception) {
+            logError("Event.ReadBooleanValue: Can't read key {$key}, error: ${e.message}")
+            defaultValue ?: false
+        }
     }
 
     fun removeSetting(key: Setting<*>) {
@@ -117,14 +178,17 @@ class AppPreferences(val context: Context) {
         const val REFRESH_TOKEN_SETTING_KEY = "refresh_token"
         const val EXPIRES_IN_TOKEN_SETTING_KEY = "expires_in"
         const val TYPE_TOKEN_SETTING_KEY = "token_type"
-        private val encryptedPreferencesKeys = listOf(ACCESS_TOKEN_SETTING_KEY,
+        private val encryptedPreferencesKeys = listOf(
+            ACCESS_TOKEN_SETTING_KEY,
             REFRESH_TOKEN_SETTING_KEY,
             EXPIRES_IN_TOKEN_SETTING_KEY,
-            TYPE_TOKEN_SETTING_KEY)
+            TYPE_TOKEN_SETTING_KEY
+        )
 
         const val NSFW_SETTING_KEY = "nsfw"
         const val ONBOARDING_SHOWN_PREF_KEY = "onboarding_shown"
         const val USE_APP_AUTH = "use_app_auth"
+        const val PERSONAL_LIST_SORT = "personal_list_sort"
 
         private val masterKeys = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
     }
@@ -142,6 +206,22 @@ sealed class Setting<T>(val key: String) {
 
     object NSFW : Setting<Boolean>(NSFW_SETTING_KEY)
     object OnboardingShown: Setting<Boolean>(ONBOARDING_SHOWN_PREF_KEY)
+    object PersonalListSort: Setting<SortType>(PERSONAL_LIST_SORT)
     object UseAppAuth: Setting<Boolean>(USE_APP_AUTH)
 }
 
+enum class SortType(val comparator: Comparator<MyListScreenContract.Item>) {
+    Title(compareBy({ it.status }, { it.title })),
+    Score(compareBy({ it.status }, { it.score })),
+    Updated(compareBy({ it.status }, { it.updatedAt }));
+
+    companion object Factory {
+        fun getTitleResource(sortType: SortType): Int {
+            return when (sortType) {
+                Score -> R.string.sort_score
+                Title -> R.string.sort_title
+                Updated -> R.string.sort_updated
+            }
+        }
+    }
+}
