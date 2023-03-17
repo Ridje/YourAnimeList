@@ -1,6 +1,7 @@
 package com.kis.youranimelist.ui.mylist
 
 import androidx.compose.ui.graphics.Color
+import com.kis.youranimelist.core.utils.SortType
 import com.kis.youranimelist.domain.personalanimelist.model.AnimeStatus
 import com.kis.youranimelist.domain.personalanimelist.model.AnimeStatusValue
 
@@ -14,6 +15,8 @@ object MyListScreenContract {
         val tabs: List<String> = AnimeStatusValue.listOfIndices(),
         val currentTab: Int = 0,
         val searchValue: String = "",
+        val sortBy: SortType = SortType.Title,
+        val sorts: List<SortType> = SortType.values().toList(),
     )
 
     data class Item(
@@ -27,6 +30,9 @@ object MyListScreenContract {
         val totalNumOfEpisodes: Int?,
         val score: Int?,
         val mean: Float?,
+        val tags: List<String>?,
+        val comments: String?,
+        val updatedAt: Long?,
     )
 
 
@@ -36,6 +42,7 @@ object MyListScreenContract {
         fun onResetStateClicked()
         fun onSwipeRefresh()
         fun onSearchValueChanged(searchValue: String)
+        fun onSortTypeChanged(sortBy: SortType)
     }
 }
 
@@ -51,5 +58,8 @@ fun AnimeStatus.asMyListItem(): MyListScreenContract.Item {
         this.anime.numEpisodes,
         this.score,
         this.anime.mean,
+        this.tags,
+        this.comments,
+        this.updatedAt,
     )
 }

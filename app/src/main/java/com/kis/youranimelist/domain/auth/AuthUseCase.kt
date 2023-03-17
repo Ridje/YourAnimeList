@@ -54,15 +54,18 @@ class AuthUseCase(
     fun onAuthError(errorCode: Int): Boolean {
         if (errorCode == HTTP_UNAUTHORIZED && authInterceptor.isAuthTokenRefreshable()) {
             val requestTokenResult = runBlocking {
-                remoteDataSource.get().refreshAccessToken(authInterceptor.refreshToken()
-                    ?: throw NullPointerException("Refresh token was nullified by another Thread")
+                remoteDataSource.get().refreshAccessToken(
+                    authInterceptor.refreshToken()
+                        ?: throw NullPointerException("Refresh token was nullified by another Thread")
                 )
             }
             if (requestTokenResult is ResultWrapper.Success) {
-                setAuthData(requestTokenResult.data.accessToken,
+                setAuthData(
+                    requestTokenResult.data.accessToken,
                     requestTokenResult.data.refreshToken,
                     requestTokenResult.data.expiresIn,
-                    requestTokenResult.data.tokenType)
+                    requestTokenResult.data.tokenType
+                )
                 return true
             }
         }

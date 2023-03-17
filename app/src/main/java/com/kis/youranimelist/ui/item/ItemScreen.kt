@@ -1,5 +1,8 @@
 package com.kis.youranimelist.ui.item
 
+import android.graphics.drawable.Drawable
+import android.util.Log
+import android.widget.Toast
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
@@ -79,6 +82,8 @@ import com.kis.youranimelist.ui.navigation.NavigationKeys
 import com.kis.youranimelist.ui.widget.AnimeCategoryListItemRounded
 import com.kis.youranimelist.ui.widget.ExpandableText
 import com.kis.youranimelist.ui.widget.SnackbarIcon
+import com.kis.youranimelist.utils.ContextCompatUtils
+import com.kis.youranimelist.utils.FileUtils
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -132,165 +137,177 @@ fun ItemScreen(
         snackbarHost = {
             SnackbarIcon(snackbarHostState = it)
         }
-    ) {
-        SnackbarShower(effectFlow = effectFlow, scaffoldState = scaffoldState)
-        ConstraintLayout(modifier = Modifier
-            .fillMaxHeight()
-            .verticalScroll(rememberScrollState())
-        ) {
-            val (image, content, blocks) = createRefs()
-            val pagerState = rememberPagerState()
-            var openDialog by remember { mutableStateOf(false) }
-            if (openDialog) {
-                PicturesDialog(pagerState.currentPage, anime, { openDialog = false })
-            }
-            HorizontalPager(
-                count = anime.images.size,
-                modifier = Modifier.constrainAs(image) {
-                    top.linkTo(
-                        parent.top
-                    )
-                },
-                state = pagerState
-            ) { page ->
-                AsyncImage(
-                    model = anime.images[page],
-                    contentDescription = stringResource(id = R.string.default_content_description),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .aspectRatio(Theme.NumberValues.defaultImageRatio)
-                        .graphicsLayer { alpha = Theme.NumberValues.almostOpaque }
-                        .drawWithContent {
-                            val colors = listOf(
-                                Theme.Colors.background,
-                                Theme.Colors.background,
-                                Theme.Colors.background.copy(alpha = Theme.NumberValues.itemMiddleFadeValue),
-                                Theme.Colors.background.copy(alpha = Theme.NumberValues.itemBottomFadeValue),
-                                Color.Transparent,
-                            )
-                            drawContent()
-                            drawRect(
-                                brush = Brush.verticalGradient(colors),
-                                blendMode = BlendMode.DstIn
-                            )
-                        }
-                        .clickable { openDialog = true },
-                    contentScale = ContentScale.Crop,
-                )
-            }
-            Row(modifier = Modifier
-                .padding(20.dp)
-                .fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween) {
-                Row {
-                    NavigateButton(
-                        onButtonPressed = onBackButtonPressed,
-                        iconRes = R.drawable.ic_arrow_left_solid,
-                    )
-                    Divider(
-                        modifier = Modifier.width(10.dp),
-                        color = Color.Transparent,
-                    )
-                    NavigateButton(
-                        onButtonPressed = onHomeButtonPressed,
-                        iconRes = R.drawable.ic_home_solid,
-                    )
-                }
-                if (anime.hasPersonalStatus) {
-                    NavigateButton(onButtonPressed = { onEditButtonPressed.invoke(anime.id) },
-                        iconRes = R.drawable.ic_pen)
-                } else {
-                    NavigateButton(onButtonPressed = onAddToBookmarksButtonPressed,
-                        iconRes = R.drawable.ic_bookmark)
-                }
-            }
-            Column(
+    ) { paddingValues ->
+        Box(modifier = Modifier.padding(paddingValues)) {
+            SnackbarShower(effectFlow = effectFlow, scaffoldState = scaffoldState)
+            ConstraintLayout(
                 modifier = Modifier
-                    .constrainAs(content) {
-                        top.linkTo(anchor = image.bottom,
-                            margin = Theme.NumberValues.contentShiftToImage)
-                    }
-                    .padding(top = 24.dp, start = 24.dp, end = 24.dp),
+                    .fillMaxHeight()
+                    .verticalScroll(rememberScrollState())
             ) {
-                HorizontalPagerIndicator(
-                    pagerState = pagerState,
-                    modifier = Modifier
-                        .align(Alignment.CenterHorizontally)
-                        .padding(16.dp),
-                    activeColor = MaterialTheme.colors.secondary,
-                    inactiveColor = MaterialTheme.colors.secondary.copy(alpha = Theme.NumberValues.secondaryColorNotActiveAlpha),
-                )
-                Text(text = anime.title, style = MaterialTheme.typography.h5)
-                Row(verticalAlignment = Alignment.Top) {
-                    Text(
-                        text = anime.year.toString(),
-                        style = MaterialTheme.typography.caption,
-                        modifier = Modifier
-                            .wrapContentWidth()
-                    )
-                    Text(text = separator, style = MaterialTheme.typography.caption)
-                    Text(
-                        text = anime.mediaType.uppercaseMediaType(),
-                        style = MaterialTheme.typography.caption,
-                        modifier = Modifier
-                            .wrapContentWidth()
-                    )
-                    Text(text = separator, style = MaterialTheme.typography.caption)
-                    Text(
-                        text = "${anime.numEpisodes} ep.",
-                        style = MaterialTheme.typography.caption,
-                    )
-                    Text(text = separator, style = MaterialTheme.typography.caption)
-                    Text(
-                        text = anime.airingStatus,
-                        style = MaterialTheme.typography.caption,
-                    )
-                    Text(text = separator, style = MaterialTheme.typography.caption)
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_star_solid),
+                val (image, content, blocks) = createRefs()
+                val pagerState = rememberPagerState()
+                var openDialog by remember { mutableStateOf(false) }
+                if (openDialog) {
+                    PicturesDialog(pagerState.currentPage, anime, { openDialog = false })
+                }
+                HorizontalPager(
+                    count = anime.images.size,
+                    modifier = Modifier.constrainAs(image) {
+                        top.linkTo(
+                            parent.top
+                        )
+                    },
+                    state = pagerState
+                ) { page ->
+                    AsyncImage(
+                        model = anime.images[page],
                         contentDescription = stringResource(id = R.string.default_content_description),
-                        tint = Color.Yellow,
                         modifier = Modifier
-                            .requiredHeightIn(max = 14.dp)
-                            .padding(end = 4.dp),
-                    )
-                    Text(
-                        text = anime.mean.toString(),
-                        style = MaterialTheme.typography.caption,
+                            .fillMaxWidth()
+                            .aspectRatio(Theme.NumberValues.defaultImageRatio)
+                            .graphicsLayer { alpha = Theme.NumberValues.almostOpaque }
+                            .drawWithContent {
+                                val colors = listOf(
+                                    Theme.Colors.background,
+                                    Theme.Colors.background,
+                                    Theme.Colors.background.copy(alpha = Theme.NumberValues.itemMiddleFadeValue),
+                                    Theme.Colors.background.copy(alpha = Theme.NumberValues.itemBottomFadeValue),
+                                    Color.Transparent,
+                                )
+                                drawContent()
+                                drawRect(
+                                    brush = Brush.verticalGradient(colors),
+                                    blendMode = BlendMode.DstIn
+                                )
+                            }
+                            .clickable { openDialog = true },
+                        contentScale = ContentScale.Crop,
                     )
                 }
-                Spacer(modifier = Modifier.height(12.dp))
-                Row(modifier = Modifier.horizontalScroll(rememberScrollState()),
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                    for (genre in anime.genres) {
-                        Chip({}) {
-                            Text(
-                                text = genre,
-                                style = MaterialTheme.typography.caption,
+                Row(
+                    modifier = Modifier
+                        .padding(20.dp)
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Row {
+                        NavigateButton(
+                            onButtonPressed = onBackButtonPressed,
+                            iconRes = R.drawable.ic_arrow_left_solid,
+                        )
+                        Divider(
+                            modifier = Modifier.width(10.dp),
+                            color = Color.Transparent,
+                        )
+                        NavigateButton(
+                            onButtonPressed = onHomeButtonPressed,
+                            iconRes = R.drawable.ic_home_solid,
+                        )
+                    }
+                    if (anime.hasPersonalStatus) {
+                        NavigateButton(
+                            onButtonPressed = { onEditButtonPressed.invoke(anime.id) },
+                            iconRes = R.drawable.ic_pen
+                        )
+                    } else {
+                        NavigateButton(
+                            onButtonPressed = onAddToBookmarksButtonPressed,
+                            iconRes = R.drawable.ic_bookmark
+                        )
+                    }
+                }
+                Column(
+                    modifier = Modifier
+                        .constrainAs(content) {
+                            top.linkTo(
+                                anchor = image.bottom,
+                                margin = Theme.NumberValues.contentShiftToImage
                             )
                         }
+                        .padding(top = 24.dp, start = 24.dp, end = 24.dp),
+                ) {
+                    HorizontalPagerIndicator(
+                        pagerState = pagerState,
+                        modifier = Modifier
+                            .align(Alignment.CenterHorizontally)
+                            .padding(16.dp),
+                        activeColor = MaterialTheme.colors.secondary,
+                        inactiveColor = MaterialTheme.colors.secondary.copy(alpha = Theme.NumberValues.secondaryColorNotActiveAlpha),
+                    )
+                    Text(text = anime.title, style = MaterialTheme.typography.h5)
+                    Row(verticalAlignment = Alignment.Top) {
+                        Text(
+                            text = anime.year.toString(),
+                            style = MaterialTheme.typography.caption,
+                            modifier = Modifier
+                                .wrapContentWidth()
+                        )
+                        Text(text = separator, style = MaterialTheme.typography.caption)
+                        Text(
+                            text = anime.mediaType.uppercaseMediaType(),
+                            style = MaterialTheme.typography.caption,
+                            modifier = Modifier
+                                .wrapContentWidth()
+                        )
+                        Text(text = separator, style = MaterialTheme.typography.caption)
+                        Text(
+                            text = "${anime.numEpisodes} ep.",
+                            style = MaterialTheme.typography.caption,
+                        )
+                        Text(text = separator, style = MaterialTheme.typography.caption)
+                        Text(
+                            text = anime.airingStatus,
+                            style = MaterialTheme.typography.caption,
+                        )
+                        Text(text = separator, style = MaterialTheme.typography.caption)
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_star_solid),
+                            contentDescription = stringResource(id = R.string.default_content_description),
+                            tint = Color.Yellow,
+                            modifier = Modifier
+                                .requiredHeightIn(max = 14.dp)
+                                .padding(end = 4.dp),
+                        )
+                        Text(
+                            text = anime.mean.toString(),
+                            style = MaterialTheme.typography.caption,
+                        )
                     }
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Row(
+                        modifier = Modifier.horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        for (genre in anime.genres) {
+                            Chip({}) {
+                                Text(
+                                    text = genre,
+                                    style = MaterialTheme.typography.caption,
+                                )
+                            }
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(12.dp))
+                    ExpandableText(text = anime.synopsis)
+                    Spacer(modifier = Modifier.height(12.dp))
                 }
-                Spacer(modifier = Modifier.height(12.dp))
-                ExpandableText(text = anime.synopsis)
-                Spacer(modifier = Modifier.height(12.dp))
-            }
-            Column(
-                modifier = Modifier.constrainAs(blocks) {
-                    top.linkTo(content.bottom)
+                Column(
+                    modifier = Modifier.constrainAs(blocks) {
+                        top.linkTo(content.bottom)
+                    }
+                ) {
+                    RelatedItems(
+                        listRelatedItems,
+                        onRelatedAnimeClicked,
+                    )
+                    RecommendedItems(
+                        recommendedAnimeItems = listRecommendedItems,
+                        onItemClick = onRecommendedAnimeClicked
+                    )
                 }
-            ) {
-                RelatedItems(
-                    listRelatedItems,
-                    onRelatedAnimeClicked,
-                )
-                RecommendedItems(
-                    recommendedAnimeItems = listRecommendedItems,
-                    onItemClick = onRecommendedAnimeClicked
-                )
             }
         }
-
     }
 
 }
@@ -302,7 +319,8 @@ fun NavigateButton(
     @DrawableRes iconRes: Int,
     modifier: Modifier = Modifier,
 ) {
-    Button(onClick = onButtonPressed,
+    Button(
+        onClick = onButtonPressed,
         shape = RoundedCornerShape(8.dp),
         colors = ButtonDefaults.buttonColors(
             backgroundColor = MaterialTheme.colors.background,
@@ -328,12 +346,16 @@ fun RelatedItems(
 ) {
     if (relatedAnimeItems.isNotEmpty()) {
         Column {
-            Text(text = stringResource(R.string.related),
+            Text(
+                text = stringResource(R.string.related),
                 style = MaterialTheme.typography.h6,
-                modifier = Modifier.padding(PaddingValues(horizontal = 6.dp, vertical = 0.dp)))
+                modifier = Modifier.padding(PaddingValues(horizontal = 6.dp, vertical = 0.dp))
+            )
             Spacer(modifier = Modifier.height(10.dp))
-            LazyRow(modifier = Modifier.height(270.dp),
-                contentPadding = PaddingValues(horizontal = 6.dp, vertical = 0.dp)) {
+            LazyRow(
+                modifier = Modifier.height(270.dp),
+                contentPadding = PaddingValues(horizontal = 6.dp, vertical = 0.dp)
+            ) {
                 items(relatedAnimeItems, key = { item -> item.id }) { relatedAnime ->
                     AnimeCategoryListItemRounded(
                         relatedAnime.picture,
@@ -360,18 +382,24 @@ fun RecommendedItems(
 ) {
     if (recommendedAnimeItems.isNotEmpty()) {
         Column {
-            Text(text = stringResource(R.string.recommendations),
+            Text(
+                text = stringResource(R.string.recommendations),
                 style = MaterialTheme.typography.h6,
-                modifier = Modifier.padding(PaddingValues(horizontal = 6.dp, vertical = 0.dp)))
+                modifier = Modifier.padding(PaddingValues(horizontal = 6.dp, vertical = 0.dp))
+            )
             Spacer(modifier = Modifier.height(10.dp))
-            LazyRow(modifier = Modifier.height(270.dp),
-                contentPadding = PaddingValues(horizontal = 6.dp, vertical = 0.dp)) {
+            LazyRow(
+                modifier = Modifier.height(270.dp),
+                contentPadding = PaddingValues(horizontal = 6.dp, vertical = 0.dp)
+            ) {
                 items(recommendedAnimeItems, { it.id }) { recommendedAnime ->
                     AnimeCategoryListItemRounded(
                         recommendedAnime.picture,
                         recommendedAnime.title,
-                        stringResource(R.string.recommended_times,
-                            recommendedAnime.recommendedTimes),
+                        stringResource(
+                            R.string.recommended_times,
+                            recommendedAnime.recommendedTimes
+                        ),
                         130.dp,
                         maxTitleLines,
                     ) { onItemClick.invoke(recommendedAnime.id) }
@@ -403,33 +431,81 @@ fun PicturesDialog(
                 count = anime.images.size,
                 state = dialogPagerState,
             ) { page ->
-                Box(modifier = Modifier
-                    .clickable(
-                        interactionSource = remember { MutableInteractionSource() },
-                        indication = null,
-                        onClick = onDialogDismissed
-                    )
-                    .fillMaxSize()
+                Box(
+                    modifier = Modifier
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null,
+                            onClick = onDialogDismissed
+                        )
+                        .fillMaxSize()
                 ) {
-                    AsyncImage(
+                    Box(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .wrapContentHeight()
+                            .wrapContentSize()
                             .align(Alignment.Center)
-                            .clickable(
-                                interactionSource = remember { MutableInteractionSource() },
-                                indication = null,
-                                onClick = {}
-                            ),
-                        model = anime.images[page],
-                        contentDescription = stringResource(id = R.string.default_content_description),
-                        contentScale = ContentScale.FillWidth,
-                    )
+                    ) {
+                        var image: Drawable? by remember { mutableStateOf(null) }
+                        AsyncImage(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .wrapContentHeight()
+                                .align(Alignment.Center)
+                                .clickable(
+                                    interactionSource = remember { MutableInteractionSource() },
+                                    indication = null,
+                                    onClick = {}
+                                ),
+                            model = anime.images[page],
+                            contentDescription = stringResource(id = R.string.default_content_description),
+                            contentScale = ContentScale.FillWidth,
+                            onSuccess = {
+                                image = it.result.drawable
+                            }
+                        )
+                        ShareButton(
+                            image = image,
+                            modifier = Modifier.align(Alignment.BottomEnd),
+                            title = anime.title,
+                        )
+                    }
                 }
             }
         },
         backgroundColor = Color.Transparent,
     )
+}
+
+private const val IMAGE_SHARE_TAG = "YAL.IMAGE_SHARE"
+@Composable
+fun ShareButton(
+    image: Drawable?,
+    modifier: Modifier = Modifier,
+    title: String,
+) {
+    image?.let { sharedImage ->
+        val scope = rememberCoroutineScope()
+        val context = LocalContext.current
+        NavigateButton(
+            modifier = modifier.padding(8.dp),
+            onButtonPressed = {
+                scope.launch {
+                    try {
+                        val uriFile = FileUtils.createCachedShareFile(context, sharedImage)
+                        ContextCompatUtils.startJPEGChooser(
+                            context = context,
+                            uri = uriFile,
+                            title = title,
+                        )
+                    } catch (e: RuntimeException) {
+                        Log.e(IMAGE_SHARE_TAG, "Can't share image now, short error: ${e.message}")
+                        Toast.makeText(context, context.getString(R.string.сannot_share_image) + e.message, Toast.LENGTH_LONG).show()
+                    }
+                }
+            },
+            iconRes = R.drawable.ic_share,
+        )
+    }
 }
 
 @Composable

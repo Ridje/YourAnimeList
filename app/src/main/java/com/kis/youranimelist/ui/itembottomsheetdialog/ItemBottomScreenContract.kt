@@ -3,7 +3,6 @@ package com.kis.youranimelist.ui.itembottomsheetdialog
 import com.kis.youranimelist.domain.personalanimelist.model.AnimeStatus
 import com.kis.youranimelist.domain.personalanimelist.model.AnimeStatusValue
 import com.kis.youranimelist.domain.rankinglist.model.Anime
-import java.time.LocalDate
 
 object ItemBottomScreenContract {
     data class ScreenState(
@@ -19,6 +18,7 @@ object ItemBottomScreenContract {
         val statusModified: Boolean = false,
         val applyLoading: Boolean = false,
         val deleteLoading: Boolean = false,
+        val comments: String?,
     )
 
     sealed class Effect {
@@ -57,7 +57,8 @@ fun ItemBottomScreenContract.ScreenState.copyWithMapping(animeStatus: AnimeStatu
             this.score
         } else {
             animeStatus.score.toFloat()
-        }
+        },
+        comments = animeStatus.comments,
     )
 }
 
@@ -72,6 +73,8 @@ fun ItemBottomScreenContract.ScreenState.asAnimeStatus(): AnimeStatus {
         score = this.score.toInt(),
         numWatchedEpisodes = this.episodesWatched ?: 0,
         updatedAt = System.currentTimeMillis(),
+        tags = null,
+        comments = this.comments,
     )
 }
 
