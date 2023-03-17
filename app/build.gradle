@@ -12,7 +12,7 @@ plugins {
 
 android {
     ext {
-        yal_application_version_code = 6
+        yal_application_version_code = 7
         yal_application_version_name = "0.2.1"
     }
 
