@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
@@ -49,6 +50,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.core.text.isDigitsOnly
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.kis.youranimelist.R
@@ -238,14 +240,19 @@ fun ItemBottomScreen(
                         .height(60.dp),
                     value = episodesWatched?.let { episodesWatched.toString() } ?: "",
                     onValueChange = { value ->
-                        onEpisodesWatchedValueChanged(value.takeIf { it.isNotBlank() }?.toInt())
+                        onEpisodesWatchedValueChanged(value.takeIf { it.isNotBlank() && it.isDigitsOnly() }?.toInt())
                     },
                     isError = episodesWatched?.let { episodesWatched > episodes } ?: true,
                     keyboardOptions = KeyboardOptions.Default.copy(
                         keyboardType = KeyboardType.Number,
+                        autoCorrect = false,
                     ),
+                    keyboardActions = KeyboardActions {
+                        onApplyChanges()
+                    },
                     label = { Text(text = stringResource(id = R.string.episodes_watched)) },
-                    visualTransformation = PostfixTransformation("/$episodes")
+                    visualTransformation = PostfixTransformation("/$episodes"),
+                    singleLine = true,
                 )
                 OutlinedButton(onClick = onPlusOneClicked,
                     modifier = Modifier.height(52.dp)
